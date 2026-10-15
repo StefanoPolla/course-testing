@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Appendix A — Glossary – Near-term Quantum Computing — lecture notes (test)</title>
+<title>Appendix A — Glossary – Near-term Quantum Computing — lecture notes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./l01-native-gates.html" rel="prev">
+<link href="./l01-platforms-and-measurement.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -78,6 +78,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<meta name="robots" content="noindex, nofollow">
 
 
 </head>
@@ -268,7 +269,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">Near-term Quantum Computing — lecture notes (test)</a> 
+      <a href="./">Near-term Quantum Computing — lecture notes</a> 
         <div class="sidebar-tools-main tools-wide">
     <a href="https://github.com/StefanoPolla/course-testing/tree/main/notes/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
     <a href="./ntqc-lecture-notes.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
@@ -286,13 +287,13 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Preface</span></a>
+ <span class="menu-text">Near-term Quantum Computing</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./l01-native-gates.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Native gates and connectivity</span></span></a>
+  <a href="./l01-platforms-and-measurement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -344,17 +345,153 @@ ul.task-list li input[type="checkbox"] {
 
 
 <dl>
+<dt><span id="gloss-calibration">calibration</span></dt>
+<dd>
+Measuring and adjusting the control pulses of a device so that its gates do what they should. Providers publish calibration data: the error rates of each qubit and gate at the last calibration.
+</dd>
+<dt><span id="gloss-coherence-time">coherence time</span></dt>
+<dd>
+How long a qubit keeps its quantum state, in particular a superposition, before noise from its surroundings destroys it.
+</dd>
+<dt><span id="gloss-coherent-error">coherent error</span></dt>
+<dd>
+A systematic error in which a gate applies the wrong unitary, for example a rotation by a slightly wrong angle, in the same way every time.
+</dd>
 <dt><span id="gloss-coupling-graph">coupling graph</span></dt>
 <dd>
 Graph whose vertices are qubits and whose edges are the pairs on which a native two-qubit gate is available.
+</dd>
+<dt><span id="gloss-cross-resonance">cross-resonance</span></dt>
+<dd>
+A two-qubit gate mechanism for superconducting qubits with fixed couplings: one qubit is driven at the frequency of its neighbour.
+</dd>
+<dt><span id="gloss-crosstalk">crosstalk</span></dt>
+<dd>
+An unwanted effect of an operation on one qubit on other qubits, for example through couplings that are never fully switched off.
+</dd>
+<dt><span id="gloss-dephasing">dephasing</span></dt>
+<dd>
+Loss of the relative phase of a superposition, for example because the qubit frequency fluctuates. Its characteristic time is called T2.
+</dd>
+<dt><span id="gloss-dilution-refrigerator">dilution refrigerator</span></dt>
+<dd>
+A refrigerator that reaches about 10 millikelvin, cold enough that heat no longer excites superconducting qubits.
+</dd>
+<dt><span id="gloss-dispersive-readout">dispersive readout</span></dt>
+<dd>
+Readout of a superconducting qubit through a resonator whose frequency depends slightly on the qubit state. A weak microwave probe tells the two states apart.
+</dd>
+<dt><span id="gloss-divincenzo">DiVincenzo criteria</span></dt>
+<dd>
+A checklist for building a quantum computer: scalable, well-characterised qubits; preparation of a known state; long coherence; a universal set of gates; measurement of individual qubits.
+</dd>
+<dt><span id="gloss-estimator">estimator</span></dt>
+<dd>
+A rule that turns measured data into an estimate of a quantity, for example the sample mean of the outcomes as an estimate of an expectation value.
+</dd>
+<dt><span id="gloss-fidelity">fidelity</span></dt>
+<dd>
+A number between 0 and 1 measuring how close an operation or state is to the intended one. Informally, one minus the probability of an error. Defined precisely in the chapter on noise.
+</dd>
+<dt><span id="gloss-ion">ion</span></dt>
+<dd>
+An atom with one or more electrons removed, so that it carries an electric charge and can be held by electric fields.
+</dd>
+<dt><span id="gloss-ion-trap">ion trap</span></dt>
+<dd>
+A device that holds ions in vacuum with electric fields, typically lined up in a chain a few micrometres apart.
+</dd>
+<dt><span id="gloss-josephson-junction">Josephson junction</span></dt>
+<dd>
+A thin insulating barrier between two superconductors. In a circuit it makes the energy levels unevenly spaced, which is what turns the circuit into a usable qubit.
+</dd>
+<dt><span id="gloss-laser-cooling">laser cooling</span></dt>
+<dd>
+Slowing the motion of atoms or ions with laser light until they are almost at rest.
+</dd>
+<dt><span id="gloss-leakage">leakage</span></dt>
+<dd>
+An error in which a qubit leaves its two qubit levels, for example when a transmon is pushed into its third level.
+</dd>
+<dt><span id="gloss-logical-qubit">logical qubit</span></dt>
+<dd>
+A qubit of information encoded in many physical qubits by an error-correcting code. Its error rate can be much lower than that of the physical qubits.
+</dd>
+<dt><span id="gloss-molmer-sorensen">Mølmer-Sørensen gate</span></dt>
+<dd>
+The standard two-qubit gate of trapped ions. Laser beams couple two ions to the shared vibrations of the chain, producing an entangling rotation of any chosen angle.
 </dd>
 <dt><span id="gloss-native-gate">native gate</span></dt>
 <dd>
 A gate the hardware implements directly with a calibrated control pulse. Every other gate must be compiled into native gates.
 </dd>
+<dt><span id="gloss-nisq">NISQ</span></dt>
+<dd>
+Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.
+</dd>
+<dt><span id="gloss-optical-tweezers">optical tweezers</span></dt>
+<dd>
+Tightly focused laser beams that hold single neutral atoms in place and can move them.
+</dd>
 <dt><span id="gloss-pauli-string">Pauli string</span></dt>
 <dd>
-A tensor product of single-qubit Paulis, P = P_1 ⊗ … ⊗ P_n with each P_j ∈ {I, X, Y, Z}. Hermitian, and squares to the identity.
+A tensor product of single-qubit Pauli matrices (I, X, Y or Z), one for each qubit, such as ZZ or XIY. Hermitian, and squares to the identity.
+</dd>
+<dt><span id="gloss-phonon">phonon</span></dt>
+<dd>
+A quantum of vibration. In an ion trap, phonons are the quanta of the vibrations that the whole chain of ions shares.
+</dd>
+<dt><span id="gloss-phonon-bus">phonon bus</span></dt>
+<dd>
+The shared vibrations of a chain of trapped ions, used as a common channel through which any two ions can interact in a two-qubit gate.
+</dd>
+<dt><span id="gloss-physical-qubit">physical qubit</span></dt>
+<dd>
+A qubit as implemented in hardware, for example one transmon or one ion, with all its imperfections.
+</dd>
+<dt><span id="gloss-qccd">QCCD</span></dt>
+<dd>
+Quantum charge-coupled device: a trapped-ion architecture in which ions are moved between zones of the trap, so that any two ions can be brought together for a gate.
+</dd>
+<dt><span id="gloss-quantum-dot">quantum dot</span></dt>
+<dd>
+A tiny region in a semiconductor that can trap single electrons.
+</dd>
+<dt><span id="gloss-qec">quantum error correction</span></dt>
+<dd>
+Encoding quantum information redundantly in many physical qubits, so that errors can be detected and corrected without disturbing the encoded information.
+</dd>
+<dt><span id="gloss-relaxation">relaxation</span></dt>
+<dd>
+Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1.
+</dd>
+<dt><span id="gloss-resonance">resonance</span></dt>
+<dd>
+Radiation drives a transition between two energy levels only when its frequency matches their energy difference divided by Planck’s constant. This is how individual qubits are addressed.
+</dd>
+<dt><span id="gloss-rydberg">Rydberg state</span></dt>
+<dd>
+A state of an atom in which one electron is excited very far from the nucleus. Atoms in Rydberg states interact strongly over micrometre distances.
+</dd>
+<dt><span id="gloss-shot">shot</span></dt>
+<dd>
+One run of a circuit: prepare the qubits, apply the gates, measure. Returns one bit string.
+</dd>
+<dt><span id="gloss-spin">spin</span></dt>
+<dd>
+An intrinsic two-level property of an electron (up or down), which can serve as a qubit.
+</dd>
+<dt><span id="gloss-swap">SWAP</span></dt>
+<dd>
+A two-qubit gate that exchanges the states of two qubits. It costs three CNOTs.
+</dd>
+<dt><span id="gloss-threshold">threshold</span></dt>
+<dd>
+The physical error rate per operation below which error correction helps: below it, larger codes give lower logical error rates.
+</dd>
+<dt><span id="gloss-transmon">transmon</span></dt>
+<dd>
+The most common superconducting qubit: a small circuit with a Josephson junction, whose two lowest energy levels form the qubit.
 </dd>
 <dt><span id="gloss-transpilation">transpilation</span></dt>
 <dd>
@@ -362,7 +499,7 @@ Compilation of a circuit into the native gates and coupling graph of a device, i
 </dd>
 <dt><span id="gloss-virtual-z">virtual Z gate</span></dt>
 <dd>
-An R_Z rotation implemented by shifting the phase of all later drive pulses instead of applying a pulse. It takes no time and adds no error.
+A Z rotation implemented by shifting the phase of all later drive pulses instead of applying a pulse. It takes no time and adds no error.
 </dd>
 </dl>
 
@@ -797,8 +934,8 @@ An R_Z rotation implemented by shifting the phase of all later drive pulses inst
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./l01-native-gates.html" class="pagination-link" aria-label="Native gates and connectivity">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Native gates and connectivity</span></span>
+      <a href="./l01-platforms-and-measurement.html" class="pagination-link" aria-label="Platforms, gates and measurement">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://stefanopolla.github.io/course-testing/index.html</loc>
-    <lastmod>2026-10-15T13:24:09.073Z</lastmod>
+    <lastmod>2026-10-15T15:50:36.732Z</lastmod>
   </url>
   <url>
-    <loc>https://stefanopolla.github.io/course-testing/l01-native-gates.html</loc>
-    <lastmod>2026-10-15T13:24:09.073Z</lastmod>
+    <loc>https://stefanopolla.github.io/course-testing/l01-platforms-and-measurement.html</loc>
+    <lastmod>2026-10-15T16:02:17.445Z</lastmod>
   </url>
   <url>
     <loc>https://stefanopolla.github.io/course-testing/glossary.html</loc>
@@ -14,6 +14,6 @@
   </url>
   <url>
     <loc>https://stefanopolla.github.io/course-testing/ntqc-lecture-notes.pdf</loc>
-    <lastmod>2026-10-15T13:24:16.371Z</lastmod>
+    <lastmod>2026-10-15T16:03:04.292Z</lastmod>
   </url>
 </urlset>
