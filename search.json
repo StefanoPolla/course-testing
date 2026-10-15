@@ -1,0 +1,73 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Near-term Quantum Computing — lecture notes (test)",
+    "section": "",
+    "text": "Preface\nThese notes accompany the lectures of Near-term Quantum Computing (UvA, 2026-2027). This is a test build for trying out GitHub Pages: it contains one section of Lecture 1 only.\nVersion: 2026-10-15. Changes after release are listed on a changelog page.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "l01-native-gates.html",
+    "href": "l01-native-gates.html",
+    "title": "1  Native gates and connectivity",
+    "section": "",
+    "text": "1.1 Pauli rotations\nA circuit as written in an SDK is not what runs on a device. The hardware implements a small set of native gates, each a calibrated control pulse, and only between the pairs of qubits that are physically coupled. This section builds the one identity we need to read native gate sets, and then looks at what connectivity costs.\nEvery Pauli string is Hermitian and squares to the identity, \\(P^2 = I\\), because each single-qubit factor does. This one property is all we need for the following identity.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Native gates and connectivity</span>"
+    ]
+  },
+  {
+    "objectID": "l01-native-gates.html#sec-pauli-rotations",
+    "href": "l01-native-gates.html#sec-pauli-rotations",
+    "title": "1  Native gates and connectivity",
+    "section": "",
+    "text": "Definition 1.1 (Pauli string) A Pauli string on \\(n\\) qubits is a tensor product \\(P = P_1 \\otimes P_2 \\otimes \\cdots \\otimes P_n\\) with each \\(P_j \\in \\{I, X, Y, Z\\}\\). We often drop the tensor product signs and write, for example, \\(ZZ\\) or \\(XIY\\).\n\n\n\nProposition 1.1 (Pauli rotations) Let \\(P\\) be a Hermitian operator with \\(P^2 = I\\), for example a Pauli string. Then for all real \\(\\theta\\) \\[\ne^{-i\\theta P/2} = \\cos\\frac{\\theta}{2}\\, I - i \\sin\\frac{\\theta}{2}\\, P .\n\\tag{1.1}\\]\n\n\nProof. Expand the exponential as a power series. Since \\(P^2 = I\\), even powers give \\(P^{2m} = I\\) and odd powers give \\(P^{2m+1} = P\\), so \\[\ne^{-i\\theta P/2}\n= \\sum_{m=0}^{\\infty} \\frac{(-1)^m}{(2m)!}\\left(\\frac{\\theta}{2}\\right)^{2m} I\n\\;-\\; i \\sum_{m=0}^{\\infty} \\frac{(-1)^m}{(2m+1)!}\\left(\\frac{\\theta}{2}\\right)^{2m+1} P ,\n\\] and the two series are those of \\(\\cos(\\theta/2)\\) and \\(\\sin(\\theta/2)\\).\n\n\nExample 1.1 (Single- and two-qubit rotations) Applying Equation 1.1 with \\(P = X\\), \\(Z\\) and \\(Z \\otimes Z\\) gives \\[\nR_X(\\theta) = \\begin{pmatrix} \\cos\\frac{\\theta}{2} & -i\\sin\\frac{\\theta}{2} \\\\\n-i\\sin\\frac{\\theta}{2} & \\cos\\frac{\\theta}{2} \\end{pmatrix}, \\qquad\nR_Z(\\theta) = \\begin{pmatrix} e^{-i\\theta/2} & 0 \\\\ 0 & e^{i\\theta/2} \\end{pmatrix},\n\\tag{1.2}\\] \\[\nR_{ZZ}(\\theta) = e^{-i\\theta Z\\otimes Z/2}\n= \\operatorname{diag}\\!\\left(e^{-i\\theta/2}, e^{i\\theta/2}, e^{i\\theta/2}, e^{-i\\theta/2}\\right).\n\\tag{1.3}\\] \\(R_{ZZ}\\) applies a phase that depends only on the parity of the two bits. That is why it can be built from two CNOTs and a single \\(R_Z\\) (Figure 1.1): the first CNOT writes the parity \\(a \\oplus b\\) into the second qubit, \\(R_Z\\) applies the phase, and the second CNOT undoes the first.\n\n\n\n\n\n\n\nFigure 1.1: The decomposition \\(R_{ZZ}(\\theta) = \\gate{CNOT}\\,(I \\otimes R_Z(\\theta))\\,\\gate{CNOT}\\), drawn with Qiskit.\n\n\n\n\n\n\n\n\n\nNoteWhere this returns\n\n\n\nEquation 1.1 comes back twice later in the course: in Trotter circuits, where \\(e^{-iHt}\\) is split into Pauli rotations, and in the parameter-shift rule for gradients.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Native gates and connectivity</span>"
+    ]
+  },
+  {
+    "objectID": "l01-native-gates.html#sec-native-gate-sets",
+    "href": "l01-native-gates.html#sec-native-gate-sets",
+    "title": "1  Native gates and connectivity",
+    "section": "1.2 Native gate sets",
+    "text": "1.2 Native gate sets\nTable 1.1 lists the native gates of some current platforms. Gate names and details change with each hardware generation; the point is the pattern. Every platform offers a continuous family of single-qubit rotations and one or two entangling gates.\n\n\n\nTable 1.1: Native gates of some current devices. TODO verify against current device specifications.\n\n\n\n\n\n\n\n\n\n\nPlatform\nSingle-qubit\nTwo-qubit\n\n\n\n\nIQM (superconducting)\n\\(\\gate{PRX}(\\theta,\\varphi)\\)\nCZ\n\n\nIBM (superconducting)\n\\(R_Z\\) (virtual), \\(\\sqrt{X}\\), \\(X\\)\nCZ or ECR\n\n\nGoogle (superconducting)\nPhasedXZ\nCZ, \\(\\sqrt{i\\mathrm{SWAP}}\\)\n\n\nQuantinuum (trapped ions)\n\\(U_{1q}(\\theta,\\varphi)\\), \\(R_Z\\)\n\\(R_{ZZ}(\\theta)\\), any angle\n\n\nIonQ (trapped ions)\nGPi, GPi2\nMølmer-Sørensen\n\n\n\n\n\n\nThe IQM gate is a rotation about an axis in the \\(xy\\)-plane of the Bloch sphere, \\[\n\\gate{PRX}(\\theta,\\varphi) = \\exp\\!\\left[-i\\frac{\\theta}{2}\\left(\\cos\\varphi\\, X + \\sin\\varphi\\, Y\\right)\\right].\n\\tag{1.4}\\] The operator in brackets squares to the identity, so Proposition 1.1 applies to it too.\n\n1.2.1 Why \\(R_Z\\) is free\nOn superconducting devices, \\(R_Z\\) is usually a virtual Z gate: no pulse is applied at all. The reason is the conjugation identity \\[\nR_Z(\\alpha)\\, \\gate{PRX}(\\theta,\\varphi)\\, R_Z(\\alpha)^\\dagger = \\gate{PRX}(\\theta,\\varphi+\\alpha),\n\\tag{1.5}\\] which follows from \\(R_Z(\\alpha) X R_Z(\\alpha)^\\dagger = \\cos\\alpha\\, X + \\sin\\alpha\\, Y\\). Using Equation 1.5, every \\(R_Z\\) can be moved later through the circuit, changing the phases \\(\\varphi\\) of the drive pulses it passes. CZ commutes with \\(R_Z\\), so nothing else changes. At the end, an \\(R_Z\\) right before a measurement in the computational basis has no effect and can be dropped.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Native gates and connectivity</span>"
+    ]
+  },
+  {
+    "objectID": "l01-native-gates.html#sec-connectivity",
+    "href": "l01-native-gates.html#sec-connectivity",
+    "title": "1  Native gates and connectivity",
+    "section": "1.3 Connectivity",
+    "text": "1.3 Connectivity\nA native two-qubit gate is available only between qubits that are physically coupled. The coupling graph records which pairs these are. On a superconducting chip it is fixed by fabrication: a square lattice, IBM’s heavy-hex lattice, or IQM’s star layout around a central resonator. In a trapped-ion chain all pairs can interact, at the price of slower gates.\nA two-qubit gate between qubits that are not neighbours needs SWAP gates to bring them together, and each SWAP costs three CNOTs (Figure 1.2).\n\n\n\n\n\n\nFigure 1.2: SWAP as three CNOTs with alternating control.\n\n\n\nIn practice we do not insert SWAPs by hand: transpilation maps a circuit onto the native gates and coupling graph of a device. We return to its cost with the algorithms; for now, remember that connectivity turns into extra two-qubit gates, and two-qubit gates are the main source of error (Preskill 2018).\n\nExercise 1.1 (Cost of distance)  \n\nCheck Figure 1.2 on the four computational basis states.\nOn a line of \\(n\\) qubits, how many CNOTs does a CNOT between the two end qubits cost, if the layout need not be restored afterwards? And if it must?\n\n\n\n\n\n\n\n\nTipTry it\n\n\n\nTutorial 1 builds these circuits in Qiskit and transpiles them to a coupling graph: open the T1 notebook in Colab. For background on the circuit model, see Nielsen and Chuang (2010), chapter 4.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Native gates and connectivity</span>"
+    ]
+  },
+  {
+    "objectID": "l01-native-gates.html#references",
+    "href": "l01-native-gates.html#references",
+    "title": "1  Native gates and connectivity",
+    "section": "References",
+    "text": "References\n\n\nNielsen, Michael A., and Isaac L. Chuang. 2010. Quantum Computation\nand Quantum Information. 10th anniversary. Cambridge University\nPress.\n\n\nPreskill, John. 2018. “Quantum Computing in the NISQ\nEra and Beyond.” Quantum 2: 79. https://doi.org/10.22331/q-2018-08-06-79.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Native gates and connectivity</span>"
+    ]
+  },
+  {
+    "objectID": "glossary.html",
+    "href": "glossary.html",
+    "title": "Appendix A — Glossary",
+    "section": "",
+    "text": "coupling graph\n\nGraph whose vertices are qubits and whose edges are the pairs on which a native two-qubit gate is available.\n\nnative gate\n\nA gate the hardware implements directly with a calibrated control pulse. Every other gate must be compiled into native gates.\n\nPauli string\n\nA tensor product of single-qubit Paulis, P = P_1 ⊗ … ⊗ P_n with each P_j ∈ {I, X, Y, Z}. Hermitian, and squares to the identity.\n\ntranspilation\n\nCompilation of a circuit into the native gates and coupling graph of a device, including inserting SWAPs and simplifying.\n\nvirtual Z gate\n\nAn R_Z rotation implemented by shifting the phase of all later drive pulses instead of applying a pulse. It takes no time and adds no error.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Glossary</span>"
+    ]
+  }
+]
