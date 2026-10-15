@@ -1,0 +1,17 @@
+# Glossary entries. Plain text only: the web tooltips cannot render maths.
+glossary:
+  pauli-string:
+    term: Pauli string
+    def: "A tensor product of single-qubit Paulis, P = P_1 ⊗ … ⊗ P_n with each P_j ∈ {I, X, Y, Z}. Hermitian, and squares to the identity."
+  native-gate:
+    term: native gate
+    def: "A gate the hardware implements directly with a calibrated control pulse. Every other gate must be compiled into native gates."
+  coupling-graph:
+    term: coupling graph
+    def: "Graph whose vertices are qubits and whose edges are the pairs on which a native two-qubit gate is available."
+  transpilation:
+    term: transpilation
+    def: "Compilation of a circuit into the native gates and coupling graph of a device, including inserting SWAPs and simplifying."
+  virtual-z:
+    term: virtual Z gate
+    def: "An R_Z rotation implemented by shifting the phase of all later drive pulses instead of applying a pulse. It takes no time and adds no error."

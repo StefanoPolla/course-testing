@@ -1,0 +1,6 @@
+# Preface {.unnumbered}
+
+These notes accompany the lectures of *Near-term Quantum Computing* (UvA, 2026-2027).
+This is a **test build** for trying out GitHub Pages: it contains one section of Lecture 1 only.
+
+Version: 2026-10-15. Changes after release are listed on a changelog page.

@@ -1,0 +1,44 @@
+project:
+  type: book
+  output-dir: _site
+
+book:
+  title: "Near-term Quantum Computing — lecture notes (test)"
+  author: "Stefano Polla"
+  date: "2026-10-15"
+  chapters:
+    - index.qmd
+    - l01-native-gates.qmd
+  appendices:
+    - glossary.qmd
+  site-url: https://stefanopolla.github.io/course-testing/
+  repo-url: https://github.com/StefanoPolla/course-testing
+  repo-subdir: notes
+  downloads: [pdf]
+  output-file: ntqc-lecture-notes
+
+bibliography: references.bib
+metadata-files:
+  - glossary.yml
+filters:
+  - glossary.lua
+crossref:
+  chapters: true
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    html-math-method: mathjax
+    default-image-extension: svg
+    number-sections: true
+    toc: true
+    include-after-body: glossary-tooltips.html
+  pdf:
+    documentclass: scrreprt
+    pdf-engine: lualatex
+    default-image-extension: pdf
+    include-in-header: macros.tex
+    number-sections: true
+    colorlinks: true

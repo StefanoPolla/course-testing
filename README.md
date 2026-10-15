@@ -9,3 +9,5 @@ Nothing here is course material, and nothing here is final. The course release w
 ## Layout
 
 - [tutorials/](tutorials/): test copies of the tutorial notebooks (student versions), with Open-in-Colab links.
+- [notes/](notes/): test lecture notes built with Quarto (website + PDF), with deployment instructions for GitHub Pages.
+- [.github/workflows/publish-notes.yml](.github/workflows/publish-notes.yml): manual workflow that builds and publishes the notes.
