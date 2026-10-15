@@ -129,7 +129,7 @@ if the layout need not be restored afterwards? And if it must?
 ::: {.callout-tip}
 ## Try it
 Tutorial 1 builds these circuits in Qiskit and transpiles them to a coupling graph:
-[open the T1 notebook in Colab](https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb). For background on the circuit model, see @nielsen2010, chapter 4.
+[open the T1 notebook in Colab]({{< var colab >}}/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb). For background on the circuit model, see @nielsen2010, chapter 4.
 :::
 
 ## References {.unnumbered}

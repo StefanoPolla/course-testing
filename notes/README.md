@@ -1,7 +1,8 @@
 # Lecture notes (test)
 
 A test copy of the Quarto lecture-notes setup: one section of Lecture 1, built as a
-website with a PDF download. It was moved here from the format trial in the planning
+website with a PDF download. Releasing to the ntqc repository: see
+[../tools/README.md](../tools/README.md). It was moved here from the format trial in the planning
 repository (`agent-sandbox/lecture-notes-format-trial/`).
 
 ## Building locally
@@ -22,7 +23,9 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 
 | File | Role |
 |---|---|
-| `_quarto.yml` | Book structure, web and PDF settings |
+| `_quarto.yml` | Book structure (the published chapters), web and PDF settings |
+| `_quarto-staging.yml` | Staging-only settings (`noindex`); not copied to the release |
+| `_variables.yml` | Repository name and Colab base URL, used as `{{< var colab >}}`; never write the repository name directly in the text |
 | `index.qmd`, `l01-native-gates.qmd`, `glossary.qmd` | Content |
 | `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths) |
 | `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
@@ -43,6 +46,8 @@ quarto publish gh-pages
 
 This renders the site, creates the `gh-pages` branch, pushes it, and writes a
 `_publish.yml` (commit it). It uses the local LaTeX installation for the PDF.
+Before Pages is turned on (step 2), the command waits for the site to come online; once
+the branch is pushed it is safe to stop it with Ctrl-C.
 
 ### 2. Turn on Pages
 

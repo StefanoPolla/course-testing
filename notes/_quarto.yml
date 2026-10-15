@@ -1,3 +1,8 @@
+# The staging profile (_quarto-staging.yml) adds noindex; that file exists only in the
+# staging repository and is not copied on release.
+profile:
+  default: staging
+
 project:
   type: book
   output-dir: _site

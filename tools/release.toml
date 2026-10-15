@@ -1,0 +1,32 @@
+# Settings for tools/release.py: staging (this repository) → release (ntqc).
+
+# Text that must not appear anywhere in the release tree (case-insensitive).
+leftover = ["course-testing"]
+
+# Text replaced in every copied text file, staging value → release value.
+# After a copy, the staging values must not appear anywhere in the release tree.
+[[rewrite]]
+staging = "StefanoPolla/course-testing"
+release = "StefanoPolla/ntqc"
+
+[[rewrite]]
+staging = "stefanopolla.github.io/course-testing"
+release = "stefanopolla.github.io/ntqc"
+
+[paths]
+# Never copied, and ignored by diff (build output, tooling, staging-only settings).
+exclude = [
+  ".git", ".DS_Store", "__pycache__", "*.quarto_ipynb",
+  "notes/_site", "notes/.quarto",
+  "notes/_quarto-staging.yml",
+  "tools",
+]
+# Expected to differ between the repositories; ignored by diff, copied only when named.
+# notes/_quarto.yml is per-repo so that each repository chooses its own published chapters.
+per_repo = ["README.md", "notes/README.md", "notes/_quarto.yml", "notes/_publish.yml", ".gitignore"]
+
+[forbidden]
+# Exam-related material must never be in either repository (DECIDED 2026-10-15).
+# Regex matched against each path, case-insensitive. A match is an error in check and
+# blocks copy. Tutorial solutions are allowed.
+path_regex = '(^|[-_/. ])(exams?|written[-_ ]?test|sdk[-_ ]?test|answer[-_ ]?keys?|test[-_ ]?answers?)([-_/. ]|$)'

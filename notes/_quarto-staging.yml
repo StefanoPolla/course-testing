@@ -1,0 +1,6 @@
+# Staging-only settings (course-testing). Not copied to the ntqc release.
+# Keeps search engines from indexing the test site.
+format:
+  html:
+    include-in-header:
+      - text: '<meta name="robots" content="noindex, nofollow">'
