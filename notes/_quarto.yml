@@ -8,12 +8,12 @@ project:
   output-dir: _site
 
 book:
-  title: "Near-term Quantum Computing — lecture notes (test)"
+  title: "Near-term Quantum Computing — lecture notes"
   author: "Stefano Polla"
   date: "2026-10-15"
   chapters:
     - index.qmd
-    - l01-native-gates.qmd
+    - l01-platforms-and-measurement.qmd
   appendices:
     - glossary.qmd
   site-url: https://stefanopolla.github.io/course-testing/
@@ -45,5 +45,6 @@ format:
     pdf-engine: lualatex
     default-image-extension: pdf
     include-in-header: macros.tex
+    fig-pos: 'htb'
     number-sections: true
     colorlinks: true

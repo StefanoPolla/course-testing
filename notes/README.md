@@ -1,7 +1,7 @@
 # Lecture notes (test)
 
-A test copy of the Quarto lecture-notes setup: one section of Lecture 1, built as a
-website with a PDF download. Releasing to the ntqc repository: see
+The Quarto lecture notes, built as a website with a PDF download. One chapter per
+lecture (`lNN-<topic>.qmd`); so far Lecture 1. Releasing to the ntqc repository: see
 [../tools/README.md](../tools/README.md). It was moved here from the format trial in the planning
 repository (`agent-sandbox/lecture-notes-format-trial/`).
 
@@ -16,7 +16,7 @@ quarto preview        # live preview in the browser while editing
 quarto render         # full build: website + PDF into _site/
 ```
 
-The circuit figures are drawn by `make_figures.py` (Qiskit) and committed as SVG (web) and
+The figures are drawn by `make_figures.py` (Qiskit for circuits, Matplotlib for diagrams) and committed as SVG (web) and
 PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 
 ## Files
@@ -26,7 +26,7 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `_quarto.yml` | Book structure (the published chapters), web and PDF settings |
 | `_quarto-staging.yml` | Staging-only settings (`noindex`); not copied to the release |
 | `_variables.yml` | Repository name and Colab base URL, used as `{{< var colab >}}`; never write the repository name directly in the text |
-| `index.qmd`, `l01-native-gates.qmd`, `glossary.qmd` | Content |
+| `index.qmd`, `l01-platforms-and-measurement.qmd`, `glossary.qmd` | Content |
 | `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths) |
 | `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
 | `macros.tex` + `_macros.qmd` | LaTeX macros, once for the PDF and once for the web; keep them in step |

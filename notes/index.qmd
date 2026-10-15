@@ -1,6 +1,9 @@
-# Preface {.unnumbered}
+# Near-term Quantum Computing {.unnumbered}
 
-These notes accompany the lectures of *Near-term Quantum Computing* (UvA, 2026-2027).
-This is a **test build** for trying out GitHub Pages: it contains one section of Lecture 1 only.
+Lecture notes for *Near-term Quantum Computing* (UvA, 2026-2027), one chapter per
+lecture. A PDF version can be downloaded from the menu.
 
-Version: 2026-10-15. Changes after release are listed on a changelog page.
+The notes assume basic quantum mechanics and the circuit model: Dirac notation, Pauli
+matrices, density matrices, expectation values and their statistical error.
+
+Version: 2026-10-15 (draft).
