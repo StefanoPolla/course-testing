@@ -135,6 +135,7 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -454,12 +455,12 @@ window.Quarto = {
 <p>Every physical qubit is imperfect. Each gate has a small chance of going wrong, the stored quantum state degrades even when nothing is done to it, and measurements sometimes return the wrong result. These errors add up. If each gate fails with probability 0.1%, a circuit of a thousand gates runs without any error only about 37% of the time, since <span class="math inline">\(0.999^{1000} \approx e^{-1}\)</span>. Noise therefore limits the size of the circuits that a device can run usefully.</p>
 <p>Preskill called the devices of this era <a href="glossary.html#gloss-nisq" class="gloss" data-gloss="Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.">NISQ</a> devices, for <em>noisy intermediate-scale quantum</em> <span class="citation" data-cites="preskill2018">(<a href="l01-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">Preskill 2018</a>)</span>. <em>Intermediate scale</em> means tens to thousands of qubits, enough that many of their circuits are hard to simulate on a classical computer, but far from the millions of qubits that the best-known quantum algorithms need. <em>Noisy</em> means that their errors are not corrected.</p>
 <div class="chg">
-<p>Getting useful results from a NISQ device means working within the limit set by noise. Circuits are kept short, so that errors have little chance to build up. The quantities to keep small are the circuit’s <a href="glossary.html#gloss-depth" class="gloss" data-gloss="The number of layers of gates in a circuit that must run one after another. Gates on different qubits can share a layer.">depth</a>, the number of layers of gates that must run one after another, and its number of two-qubit gates, the least reliable operations on current devices (<a href="#sec-noise-sources" class="quarto-xref"><span>Section 1.4</span></a>). Each run of a circuit returns a single random outcome, so every quantity is estimated from many repetitions, called shots (<a href="#sec-shots" class="quarto-xref"><span>Section 1.5.2</span></a>). And <a href="glossary.html#gloss-error-mitigation" class="gloss" data-gloss="Methods that reduce the effect of noise on estimated quantities without correcting the errors, typically by running extra or modified circuits and combining their results. They cost extra shots.">error mitigation</a> reduces the effect of the remaining noise on these estimates, without correcting the errors themselves, by running extra or modified circuits and combining their results. It costs more shots, and we return to it later in the course.</p>
+<p>Getting useful results from a NISQ device means working within the limit set by noise. Circuits are kept short, so that errors have little chance to build up. The quantities to keep small are the circuit’s <a href="glossary.html#gloss-depth" class="gloss" data-gloss="The number of layers of gates in a circuit that must run one after another. Gates on different qubits can share a layer.">depth</a>, the number of layers of gates that must run one after another, and its number of two-qubit gates, the least reliable operations on current devices (<a href="#sec-noise-sources" class="quarto-xref"><span>Section 1.4</span></a>). Each run of a circuit returns a single random outcome, so every quantity is estimated from many repetitions, called shots (<a href="#sec-shots" class="quarto-xref"><span>Section 1.5.2</span></a>). And <a href="glossary.html#gloss-error-mitigation" class="gloss" data-gloss="Methods that reduce the effect of noise on estimated quantities without correcting the errors, typically by running extra or modified circuits and combining their results. They cost extra shots.">error mitigation</a> reduces the effect of the remaining noise on these estimates, without correcting the errors themselves, by running extra or modified circuits and combining their results. Error mitigation is not the same as error correction: it only works if the circuit does not accumulate too much error in the first place, and its price is running more shots. We come back to it later in the course.</p>
 </div>
 <p>Correcting errors is possible in principle. <a href="glossary.html#gloss-qec" class="gloss" data-gloss="Encoding quantum information redundantly in many physical qubits, so that errors can be detected and corrected without disturbing the encoded information.">Quantum error correction</a> stores each qubit of information redundantly in many <a href="glossary.html#gloss-physical-qubit" class="gloss" data-gloss="A qubit as implemented in hardware, for example one transmon or one ion, with all its imperfections.">physical qubits</a>, which together form one <a href="glossary.html#gloss-logical-qubit" class="gloss" data-gloss="A qubit of information encoded in many physical qubits by an error-correcting code. Its error rate can be much lower than that of the physical qubits.">logical qubit</a>. Repeated checks on the physical qubits reveal errors without disturbing the stored information, so that the errors can be undone. This only helps if the physical qubits are good enough. Below a certain error rate per operation, the <a href="glossary.html#gloss-threshold" class="gloss" data-gloss="The physical error rate per operation below which error correction helps: below it, larger codes give lower logical error rates.">threshold</a>, larger codes give lower logical error rates, as low as a computation requires, and the computer is called <em>fault tolerant</em>.</p>
 <p>Fault tolerance is expensive. Useful algorithms are estimated to need of order a thousand physical qubits for every logical qubit, and around a million physical qubits in total <span class="citation" data-cites="fowler2012 gidney2025">(<a href="l01-platforms-and-measurement.html#ref-fowler2012" role="doc-biblioref">Fowler et al. 2012</a>; <a href="l01-platforms-and-measurement.html#ref-gidney2025" role="doc-biblioref">Gidney 2025</a>)</span>. Experiments are now crossing the threshold: in 2024, a superconducting device ran an error-correcting code whose logical error rate halved each time the code was made larger <span class="citation" data-cites="google2025">(<a href="l01-platforms-and-measurement.html#ref-google2025" role="doc-biblioref">Google Quantum AI and Collaborators 2025</a>)</span>. Such experiments use a whole device to protect a single logical qubit, however, and useful computations still run on physical qubits. We come back to the stage in between, <em>early fault tolerance</em>, at the end of the course.</p>
 <div class="chg">
-<p>The cost goes beyond the number of qubits. A code protects stored information, but every gate on logical qubits must also be carried out without spreading errors, and only a small set of gates can be done this way at a low cost. Every other gate has to be built from this set, which changes which operations are expensive. In the most studied codes, a CNOT between two logical qubits is relatively cheap. A single-qubit rotation by an arbitrary angle, which a NISQ device performs with a single pulse (<a href="#sec-driving-gates" class="quarto-xref"><span>Section 1.3.2</span></a>), must instead be approximated by a sequence of tens to about a hundred protected gates, some of which need a costly extra procedure of their own <span class="citation" data-cites="ross2016 litinski2019">(<a href="l01-platforms-and-measurement.html#ref-ross2016" role="doc-biblioref">Ross and Selinger 2016</a>; <a href="l01-platforms-and-measurement.html#ref-litinski2019" role="doc-biblioref">Litinski 2019</a>)</span>. The cost of a NISQ circuit is dominated by its depth and its two-qubit gates, while the cost of a fault-tolerant circuit is often dominated by its number of rotations. <a href="#tbl-nisq-ftqc" class="quarto-xref">Table&nbsp;<span>1.1</span></a> summarises the differences.</p>
+<p>The cost of error correction is not only an increase in the number of physical qubits. A code protects stored information, but every gate on logical qubits must also be carried out without spreading errors, and only a small set of gates can be done this way at a low cost. Every other gate has to be built from this set, so the operations that are cheap on a NISQ device can be expensive on a fault-tolerant one, and the reverse. In the most studied codes, a CNOT between two logical qubits is relatively cheap. A single-qubit rotation by an arbitrary angle, which a NISQ device performs with a single pulse (<a href="#sec-driving-gates" class="quarto-xref"><span>Section 1.3.2</span></a>), must instead be approximated by a sequence of tens to about a hundred protected gates, some of which need a costly extra procedure of their own <span class="citation" data-cites="ross2016 litinski2019">(<a href="l01-platforms-and-measurement.html#ref-ross2016" role="doc-biblioref">Ross and Selinger 2016</a>; <a href="l01-platforms-and-measurement.html#ref-litinski2019" role="doc-biblioref">Litinski 2019</a>)</span>. The cost of a NISQ circuit is dominated by its depth and its two-qubit gates, while the cost of a fault-tolerant circuit is often dominated by its number of rotations. <a href="#tbl-nisq-ftqc" class="quarto-xref">Table&nbsp;<span>1.1</span></a> summarises the differences.</p>
 <div id="tbl-nisq-ftqc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nisq-ftqc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -526,7 +527,7 @@ Table&nbsp;1.1: NISQ and fault-tolerant quantum computing compared.
 </figure>
 </div>
 </div>
-<p>This course works with physical qubits. We run circuits on them, estimate how much their noise affects the results, and use methods that reduce its effect without full error correction. One question will come back throughout: when a device produces a number, what would it take to believe it?</p>
+<p><span class="chg">This course focuses on NISQ devices. We will learn how noise affects their results, how error mitigation can reduce its effect, and which algorithms can be run on today’s devices.</span></p>
 </section>
 <section id="sec-platforms" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="sec-platforms"><span class="header-section-number">1.2</span> Physical qubits</h2>
@@ -552,14 +553,14 @@ Table&nbsp;1.1: NISQ and fault-tolerant quantum computing compared.
 <h3 data-number="1.2.2" class="anchored" data-anchor-id="sec-pulses"><span class="header-section-number">1.2.2</span> <span class="chg">Energy levels, frequencies and pulses</span></h3>
 <p>Quantum mechanics links energy and frequency. An energy difference <span class="math inline">\(E\)</span> between two levels corresponds to a frequency <span class="math inline">\(f = E/h\)</span>, where <span class="math inline">\(h\)</span> is Planck’s constant, and radiation at that frequency drives transitions between the two levels, while radiation at other frequencies hardly affects them. This selectivity is called <a href="glossary.html#gloss-resonance" class="gloss" data-gloss="Radiation drives a transition between two energy levels only when its frequency matches their energy difference divided by Planck’s constant. This is how individual qubits are addressed.">resonance</a><span class="chg">, and on most platforms it is how qubits are controlled.</span></p>
 <div class="chg">
-<p>A <a href="glossary.html#gloss-pulse" class="gloss" data-gloss="A short burst of microwave or laser radiation at a chosen frequency, switched on and off smoothly, used to drive a qubit. Its frequency selects which qubit responds; its area and phase set the rotation.">pulse</a> is a short burst of radiation at a chosen frequency, the carrier frequency, switched on and off smoothly. Its shape over time, the <em>envelope</em>, is often close to a Gaussian (<a href="#fig-pulse" class="quarto-xref">Figure&nbsp;<span>1.1</span></a>, a). Superconducting qubits are driven by microwave pulses, trapped ions by laser or microwave pulses. A qubit with transition frequency <span class="math inline">\(f_q\)</span> oscillates at that frequency too, and in a simplified picture, the effect of a pulse on the qubit is the product of the pulse with this oscillation, added up over time. If the two frequencies are equal, the product keeps the same sign, and its effect builds up as long as the pulse lasts (<a href="#fig-pulse" class="quarto-xref">Figure&nbsp;<span>1.1</span></a>, b and c). The result is a rotation of the qubit, by an angle proportional to the area under the envelope. If the frequencies differ, the product alternates in sign, its contributions cancel, and the qubit is left almost unchanged. A pulse at the frequency of one qubit therefore acts on that qubit, and hardly on qubits with other frequencies. <a href="#sec-driving-gates" class="quarto-xref"><span>Section 1.3.2</span></a> shows how the shape and timing of a pulse set the rotation.</p>
+<p>A <a href="glossary.html#gloss-pulse" class="gloss" data-gloss="A short burst of microwave or laser radiation at a chosen frequency, switched on and off smoothly, used to drive a qubit. Its frequency selects which qubit responds; its area and phase set the rotation.">pulse</a> is a short burst of radiation at a chosen frequency, the carrier frequency, switched on and off smoothly. Its shape over time, the <em>envelope</em>, is often close to a Gaussian (<a href="#fig-pulse" class="quarto-xref">Figure&nbsp;<span>1.1</span></a> a). Superconducting qubits are driven by microwave pulses, trapped ions by laser or microwave pulses. A qubit with transition frequency <span class="math inline">\(f_q\)</span> oscillates at that frequency too, and in a simplified picture, the effect of a pulse on the qubit is the product of the pulse with this oscillation, added up over time. If the two frequencies are equal, the product keeps the same sign, and its effect builds up as long as the pulse lasts (<a href="#fig-pulse" class="quarto-xref">Figure&nbsp;<span>1.1</span></a>, left, b and c). The result is a rotation of the qubit, by an angle proportional to the area under the envelope. If the frequencies differ, the product alternates in sign, its contributions cancel, and the qubit is left almost unchanged. A pulse at the frequency of one qubit therefore acts on that qubit, and hardly on qubits with other frequencies. <a href="#sec-driving-gates" class="quarto-xref"><span>Section 1.3.2</span></a> shows how the shape and timing of a pulse set the rotation.</p>
 <div id="fig-pulse" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pulse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="figures/pulse-resonance.svg" class="img-fluid figure-img" style="width:85.0%">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pulse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.1: A Gaussian pulse acting on two qubits, one at the carrier frequency and one at a 35% higher frequency. The effect on the resonant qubit builds up to a value set by the area under the envelope; for the off-resonant qubit, it averages out to almost zero. The frequencies are scaled down to show the oscillations: a superconducting qubit oscillates a hundred times or more during a pulse, so that a much smaller difference in frequency is enough.
+Figure&nbsp;1.1: The same Gaussian pulse acting on a qubit at the carrier frequency (left) and on a qubit at a 35% higher frequency (right). (a) The pulse, with the qubit’s own oscillation dashed; (b) the product of the two; (c) its running integral. The effect on the resonant qubit builds up to a value set by the area under the envelope; for the off-resonant qubit, it averages out to almost zero. The frequencies are scaled down to show the oscillations: a superconducting qubit oscillates a hundred times or more during a pulse, so that a much smaller difference in frequency is enough.
 </figcaption>
 </figure>
 </div>
@@ -626,7 +627,10 @@ Figure&nbsp;1.3: Superconducting qubits under the microscope. (a) Two transmon q
 <p><span class="theorem-title"><strong>Exercise 1.1 (<span class="chg">Thermal excitation</span>)</strong></span> In thermal equilibrium at temperature <span class="math inline">\(T\)</span>, the excited and ground states of a qubit with frequency <span class="math inline">\(f\)</span> are populated in the ratio <span class="math inline">\(p_1/p_0 = e^{-hf/k_B T}\)</span> (the Boltzmann factor), where <span class="math inline">\(k_B\)</span> is Boltzmann’s constant. Use <span class="math inline">\(h/k_B \approx 0.048\)</span> K/GHz.</p>
 <ol type="a">
 <li><p>Compute <span class="math inline">\(p_1/p_0\)</span> for a 5 GHz qubit at room temperature (300 K), at 1 K and at 10 mK.</p></li>
-<li><p>Below which temperature is <span class="math inline">\(p_1/p_0\)</span> smaller than <span class="math inline">\(10^{-3}\)</span>?</p></li>
+<li><p>Below which temperature is <span class="math inline">\(p_1/p_0\)</span> smaller than <span class="math inline">\(10^{-3}\)</span>?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Take the logarithm of both sides.</span></p>
+</details></li>
 </ol>
 </div>
 </section>
@@ -971,8 +975,14 @@ Figure&nbsp;1.7: The Bloch sphere rotated by <span class="math inline">\(\gate{P
 <div id="exr-prx" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.2 (The PRX gate)</strong></span> &nbsp;</p>
 <ol type="a">
-<li><p>Show that <span class="math inline">\((\cos\varphi\, X + \sin\varphi\, Y)^2 = I\)</span>. Hint: expand the square, and use that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> anticommute.</p></li>
-<li><p>Use <a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a> to write <span class="math inline">\(\gate{PRX}(\theta,\varphi)\)</span> as a <span class="math inline">\(2\times 2\)</span> matrix.</p></li>
+<li><p>Show that <span class="math inline">\((\cos\varphi\, X + \sin\varphi\, Y)^2 = I\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Expand the square, and use that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> anticommute.</span></p>
+</details></li>
+<li><p>Write <span class="math inline">\(\gate{PRX}(\theta,\varphi)\)</span> as a <span class="math inline">\(2\times 2\)</span> matrix.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use <a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, which applies because of (a).</span></p>
+</details></li>
 <li><p>Check that <span class="math inline">\(\gate{PRX}(\theta,0) = R_X(\theta)\)</span> and <span class="math inline">\(\gate{PRX}(\theta,\pi/2) = R_Y(\theta)\)</span>. Which rotation is <span class="math inline">\(\gate{PRX}(\theta,\pi)\)</span>?</p></li>
 </ol>
 </div>
@@ -1075,10 +1085,22 @@ Figure&nbsp;1.8: <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2
 <div id="exr-pauli-conjugation" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.3 (Turning one Pauli into another)</strong></span> Let <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> be Pauli strings that anticommute, <span class="math inline">\(PQ = -QP\)</span>.</p>
 <ol type="a">
-<li><p>Show that <span class="math inline">\(e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ\)</span>. Hint: write both exponentials with <a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, and use <span class="math inline">\(PQP = -Q\)</span>.</p></li>
-<li><p>Use (a) to show that <span class="math inline">\(R_Y(\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(X\)</span>, and that <span class="math inline">\(R_X(-\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(Y\)</span>.</p></li>
-<li><p>Check that the circuit of <a href="#fig-pauli-rotation" class="quarto-xref">Figure&nbsp;<span>1.8</span></a> implements <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2}\)</span>.</p></li>
-<li><p>Draw a circuit of CZ gates and <span class="math inline">\(R_X\)</span> or <span class="math inline">\(R_Y\)</span> rotations for <span class="math inline">\(R_{ZZ}(\theta)\)</span>, and compare it with <a href="#fig-rzz" class="quarto-xref">Figure&nbsp;<span>1.6</span></a>.</p></li>
+<li><p>Show that <span class="math inline">\(e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Write both exponentials with <a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, and use <span class="math inline">\(PQP = -Q\)</span>.</span></p>
+</details></li>
+<li><p>Show that <span class="math inline">\(R_Y(\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(X\)</span>, and that <span class="math inline">\(R_X(-\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(Y\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use (a), and the products of Pauli matrices.</span></p>
+</details></li>
+<li><p>Check that the circuit of <a href="#fig-pauli-rotation" class="quarto-xref">Figure&nbsp;<span>1.8</span></a> implements <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2}\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use <a href="#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>, the identity for CZ in the text, and (b).</span></p>
+</details></li>
+<li><p>Draw a circuit of CZ gates and <span class="math inline">\(R_X\)</span> or <span class="math inline">\(R_Y\)</span> rotations for <span class="math inline">\(R_{ZZ}(\theta)\)</span>, and compare it with <a href="#fig-rzz" class="quarto-xref">Figure&nbsp;<span>1.6</span></a>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Start from <span class="math inline">\(R_X(\theta)\)</span> on the second qubit, conjugate it by CZ, then turn the remaining <span class="math inline">\(X\)</span> into <span class="math inline">\(Z\)</span>.</span></p>
+</details></li>
 </ol>
 </div>
 </div>
@@ -1137,8 +1159,14 @@ R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma) = R_Z(\alpha+\gamma)\,\gate{PRX}(\beta, \pi
 <div id="exr-virtual-z" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.4 (Virtual Z gates)</strong></span> &nbsp;</p>
 <ol type="a">
-<li><p><span class="chg">Use <a href="#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> to show</span> that <span class="math inline">\(R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y\)</span> and <span class="math inline">\(R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X\)</span>.</p></li>
-<li><p>Write the Hadamard gate, up to a global phase, as a single <span class="math inline">\(\gate{PRX}\)</span> pulse followed by a <span class="math inline">\(Z\)</span> rotation.</p></li>
+<li><p>Show that <span class="math inline">\(R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y\)</span> and <span class="math inline">\(R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use <a href="#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (a) with <span class="math inline">\(P = Z\)</span>.</span></p>
+</details></li>
+<li><p>Write the Hadamard gate, up to a global phase, as a single <span class="math inline">\(\gate{PRX}\)</span> pulse followed by a <span class="math inline">\(Z\)</span> rotation.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Write the Hadamard gate as <span class="math inline">\(R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)\)</span> first, then use <a href="#eq-virtual-z-push" class="quarto-xref">Equation&nbsp;<span>1.7</span></a>.</span></p>
+</details></li>
 </ol>
 </div>
 </section>
@@ -1173,15 +1201,24 @@ Figure&nbsp;1.11: SWAP as three CNOTs with alternating control.
 <p><span class="theorem-title"><strong>Exercise 1.5 (The cost of distance)</strong></span> &nbsp;</p>
 <ol type="a">
 <li><p>Check <a href="#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a> on the four computational basis states.</p></li>
-<li><p><span class="chg">We want to implement a CNOT between the qubits at opposite ends of a line of <span class="math inline">\(n\)</span> qubits. If the qubits may stay in their new positions after the operation, how many CNOTs are needed? And if they must be returned to their original positions?</span></p></li>
+<li><p><span class="chg">We want to implement a CNOT between the qubits at opposite ends of a line of <span class="math inline">\(n\)</span> qubits. If the qubits may stay in their new positions after the operation, how many CNOTs are needed? And if they must be returned to their original positions?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Each SWAP moves a state one step along the line.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="chg">
 <div id="exr-swap-native" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.6 (SWAP from native gates)</strong></span> On a device whose native gates are <span class="math inline">\(\gate{PRX}\)</span> and CZ, a SWAP must be built from these.</p>
 <ol type="a">
-<li><p>Let <span class="math inline">\(A\)</span> be a single-qubit unitary. Write <span class="math inline">\(\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z\)</span>, and show that <span class="math inline">\((I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)\)</span> applies <span class="math inline">\(AZA^\dagger\)</span> to the second qubit if the first is in <span class="math inline">\(\ket{1}\)</span>, and does nothing if it is in <span class="math inline">\(\ket{0}\)</span>.</p></li>
-<li><p>Find a <span class="math inline">\(\gate{PRX}\)</span> rotation <span class="math inline">\(A\)</span> with <span class="math inline">\(AZA^\dagger = X\)</span> (<a href="#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> helps), and write a CNOT as one CZ and two <span class="math inline">\(\gate{PRX}\)</span> gates.</p></li>
+<li><p>Let <span class="math inline">\(A\)</span> be a single-qubit unitary. Show that <span class="math inline">\((I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)\)</span> applies <span class="math inline">\(AZA^\dagger\)</span> to the second qubit if the first is in <span class="math inline">\(\ket{1}\)</span>, and does nothing if it is in <span class="math inline">\(\ket{0}\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Write <span class="math inline">\(\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z\)</span>.</span></p>
+</details></li>
+<li><p>Find a <span class="math inline">\(\gate{PRX}\)</span> rotation <span class="math inline">\(A\)</span> with <span class="math inline">\(AZA^\dagger = X\)</span>, and write a CNOT as one CZ and two <span class="math inline">\(\gate{PRX}\)</span> gates.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg"><a href="#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (b) gives a suitable <span class="math inline">\(A\)</span>.</span></p>
+</details></li>
 <li><p>Using <a href="#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a>, write a SWAP with three CZs and <span class="math inline">\(\gate{PRX}\)</span> gates only. How many <span class="math inline">\(\gate{PRX}\)</span> pulses does it need?</p></li>
 </ol>
 </div>
@@ -1240,6 +1277,11 @@ Table&nbsp;1.4: What can go wrong in a quantum device.
 <td>readout error</td>
 </tr>
 <tr class="odd">
+<td><span class="chg">many qubits fail at once</span></td>
+<td><span class="chg">a cosmic ray deposits energy in the chip and disturbs all qubits nearby</span></td>
+<td><span class="chg">correlated errors</span></td>
+</tr>
+<tr class="even">
 <td>the device drifts</td>
 <td>properties that change over hours</td>
 <td>(recalibration)</td>
@@ -1342,8 +1384,14 @@ Table&nbsp;1.5: Typical timescales of current devices, as orders of magnitude.
 <div id="exr-shot-budget" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.7 (A shot budget)</strong></span> &nbsp;</p>
 <ol type="a">
-<li><p>How many shots give a standard error of 0.01 when <span class="math inline">\(\langle P\rangle \approx 0.9\)</span>? Compare with <span class="math inline">\(\langle P\rangle \approx 0\)</span>.</p></li>
-<li><p>You need ten expectation values, each from its own circuit, each with a standard error of at most 0.005. Assume the worst case, <span class="math inline">\(\langle P\rangle = 0\)</span>. Using <a href="#tbl-timescales" class="quarto-xref">Table&nbsp;<span>1.5</span></a>, estimate the total time on a superconducting device and on an ion trap. Which part of the time dominates on each?</p></li>
+<li><p>How many shots give a standard error of 0.01 when <span class="math inline">\(\langle P\rangle \approx 0.9\)</span>? Compare with <span class="math inline">\(\langle P\rangle \approx 0\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Solve <a href="#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> for <span class="math inline">\(N\)</span>.</span></p>
+</details></li>
+<li><p>You need ten expectation values, each from its own circuit, each with a standard error of at most 0.005. Assume the worst case, <span class="math inline">\(\langle P\rangle = 0\)</span>. Estimate the total time on a superconducting device and on an ion trap. Which part of the time dominates on each?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use the times per shot and per circuit of <a href="#tbl-timescales" class="quarto-xref">Table&nbsp;<span>1.5</span></a>.</span></p>
+</details></li>
 </ol>
 </div>
 </section>
@@ -1352,49 +1400,68 @@ Table&nbsp;1.5: Typical timescales of current devices, as orders of magnitude.
 <h2 data-number="1.6" class="anchored" data-anchor-id="sec-l01-exercises"><span class="header-section-number">1.6</span> More exercises</h2>
 <p>These exercises combine material from several sections of the chapter.</p>
 <div id="exr-error-budget" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 1.8 (An error budget)</strong></span> A circuit has 100 single-qubit gates and 40 two-qubit gates, and ends by measuring 10 qubits. Assume that each operation fails independently, with probability <span class="math inline">\(10^{-4}\)</span> for a single-qubit gate, <span class="math inline">\(5\times10^{-3}\)</span> for a two-qubit gate and <span class="math inline">\(10^{-2}\)</span> for a measurement. <span class="math inline">\(Z\)</span> rotations are virtual and do not count.</p>
+<p><span class="theorem-title"><strong>Exercise 1.8 (An error budget)</strong></span> &nbsp;</p>
+<div class="chg">
+<p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, with virtual <span class="math inline">\(Z\)</span> rotations. Its operations fail independently, with probability <span class="math inline">\(10^{-4}\)</span> for a <span class="math inline">\(\gate{PRX}\)</span> pulse, <span class="math inline">\(5\times10^{-3}\)</span> for a CZ and <span class="math inline">\(10^{-2}\)</span> for a measurement. On a line of 10 qubits, we run a brick-wall circuit: each layer applies <span class="math inline">\(R_Z\)</span> and <span class="math inline">\(R_X\)</span> to every qubit, followed by CZs between neighbouring qubits, on the pairs (1,2), (3,4), … in odd layers and (2,3), (4,5), … in even layers. <a href="#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> shows two layers on four qubits. The circuit has 8 layers and ends by measuring all qubits.</p>
+<div id="fig-brick-wall" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-pos="H">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-brick-wall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/brick-wall.svg" class="img-fluid figure-img" style="width:70.0%" data-fig-pos="H">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-brick-wall-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.12: Two layers of a brick-wall circuit on four qubits.
+</figcaption>
+</figure>
+</div>
+</div>
 <ol type="a">
-<li><p>Estimate the probability that a run of the circuit has no error at all. Which kind of operation contributes most to the failures?</p></li>
-<li><p>On a device with limited connectivity, 10 of the 40 two-qubit gates act on qubits that are not neighbours, and each of them needs one SWAP first. Count each SWAP as three two-qubit gates, and redo (a).</p></li>
-<li><p>Roughly how many two-qubit gates can a circuit contain before the probability of a run without error drops below one half? Hint: <span class="math inline">\((1-p)^n \approx e^{-np}\)</span> for small <span class="math inline">\(p\)</span>.</p></li>
+<li><p><span class="chg">Count the native operations of each kind, and estimate the probability that a run of the circuit has no error at all. Which kind of operation contributes most to the failures?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Which gates in <a href="#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> need a pulse?</span></p>
+</details></li>
+<li><p><span class="chg">How does the answer to (a) change on a device without virtual <span class="math inline">\(Z\)</span> rotations, where each <span class="math inline">\(R_Z\)</span> needs a pulse with the same error as <span class="math inline">\(\gate{PRX}\)</span>?</span></p></li>
+<li><p><span class="chg">Roughly how many layers can the circuit have before the probability of a run without error drops below one half?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg"><span class="math inline">\((1-p)^n \approx e^{-np}\)</span> for small <span class="math inline">\(p\)</span>.</span></p>
+</details></li>
 </ol>
 </div>
 <div id="exr-readout-bias" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.9 (Readout errors bias the estimate)</strong></span> Suppose that the readout of each qubit reports the wrong bit with probability <span class="math inline">\(p\)</span>, independently in every shot and for both outcomes.</p>
 <ol type="a">
 <li><p>Show that the recorded sign <span class="math inline">\(s\)</span> of a single-qubit <span class="math inline">\(Z\)</span> measurement has expectation value <span class="math inline">\((1-2p)\langle Z\rangle\)</span>.</p></li>
-<li><p>For a Pauli string <span class="math inline">\(P\)</span> acting on <span class="math inline">\(k\)</span> qubits, show that the recorded sign has expectation value <span class="math inline">\((1-2p)^k\langle P\rangle\)</span>.</p></li>
-<li><p>Take <span class="math inline">\(p = 0.02\)</span>, <span class="math inline">\(k = 4\)</span> and <span class="math inline">\(\langle P\rangle = 0.5\)</span>. Compare the bias of <span class="math inline">\(\bar s\)</span> with its standard error (<a href="#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a>) for <span class="math inline">\(N = 10^3\)</span> and for <span class="math inline">\(N = 10^5\)</span> shots. When do more shots stop helping?</p></li>
+<li><p>For a Pauli string <span class="math inline">\(P\)</span> acting on <span class="math inline">\(k\)</span> qubits, show that the recorded sign has expectation value <span class="math inline">\((1-2p)^k\langle P\rangle\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">The recorded sign is the true sign times one independent factor <span class="math inline">\(\pm 1\)</span> per qubit.</span></p>
+</details></li>
+<li><p>Take <span class="math inline">\(p = 0.02\)</span>, <span class="math inline">\(k = 4\)</span> and <span class="math inline">\(\langle P\rangle = 0.5\)</span>. Compare the bias of <span class="math inline">\(\bar s\)</span> with its standard error for <span class="math inline">\(N = 10^3\)</span> and for <span class="math inline">\(N = 10^5\)</span> shots. When do more shots stop helping?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">The standard error is given by <a href="#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a>.</span></p>
+</details></li>
 <li><p>If <span class="math inline">\(p\)</span> is known, how can the estimate be corrected? What does the correction do to the standard error?</p></li>
 </ol>
 </div>
 <div id="exr-measure-basis" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.10 (Measuring in other bases)</strong></span> A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, and measures in the computational basis.</p>
 <ol type="a">
-<li><p>Which <span class="math inline">\(\gate{PRX}\)</span> pulses must be applied before the measurement to estimate <span class="math inline">\(\langle X\otimes Y\otimes Z\rangle\)</span>? Hint: on each qubit, you need a rotation <span class="math inline">\(U\)</span> with <span class="math inline">\(U P_j U^\dagger = Z\)</span>; see <a href="#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a>.</p></li>
+<li><p>Which <span class="math inline">\(\gate{PRX}\)</span> pulses must be applied before the measurement to estimate <span class="math inline">\(\langle X\otimes Y\otimes Z\rangle\)</span>?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">On each qubit, you need a rotation <span class="math inline">\(U\)</span> with <span class="math inline">\(U P_j U^\dagger = Z\)</span>; see <a href="#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a>.</span></p>
+</details></li>
 <li><p>Can <span class="math inline">\(\langle X\otimes I\rangle\)</span> and <span class="math inline">\(\langle X\otimes X\rangle\)</span> be estimated from the same shots? And <span class="math inline">\(\langle X\otimes X\rangle\)</span> and <span class="math inline">\(\langle Z\otimes Z\rangle\)</span>, if only single-qubit rotations are allowed before the measurement?</p></li>
 </ol>
 </div>
 </section>
 <section id="sec-l01-reading" class="level2" data-number="1.7">
 <h2 data-number="1.7" class="anchored" data-anchor-id="sec-l01-reading"><span class="header-section-number">1.7</span> Further reading</h2>
-<p><span class="chg">For a first look at the hardware, with photos and no maths, <span class="citation" data-cites="brubaker2026">Brubaker (<a href="l01-platforms-and-measurement.html#ref-brubaker2026" role="doc-biblioref">2026</a>)</span> visits laboratories building trapped-ion, neutral-atom and superconducting machines. For superconducting qubits, <span class="citation" data-cites="kjaergaard2020">Kjaergaard et al. (<a href="l01-platforms-and-measurement.html#ref-kjaergaard2020" role="doc-biblioref">2020</a>)</span> surveys the state of the field with readable introductory sections, and <span class="citation" data-cites="roth2023">Roth et al. (<a href="l01-platforms-and-measurement.html#ref-roth2023" role="doc-biblioref">2023</a>)</span> builds up the transmon step by step for readers with an engineering background. For trapped ions, <span class="citation" data-cites="bernardini2024">Bernardini et al. (<a href="l01-platforms-and-measurement.html#ref-bernardini2024" role="doc-biblioref">2024</a>)</span> is an introduction written for students and organised around the DiVincenzo criteria.</span> For more depth, <span class="citation" data-cites="krantz2019">Krantz et al. (<a href="l01-platforms-and-measurement.html#ref-krantz2019" role="doc-biblioref">2019</a>)</span> is a thorough guide to superconducting qubits written for engineers, and <span class="citation" data-cites="bruzewicz2019">Bruzewicz et al. (<a href="l01-platforms-and-measurement.html#ref-bruzewicz2019" role="doc-biblioref">2019</a>)</span> reviews trapped ions. <span class="citation" data-cites="henriet2020">Henriet et al. (<a href="l01-platforms-and-measurement.html#ref-henriet2020" role="doc-biblioref">2020</a>)</span>, <span class="citation" data-cites="slussarenko2019">Slussarenko and Pryde (<a href="l01-platforms-and-measurement.html#ref-slussarenko2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="burkard2023">Burkard et al. (<a href="l01-platforms-and-measurement.html#ref-burkard2023" role="doc-biblioref">2023</a>)</span> review neutral atoms, photonics and spin qubits. <span class="citation" data-cites="preskill2018">Preskill (<a href="l01-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">2018</a>)</span> introduced the NISQ era, and <span class="citation" data-cites="nielsen2010">Nielsen and Chuang (<a href="l01-platforms-and-measurement.html#ref-nielsen2010" role="doc-biblioref">2010, chap. 4</a>)</span> covers the circuit model.</p>
+<p>For superconducting qubits, <span class="citation" data-cites="krantz2019">Krantz et al. (<a href="l01-platforms-and-measurement.html#ref-krantz2019" role="doc-biblioref">2019</a>)</span> is a thorough guide written for engineers; for trapped ions, see <span class="citation" data-cites="bruzewicz2019">Bruzewicz et al. (<a href="l01-platforms-and-measurement.html#ref-bruzewicz2019" role="doc-biblioref">2019</a>)</span>. <span class="citation" data-cites="henriet2020">Henriet et al. (<a href="l01-platforms-and-measurement.html#ref-henriet2020" role="doc-biblioref">2020</a>)</span>, <span class="citation" data-cites="slussarenko2019">Slussarenko and Pryde (<a href="l01-platforms-and-measurement.html#ref-slussarenko2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="burkard2023">Burkard et al. (<a href="l01-platforms-and-measurement.html#ref-burkard2023" role="doc-biblioref">2023</a>)</span> review neutral atoms, photonics and spin qubits. <span class="citation" data-cites="preskill2018">Preskill (<a href="l01-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">2018</a>)</span> introduced the NISQ era, and <span class="citation" data-cites="nielsen2010">Nielsen and Chuang (<a href="l01-platforms-and-measurement.html#ref-nielsen2010" role="doc-biblioref">2010, chap. 4</a>)</span> covers the circuit model.</p>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-bernardini2024" class="csl-entry" role="listitem">
-Bernardini, Francesco, Abhijit Chakraborty, and Carlos R. Ordóñez. 2024.
-<span>“Quantum Computing with Trapped Ions: A Beginner’s Guide.”</span>
-<em>European Journal of Physics</em> 45 (1): 013001. <a href="https://doi.org/10.1088/1361-6404/ad06be">https://doi.org/10.1088/1361-6404/ad06be</a>.
-</div>
 <div id="ref-blitzstein2019" class="csl-entry" role="listitem">
 Blitzstein, Joseph K., and Jessica Hwang. 2019. <em>Introduction to
 Probability</em>. 2nd ed. Chapman; Hall/CRC. <a href="https://probabilitybook.net">https://probabilitybook.net</a>.
-</div>
-<div id="ref-brubaker2026" class="csl-entry" role="listitem">
-Brubaker, Ben. 2026. <em>Building a Quantum Computer, One Fragile Qubit
-at a Time</em>. Quanta Magazine. <a href="https://www.quantamagazine.org/building-a-quantum-computer-one-fragile-qubit-at-a-time-20260819/">https://www.quantamagazine.org/building-a-quantum-computer-one-fragile-qubit-at-a-time-20260819/</a>.
 </div>
 <div id="ref-bruzewicz2019" class="csl-entry" role="listitem">
 Bruzewicz, Colin D., John Chiaverini, Robert McConnell, and Jeremy M.
@@ -1436,11 +1503,6 @@ Henriet, Loïc, Lucas Beguin, Adrien Signoles, et al. 2020.
 <span>“Quantum Computing with Neutral Atoms.”</span> <em>Quantum</em> 4:
 327. <a href="https://doi.org/10.22331/q-2020-09-21-327">https://doi.org/10.22331/q-2020-09-21-327</a>.
 </div>
-<div id="ref-kjaergaard2020" class="csl-entry" role="listitem">
-Kjaergaard, Morten, Mollie E. Schwartz, Jochen Braumüller, et al. 2020.
-<span>“Superconducting Qubits: Current State of Play.”</span> <em>Annual
-Review of Condensed Matter Physics</em> 11: 369–95. <a href="https://doi.org/10.1146/annurev-conmatphys-031119-050605">https://doi.org/10.1146/annurev-conmatphys-031119-050605</a>.
-</div>
 <div id="ref-krantz2019" class="csl-entry" role="listitem">
 Krantz, Philip, Morten Kjaergaard, Fei Yan, Terry P. Orlando, Simon
 Gustavsson, and William D. Oliver. 2019. <span>“A Quantum Engineer’s
@@ -1465,11 +1527,6 @@ Era and Beyond.”</span> <em>Quantum</em> 2: 79. <a href="https://doi.org/10.22
 Ross, Neil J., and Peter Selinger. 2016. <span>“Optimal Ancilla-Free
 <span>Clifford+T</span> Approximation of z-Rotations.”</span>
 <em>Quantum Information and Computation</em> 16 (11–12): 901–53. <a href="https://doi.org/10.26421/QIC16.11-12-1">https://doi.org/10.26421/QIC16.11-12-1</a>.
-</div>
-<div id="ref-roth2023" class="csl-entry" role="listitem">
-Roth, Thomas E., Ruichao Ma, and Weng C. Chew. 2023. <span>“The Transmon
-Qubit for Electromagnetics Engineers: An Introduction.”</span> <em>IEEE
-Antennas and Propagation Magazine</em> 65 (2): 8–20. <a href="https://doi.org/10.1109/MAP.2022.3176593">https://doi.org/10.1109/MAP.2022.3176593</a>.
 </div>
 <div id="ref-slussarenko2019" class="csl-entry" role="listitem">
 Slussarenko, Sergei, and Geoff J. Pryde. 2019. <span>“Photonic Quantum

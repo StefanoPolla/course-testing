@@ -116,6 +116,7 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -406,14 +407,23 @@ window.Quarto = {
 <p>In thermal equilibrium at temperature <span class="math inline">\(T\)</span>, the excited and ground states of a qubit with frequency <span class="math inline">\(f\)</span> are populated in the ratio <span class="math inline">\(p_1/p_0 = e^{-hf/k_B T}\)</span> (the Boltzmann factor), where <span class="math inline">\(k_B\)</span> is Boltzmann’s constant. Use <span class="math inline">\(h/k_B \approx 0.048\)</span> K/GHz.</p>
 <ol type="a">
 <li><p>Compute <span class="math inline">\(p_1/p_0\)</span> for a 5 GHz qubit at room temperature (300 K), at 1 K and at 10 mK.</p></li>
-<li><p>Below which temperature is <span class="math inline">\(p_1/p_0\)</span> smaller than <span class="math inline">\(10^{-3}\)</span>?</p></li>
+<li><p>Below which temperature is <span class="math inline">\(p_1/p_0\)</span> smaller than <span class="math inline">\(10^{-3}\)</span>?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Take the logarithm of both sides.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="l01-platforms-and-measurement.html#exr-prx" class="quarto-xref">Exercise&nbsp;<span>1.2</span></a></strong> (The PRX gate)</p>
 <ol type="a">
-<li><p>Show that <span class="math inline">\((\cos\varphi\, X + \sin\varphi\, Y)^2 = I\)</span>. Hint: expand the square, and use that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> anticommute.</p></li>
-<li><p>Use <a href="l01-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a> to write <span class="math inline">\(\gate{PRX}(\theta,\varphi)\)</span> as a <span class="math inline">\(2\times 2\)</span> matrix.</p></li>
+<li><p>Show that <span class="math inline">\((\cos\varphi\, X + \sin\varphi\, Y)^2 = I\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Expand the square, and use that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> anticommute.</span></p>
+</details></li>
+<li><p>Write <span class="math inline">\(\gate{PRX}(\theta,\varphi)\)</span> as a <span class="math inline">\(2\times 2\)</span> matrix.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use <a href="l01-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, which applies because of (a).</span></p>
+</details></li>
 <li><p>Check that <span class="math inline">\(\gate{PRX}(\theta,0) = R_X(\theta)\)</span> and <span class="math inline">\(\gate{PRX}(\theta,\pi/2) = R_Y(\theta)\)</span>. Which rotation is <span class="math inline">\(\gate{PRX}(\theta,\pi)\)</span>?</p></li>
 </ol>
 </div>
@@ -421,49 +431,96 @@ window.Quarto = {
 <p><strong><a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a></strong> (Turning one Pauli into another)</p>
 <p>Let <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> be Pauli strings that anticommute, <span class="math inline">\(PQ = -QP\)</span>.</p>
 <ol type="a">
-<li><p>Show that <span class="math inline">\(e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ\)</span>. Hint: write both exponentials with <a href="l01-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, and use <span class="math inline">\(PQP = -Q\)</span>.</p></li>
-<li><p>Use (a) to show that <span class="math inline">\(R_Y(\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(X\)</span>, and that <span class="math inline">\(R_X(-\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(Y\)</span>.</p></li>
-<li><p>Check that the circuit of <a href="l01-platforms-and-measurement.html#fig-pauli-rotation" class="quarto-xref">Figure&nbsp;<span>1.8</span></a> implements <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2}\)</span>.</p></li>
-<li><p>Draw a circuit of CZ gates and <span class="math inline">\(R_X\)</span> or <span class="math inline">\(R_Y\)</span> rotations for <span class="math inline">\(R_{ZZ}(\theta)\)</span>, and compare it with <a href="l01-platforms-and-measurement.html#fig-rzz" class="quarto-xref">Figure&nbsp;<span>1.6</span></a>.</p></li>
+<li><p>Show that <span class="math inline">\(e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Write both exponentials with <a href="l01-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, and use <span class="math inline">\(PQP = -Q\)</span>.</span></p>
+</details></li>
+<li><p>Show that <span class="math inline">\(R_Y(\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(X\)</span>, and that <span class="math inline">\(R_X(-\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(Y\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use (a), and the products of Pauli matrices.</span></p>
+</details></li>
+<li><p>Check that the circuit of <a href="l01-platforms-and-measurement.html#fig-pauli-rotation" class="quarto-xref">Figure&nbsp;<span>1.8</span></a> implements <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2}\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use <a href="l01-platforms-and-measurement.html#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>, the identity for CZ in the text, and (b).</span></p>
+</details></li>
+<li><p>Draw a circuit of CZ gates and <span class="math inline">\(R_X\)</span> or <span class="math inline">\(R_Y\)</span> rotations for <span class="math inline">\(R_{ZZ}(\theta)\)</span>, and compare it with <a href="l01-platforms-and-measurement.html#fig-rzz" class="quarto-xref">Figure&nbsp;<span>1.6</span></a>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Start from <span class="math inline">\(R_X(\theta)\)</span> on the second qubit, conjugate it by CZ, then turn the remaining <span class="math inline">\(X\)</span> into <span class="math inline">\(Z\)</span>.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="l01-platforms-and-measurement.html#exr-virtual-z" class="quarto-xref">Exercise&nbsp;<span>1.4</span></a></strong> (Virtual Z gates)</p>
 <ol type="a">
-<li><p><span class="chg">Use <a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> to show</span> that <span class="math inline">\(R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y\)</span> and <span class="math inline">\(R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X\)</span>.</p></li>
-<li><p>Write the Hadamard gate, up to a global phase, as a single <span class="math inline">\(\gate{PRX}\)</span> pulse followed by a <span class="math inline">\(Z\)</span> rotation.</p></li>
+<li><p>Show that <span class="math inline">\(R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y\)</span> and <span class="math inline">\(R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use <a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (a) with <span class="math inline">\(P = Z\)</span>.</span></p>
+</details></li>
+<li><p>Write the Hadamard gate, up to a global phase, as a single <span class="math inline">\(\gate{PRX}\)</span> pulse followed by a <span class="math inline">\(Z\)</span> rotation.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Write the Hadamard gate as <span class="math inline">\(R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)\)</span> first, then use <a href="l01-platforms-and-measurement.html#eq-virtual-z-push" class="quarto-xref">Equation&nbsp;<span>1.7</span></a>.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="l01-platforms-and-measurement.html#exr-swap" class="quarto-xref">Exercise&nbsp;<span>1.5</span></a></strong> (The cost of distance)</p>
 <ol type="a">
 <li><p>Check <a href="l01-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a> on the four computational basis states.</p></li>
-<li><p><span class="chg">We want to implement a CNOT between the qubits at opposite ends of a line of <span class="math inline">\(n\)</span> qubits. If the qubits may stay in their new positions after the operation, how many CNOTs are needed? And if they must be returned to their original positions?</span></p></li>
+<li><p><span class="chg">We want to implement a CNOT between the qubits at opposite ends of a line of <span class="math inline">\(n\)</span> qubits. If the qubits may stay in their new positions after the operation, how many CNOTs are needed? And if they must be returned to their original positions?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Each SWAP moves a state one step along the line.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="l01-platforms-and-measurement.html#exr-swap-native" class="quarto-xref">Exercise&nbsp;<span>1.6</span></a></strong> (SWAP from native gates)</p>
 <p>On a device whose native gates are <span class="math inline">\(\gate{PRX}\)</span> and CZ, a SWAP must be built from these.</p>
 <ol type="a">
-<li><p>Let <span class="math inline">\(A\)</span> be a single-qubit unitary. Write <span class="math inline">\(\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z\)</span>, and show that <span class="math inline">\((I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)\)</span> applies <span class="math inline">\(AZA^\dagger\)</span> to the second qubit if the first is in <span class="math inline">\(\ket{1}\)</span>, and does nothing if it is in <span class="math inline">\(\ket{0}\)</span>.</p></li>
-<li><p>Find a <span class="math inline">\(\gate{PRX}\)</span> rotation <span class="math inline">\(A\)</span> with <span class="math inline">\(AZA^\dagger = X\)</span> (<a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> helps), and write a CNOT as one CZ and two <span class="math inline">\(\gate{PRX}\)</span> gates.</p></li>
+<li><p>Let <span class="math inline">\(A\)</span> be a single-qubit unitary. Show that <span class="math inline">\((I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)\)</span> applies <span class="math inline">\(AZA^\dagger\)</span> to the second qubit if the first is in <span class="math inline">\(\ket{1}\)</span>, and does nothing if it is in <span class="math inline">\(\ket{0}\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Write <span class="math inline">\(\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z\)</span>.</span></p>
+</details></li>
+<li><p>Find a <span class="math inline">\(\gate{PRX}\)</span> rotation <span class="math inline">\(A\)</span> with <span class="math inline">\(AZA^\dagger = X\)</span>, and write a CNOT as one CZ and two <span class="math inline">\(\gate{PRX}\)</span> gates.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg"><a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (b) gives a suitable <span class="math inline">\(A\)</span>.</span></p>
+</details></li>
 <li><p>Using <a href="l01-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a>, write a SWAP with three CZs and <span class="math inline">\(\gate{PRX}\)</span> gates only. How many <span class="math inline">\(\gate{PRX}\)</span> pulses does it need?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="l01-platforms-and-measurement.html#exr-shot-budget" class="quarto-xref">Exercise&nbsp;<span>1.7</span></a></strong> (A shot budget)</p>
 <ol type="a">
-<li><p>How many shots give a standard error of 0.01 when <span class="math inline">\(\langle P\rangle \approx 0.9\)</span>? Compare with <span class="math inline">\(\langle P\rangle \approx 0\)</span>.</p></li>
-<li><p>You need ten expectation values, each from its own circuit, each with a standard error of at most 0.005. Assume the worst case, <span class="math inline">\(\langle P\rangle = 0\)</span>. Using <a href="l01-platforms-and-measurement.html#tbl-timescales" class="quarto-xref">Table&nbsp;<span>1.5</span></a>, estimate the total time on a superconducting device and on an ion trap. Which part of the time dominates on each?</p></li>
+<li><p>How many shots give a standard error of 0.01 when <span class="math inline">\(\langle P\rangle \approx 0.9\)</span>? Compare with <span class="math inline">\(\langle P\rangle \approx 0\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Solve <a href="l01-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> for <span class="math inline">\(N\)</span>.</span></p>
+</details></li>
+<li><p>You need ten expectation values, each from its own circuit, each with a standard error of at most 0.005. Assume the worst case, <span class="math inline">\(\langle P\rangle = 0\)</span>. Estimate the total time on a superconducting device and on an ion trap. Which part of the time dominates on each?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Use the times per shot and per circuit of <a href="l01-platforms-and-measurement.html#tbl-timescales" class="quarto-xref">Table&nbsp;<span>1.5</span></a>.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="l01-platforms-and-measurement.html#exr-error-budget" class="quarto-xref">Exercise&nbsp;<span>1.8</span></a></strong> (An error budget)</p>
-<p>A circuit has 100 single-qubit gates and 40 two-qubit gates, and ends by measuring 10 qubits. Assume that each operation fails independently, with probability <span class="math inline">\(10^{-4}\)</span> for a single-qubit gate, <span class="math inline">\(5\times10^{-3}\)</span> for a two-qubit gate and <span class="math inline">\(10^{-2}\)</span> for a measurement. <span class="math inline">\(Z\)</span> rotations are virtual and do not count.</p>
+<div class="chg">
+<p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, with virtual <span class="math inline">\(Z\)</span> rotations. Its operations fail independently, with probability <span class="math inline">\(10^{-4}\)</span> for a <span class="math inline">\(\gate{PRX}\)</span> pulse, <span class="math inline">\(5\times10^{-3}\)</span> for a CZ and <span class="math inline">\(10^{-2}\)</span> for a measurement. On a line of 10 qubits, we run a brick-wall circuit: each layer applies <span class="math inline">\(R_Z\)</span> and <span class="math inline">\(R_X\)</span> to every qubit, followed by CZs between neighbouring qubits, on the pairs (1,2), (3,4), … in odd layers and (2,3), (4,5), … in even layers. <a href="l01-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> shows two layers on four qubits. The circuit has 8 layers and ends by measuring all qubits.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/brick-wall" class="img-fluid figure-img" style="width:70.0%"></p>
+<figcaption>Two layers of a brick-wall circuit on four qubits.</figcaption>
+</figure>
+</div>
+</div>
 <ol type="a">
-<li><p>Estimate the probability that a run of the circuit has no error at all. Which kind of operation contributes most to the failures?</p></li>
-<li><p>On a device with limited connectivity, 10 of the 40 two-qubit gates act on qubits that are not neighbours, and each of them needs one SWAP first. Count each SWAP as three two-qubit gates, and redo (a).</p></li>
-<li><p>Roughly how many two-qubit gates can a circuit contain before the probability of a run without error drops below one half? Hint: <span class="math inline">\((1-p)^n \approx e^{-np}\)</span> for small <span class="math inline">\(p\)</span>.</p></li>
+<li><p><span class="chg">Count the native operations of each kind, and estimate the probability that a run of the circuit has no error at all. Which kind of operation contributes most to the failures?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">Which gates in <a href="l01-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> need a pulse?</span></p>
+</details></li>
+<li><p><span class="chg">How does the answer to (a) change on a device without virtual <span class="math inline">\(Z\)</span> rotations, where each <span class="math inline">\(R_Z\)</span> needs a pulse with the same error as <span class="math inline">\(\gate{PRX}\)</span>?</span></p></li>
+<li><p><span class="chg">Roughly how many layers can the circuit have before the probability of a run without error drops below one half?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg"><span class="math inline">\((1-p)^n \approx e^{-np}\)</span> for small <span class="math inline">\(p\)</span>.</span></p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
@@ -471,8 +528,14 @@ window.Quarto = {
 <p>Suppose that the readout of each qubit reports the wrong bit with probability <span class="math inline">\(p\)</span>, independently in every shot and for both outcomes.</p>
 <ol type="a">
 <li><p>Show that the recorded sign <span class="math inline">\(s\)</span> of a single-qubit <span class="math inline">\(Z\)</span> measurement has expectation value <span class="math inline">\((1-2p)\langle Z\rangle\)</span>.</p></li>
-<li><p>For a Pauli string <span class="math inline">\(P\)</span> acting on <span class="math inline">\(k\)</span> qubits, show that the recorded sign has expectation value <span class="math inline">\((1-2p)^k\langle P\rangle\)</span>.</p></li>
-<li><p>Take <span class="math inline">\(p = 0.02\)</span>, <span class="math inline">\(k = 4\)</span> and <span class="math inline">\(\langle P\rangle = 0.5\)</span>. Compare the bias of <span class="math inline">\(\bar s\)</span> with its standard error (<a href="l01-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a>) for <span class="math inline">\(N = 10^3\)</span> and for <span class="math inline">\(N = 10^5\)</span> shots. When do more shots stop helping?</p></li>
+<li><p>For a Pauli string <span class="math inline">\(P\)</span> acting on <span class="math inline">\(k\)</span> qubits, show that the recorded sign has expectation value <span class="math inline">\((1-2p)^k\langle P\rangle\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">The recorded sign is the true sign times one independent factor <span class="math inline">\(\pm 1\)</span> per qubit.</span></p>
+</details></li>
+<li><p>Take <span class="math inline">\(p = 0.02\)</span>, <span class="math inline">\(k = 4\)</span> and <span class="math inline">\(\langle P\rangle = 0.5\)</span>. Compare the bias of <span class="math inline">\(\bar s\)</span> with its standard error for <span class="math inline">\(N = 10^3\)</span> and for <span class="math inline">\(N = 10^5\)</span> shots. When do more shots stop helping?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">The standard error is given by <a href="l01-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a>.</span></p>
+</details></li>
 <li><p>If <span class="math inline">\(p\)</span> is known, how can the estimate be corrected? What does the correction do to the standard error?</p></li>
 </ol>
 </div>
@@ -480,7 +543,10 @@ window.Quarto = {
 <p><strong><a href="l01-platforms-and-measurement.html#exr-measure-basis" class="quarto-xref">Exercise&nbsp;<span>1.10</span></a></strong> (Measuring in other bases)</p>
 <p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, and measures in the computational basis.</p>
 <ol type="a">
-<li><p>Which <span class="math inline">\(\gate{PRX}\)</span> pulses must be applied before the measurement to estimate <span class="math inline">\(\langle X\otimes Y\otimes Z\rangle\)</span>? Hint: on each qubit, you need a rotation <span class="math inline">\(U\)</span> with <span class="math inline">\(U P_j U^\dagger = Z\)</span>; see <a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a>.</p></li>
+<li><p>Which <span class="math inline">\(\gate{PRX}\)</span> pulses must be applied before the measurement to estimate <span class="math inline">\(\langle X\otimes Y\otimes Z\rangle\)</span>?</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="chg">On each qubit, you need a rotation <span class="math inline">\(U\)</span> with <span class="math inline">\(U P_j U^\dagger = Z\)</span>; see <a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a>.</span></p>
+</details></li>
 <li><p>Can <span class="math inline">\(\langle X\otimes I\rangle\)</span> and <span class="math inline">\(\langle X\otimes X\rangle\)</span> be estimated from the same shots? And <span class="math inline">\(\langle X\otimes X\rangle\)</span> and <span class="math inline">\(\langle Z\otimes Z\rangle\)</span>, if only single-qubit rotations are allowed before the measurement?</p></li>
 </ol>
 </div>
