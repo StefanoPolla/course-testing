@@ -45,7 +45,8 @@ local function exercise_list(el)
   local out = pandoc.Blocks {}
   for number, file in ipairs(chapters(project)) do
     local text = (read_file(project .. "/" .. file) or ""):gsub("{{<.->}}", "")
-    local doc = pandoc.read(text, "markdown")
+    -- the page is web-only, so figures without an extension are the SVG versions
+    local doc = pandoc.read(text, "markdown", { default_image_extension = "svg" })
     local title, found = nil, {}
     doc:walk {
       Header = function(h) if h.level == 1 and not title then title = h.content end end,
