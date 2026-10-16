@@ -2,7 +2,7 @@
 tutorial-dates: ["Fri 30 Oct", "Fri 6 Nov", "Fri 13 Nov", "Fri 20 Nov", "Fri 27 Nov", "Fri 4 Dec", "Fri 11 Dec"]
 ---
 
-# Near-term Quantum Computing {.unnumbered}
+# [About these notes]{.chg} {#sec-about .unnumbered .web-only}
 
 Lecture notes for *Near-term Quantum Computing* (UvA, 2026-2027), one chapter per
 lecture. [Chapters are added as the course goes on.]{.chg}

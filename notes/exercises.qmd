@@ -1,4 +1,4 @@
-# Exercises {#sec-exercises}
+# Exercises {#sec-exercises .web-only}
 
 {{< include _macros.qmd >}}
 

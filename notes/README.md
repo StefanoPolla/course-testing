@@ -27,7 +27,7 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `_quarto-staging.yml` | Staging-only settings (`noindex`); not copied to the release |
 | `_variables.yml` | Repository name and Colab base URL, used as `{{< var colab >}}`; never write the repository name directly in the text |
 | `index.qmd`, `l01-platforms-and-measurement.qmd`, `exercises.qmd`, `glossary.qmd` | Content |
-| `exercises.lua` | Fills the Exercises appendix (web only; removed from the PDF) with the exercises (`exr-` boxes) of every `lNN-*.qmd` chapter listed in `_quarto.yml`, with links back; exercises must not contain labelled equations or figures |
+| `exercises.lua` | Fills the Exercises appendix; also removes every chapter whose heading has the class `.web-only` (About page, Exercises) from the PDF with the exercises (`exr-` boxes) of every `lNN-*.qmd` chapter listed in `_quarto.yml`, with links back; exercises must not contain labelled equations or figures |
 | `tutorials.lua` | Builds the tutorial table on the index page from `../tutorials/tutorial-NN/` (`*_qiskit.ipynb`, `*_qiskit_solutions.ipynb`) and the dates in `index.qmd`; it updates itself when a notebook is added |
 | `hints.lua` | Exercise hints: `::: {.hint}` becomes a "Hint" button on the web and an inline "Hint:" in the PDF |
 | `copy_notebooks.py` | Pre-render step: copies the tutorial notebooks into `downloads/` (git-ignored), published with the site so the tutorial table can offer direct downloads |
