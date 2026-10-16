@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Stefano Polla">
-<meta name="dcterms.date" content="2026-10-15">
+<meta name="dcterms.date" content="2026-10-16">
 
 <title>Near-term Quantum Computing — lecture notes</title>
 <style>
@@ -81,6 +81,11 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <meta name="robots" content="noindex, nofollow">
+<style>
+  .chg { color: #a3236b; }
+  body.quarto-dark .chg { color: #ff8cc6; }
+  div.chg { border-left: 3px solid currentColor; padding-left: 0.6em; }
+</style>
 
 
 </head>
@@ -309,8 +314,14 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./glossary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
   </div>
 </li>
       </ul>
@@ -325,7 +336,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#near-term-quantum-computing" id="toc-near-term-quantum-computing" class="nav-link active" data-scroll-target="#near-term-quantum-computing">Near-term Quantum Computing</a></li>
+  <li><a href="#near-term-quantum-computing" id="toc-near-term-quantum-computing" class="nav-link active" data-scroll-target="#near-term-quantum-computing">Near-term Quantum Computing</a>
+  <ul class="collapse">
+  <li><a href="#how-to-use-these-notes" id="toc-how-to-use-these-notes" class="nav-link" data-scroll-target="#how-to-use-these-notes">How to use these notes</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#tutorials" id="toc-tutorials" class="nav-link" data-scroll-target="#tutorials">Tutorials</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -352,7 +368,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 15, 2026</p>
+      <p class="date">October 16, 2026</p>
     </div>
   </div>
   
@@ -366,9 +382,96 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="near-term-quantum-computing" class="level1 unnumbered">
 <h1 class="unnumbered">Near-term Quantum Computing</h1>
-<p>Lecture notes for <em>Near-term Quantum Computing</em> (UvA, 2026-2027), one chapter per lecture. A PDF version can be downloaded from the menu.</p>
+<p>Lecture notes for <em>Near-term Quantum Computing</em> (UvA, 2026-2027), one chapter per lecture. <span class="chg">Chapters are added as the course goes on.</span></p>
+<section id="how-to-use-these-notes" class="level2 unnumbered chg">
+<h2 class="unnumbered anchored" data-anchor-id="how-to-use-these-notes">How to use these notes</h2>
+<ul>
+<li><strong>Chapters.</strong> Each chapter follows one lecture and goes into more detail than the lecture can. The exercises of all chapters are also collected on the <a href="./exercises.html">Exercises</a> page, with links back to the chapters.</li>
+<li><strong>Glossary.</strong> Underlined terms are explained in the <a href="./glossary.html">Glossary</a>. On the website, hover over a term (or tap it on a phone) to see its definition, and click it to open the glossary.</li>
+<li><strong>Search.</strong> The search box at the top of the sidebar searches all chapters; on a computer, the shortcut is <code>/</code>.</li>
+<li><strong>PDF.</strong> The download icon next to the title gives all published chapters as one PDF, with the same numbering, for printing or reading offline. Glossary terms are in italics there, and the glossary is an appendix.</li>
+</ul>
+</section>
+<section id="prerequisites" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="prerequisites">Prerequisites</h2>
 <p>The notes assume basic quantum mechanics and the circuit model: Dirac notation, Pauli matrices, density matrices, expectation values and their statistical error.</p>
-<p>Version: 2026-10-15 (draft).</p>
+<div class="chg">
+<p>The tutorials are Jupyter notebooks in Python, which run in Google Colab. They assume basic Python (variables, functions, loops, lists and dictionaries) and a little familiarity with Jupyter notebooks, NumPy arrays and Matplotlib plots. If any of these is new to you, these short introductions cover what we need:</p>
+<ul>
+<li>Python: the official <a href="https://docs.python.org/3/tutorial/">Python tutorial</a>, sections 3 to 5;</li>
+<li>Jupyter notebooks in Colab: <a href="https://colab.research.google.com/notebooks/basic_features_overview.ipynb">Overview of Colab</a>;</li>
+<li>NumPy: <a href="https://numpy.org/doc/stable/user/absolute_beginners.html">NumPy: the absolute basics for beginners</a>;</li>
+<li>Matplotlib: <a href="https://matplotlib.org/stable/users/explain/quick_start.html">Quick start guide</a>.</li>
+</ul>
+</div>
+</section>
+<section id="tutorials" class="level2 unnumbered chg">
+<h2 class="unnumbered anchored" data-anchor-id="tutorials">Tutorials</h2>
+<p>Each notebook opens in Google Colab. To keep your work, use <strong>File → Save a copy in Drive</strong> before you start. New notebooks and solutions appear in this table as they are released.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Tutorial</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Topic</th>
+<th style="text-align: left;">Notebook</th>
+<th style="text-align: left;">Solutions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">T1</td>
+<td style="text-align: left;">Fri 30 Oct</td>
+<td style="text-align: left;">Circuits, simulators and sampling</td>
+<td style="text-align: left;"><a href="https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb">Open in Colab</a></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T2</td>
+<td style="text-align: left;">Fri 6 Nov</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>not yet released</em></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T3</td>
+<td style="text-align: left;">Fri 13 Nov</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>not yet released</em></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T4</td>
+<td style="text-align: left;">Fri 20 Nov</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>not yet released</em></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T5</td>
+<td style="text-align: left;">Fri 27 Nov</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>not yet released</em></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">T6</td>
+<td style="text-align: left;">Fri 4 Dec</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>not yet released</em></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T7</td>
+<td style="text-align: left;">Fri 11 Dec</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><em>not yet released</em></td>
+<td style="text-align: left;"><em>after the tutorial</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<p>Version: 2026-10-16 (draft).</p>
 
 
 </section>

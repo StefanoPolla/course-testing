@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Appendix A — Glossary – Near-term Quantum Computing — lecture notes</title>
+<title>Appendix B — Glossary – Near-term Quantum Computing — lecture notes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./l01-platforms-and-measurement.html" rel="prev">
+<link href="./exercises.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -254,7 +254,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glossary.html">Appendices</a></li><li class="breadcrumb-item"><a href="./glossary.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./exercises.html">Appendices</a></li><li class="breadcrumb-item"><a href="./glossary.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -307,8 +307,14 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./glossary.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
   </div>
 </li>
       </ul>
@@ -325,9 +331,9 @@ ul.task-list li input[type="checkbox"] {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glossary.html">Appendices</a></li><li class="breadcrumb-item"><a href="./glossary.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./exercises.html">Appendices</a></li><li class="breadcrumb-item"><a href="./glossary.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Appendix A — Glossary</h1>
+<h1 class="title">Appendix B — Glossary</h1>
 </div>
 
 
@@ -357,6 +363,10 @@ How long a qubit keeps its quantum state, in particular a superposition, before 
 <dd>
 A systematic error in which a gate applies the wrong unitary, for example a rotation by a slightly wrong angle, in the same way every time.
 </dd>
+<dt><span id="gloss-coupler">coupler</span></dt>
+<dd>
+A circuit element between two superconducting qubits through which they interact. A tunable coupler can switch the interaction on and off.
+</dd>
 <dt><span id="gloss-coupling-graph">coupling graph</span></dt>
 <dd>
 Graph whose vertices are qubits and whose edges are the pairs on which a native two-qubit gate is available.
@@ -373,6 +383,14 @@ An unwanted effect of an operation on one qubit on other qubits, for example thr
 <dd>
 Loss of the relative phase of a superposition, for example because the qubit frequency fluctuates. Its characteristic time is called T2.
 </dd>
+<dt><span id="gloss-depth">depth</span></dt>
+<dd>
+The number of layers of gates in a circuit that must run one after another. Gates on different qubits can share a layer.
+</dd>
+<dt><span id="gloss-digital-qc">digital quantum computer</span></dt>
+<dd>
+A quantum computer that runs circuits: sequences of gates from a fixed universal set, applied to qubits and followed by measurements. Also called gate-based, as opposed to analog devices that imitate the time evolution of a physical system directly.
+</dd>
 <dt><span id="gloss-dilution-refrigerator">dilution refrigerator</span></dt>
 <dd>
 A refrigerator that reaches about 10 millikelvin, cold enough that heat no longer excites superconducting qubits.
@@ -384,6 +402,10 @@ Readout of a superconducting qubit through a resonator whose frequency depends s
 <dt><span id="gloss-divincenzo">DiVincenzo criteria</span></dt>
 <dd>
 A checklist for building a quantum computer: scalable, well-characterised qubits; preparation of a known state; long coherence; a universal set of gates; measurement of individual qubits.
+</dd>
+<dt><span id="gloss-error-mitigation">error mitigation</span></dt>
+<dd>
+Methods that reduce the effect of noise on estimated quantities without correcting the errors, typically by running extra or modified circuits and combining their results. They cost extra shots.
 </dd>
 <dt><span id="gloss-estimator">estimator</span></dt>
 <dd>
@@ -448,6 +470,10 @@ The shared vibrations of a chain of trapped ions, used as a common channel throu
 <dt><span id="gloss-physical-qubit">physical qubit</span></dt>
 <dd>
 A qubit as implemented in hardware, for example one transmon or one ion, with all its imperfections.
+</dd>
+<dt><span id="gloss-pulse">pulse</span></dt>
+<dd>
+A short burst of microwave or laser radiation at a chosen frequency, switched on and off smoothly, used to drive a qubit. Its frequency selects which qubit responds; its area and phase set the rotation.
 </dd>
 <dt><span id="gloss-qccd">QCCD</span></dt>
 <dd>
@@ -934,8 +960,8 @@ A Z rotation implemented by shifting the phase of all later drive pulses instead
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./l01-platforms-and-measurement.html" class="pagination-link" aria-label="Platforms, gates and measurement">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span>
+      <a href="./exercises.html" class="pagination-link" aria-label="Exercises">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Exercises</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
