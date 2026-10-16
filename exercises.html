@@ -506,7 +506,7 @@ window.Quarto = {
 <p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, with virtual <span class="math inline">\(Z\)</span> rotations. Its operations fail independently, with probability <span class="math inline">\(10^{-4}\)</span> for a <span class="math inline">\(\gate{PRX}\)</span> pulse, <span class="math inline">\(5\times10^{-3}\)</span> for a CZ and <span class="math inline">\(10^{-2}\)</span> for a measurement. On a line of 10 qubits, we run a brick-wall circuit: each layer applies <span class="math inline">\(R_Z\)</span> and <span class="math inline">\(R_X\)</span> to every qubit, followed by CZs between neighbouring qubits, on the pairs (1,2), (3,4), … in odd layers and (2,3), (4,5), … in even layers. <a href="l01-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> shows two layers on four qubits. The circuit has 8 layers and ends by measuring all qubits.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="figures/brick-wall" class="img-fluid figure-img" style="width:70.0%"></p>
+<p><img src="figures/brick-wall.svg" class="img-fluid figure-img" style="width:70.0%"></p>
 <figcaption>Two layers of a brick-wall circuit on four qubits.</figcaption>
 </figure>
 </div>
