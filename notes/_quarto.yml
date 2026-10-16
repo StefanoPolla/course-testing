@@ -10,11 +10,12 @@ project:
 book:
   title: "Near-term Quantum Computing — lecture notes"
   author: "Stefano Polla"
-  date: "2026-10-15"
+  date: "2026-10-16"
   chapters:
     - index.qmd
     - l01-platforms-and-measurement.qmd
   appendices:
+    - exercises.qmd
     - glossary.qmd
   site-url: https://stefanopolla.github.io/course-testing/
   repo-url: https://github.com/StefanoPolla/course-testing
@@ -26,7 +27,10 @@ bibliography: references.bib
 metadata-files:
   - glossary.yml
 filters:
+  - exercises.lua
+  - tutorials.lua
   - glossary.lua
+  - changes.lua  # temporary: review highlighting
 crossref:
   chapters: true
 

@@ -26,7 +26,11 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `_quarto.yml` | Book structure (the published chapters), web and PDF settings |
 | `_quarto-staging.yml` | Staging-only settings (`noindex`); not copied to the release |
 | `_variables.yml` | Repository name and Colab base URL, used as `{{< var colab >}}`; never write the repository name directly in the text |
-| `index.qmd`, `l01-platforms-and-measurement.qmd`, `glossary.qmd` | Content |
+| `index.qmd`, `l01-platforms-and-measurement.qmd`, `exercises.qmd`, `glossary.qmd` | Content |
+| `exercises.lua` | Fills the Exercises appendix with the exercises (`exr-` boxes) of every `lNN-*.qmd` chapter listed in `_quarto.yml`, with links back; exercises must not contain labelled equations or figures |
+| `tutorials.lua` | Builds the tutorial table on the index page from `../tutorials/tutorial-NN/` (`*_qiskit.ipynb`, `*_qiskit_solutions.ipynb`) and the dates in `index.qmd`; it updates itself when a notebook is added |
+| `_prx-widget.qmd` | Interactive Bloch sphere for PRX (raw HTML and JavaScript, web only), included in L1 |
+| `changes.lua` | Temporary: colours text marked `[...]{.chg}` or `::: {.chg}` during a review round; remove it and the markers once the changes are accepted |
 | `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths) |
 | `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
 | `macros.tex` + `_macros.qmd` | LaTeX macros, once for the PDF and once for the web; keep them in step |
