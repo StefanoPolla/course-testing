@@ -1,8 +1,10 @@
 -- Tutorial table: write ::: {#tutorial-table} ::: in the text (index.qmd).
 -- Built at render time from ../tutorials/tutorial-NN/ (student notebook *_qiskit.ipynb,
 -- solutions *_qiskit_solutions.ipynb) and the page's `tutorial-dates` metadata, so the
--- table updates itself when a notebook is added. Links use the Colab base URL of
--- _variables.yml, which tools/release.py rewrites on release.
+-- table updates itself when a notebook is added. Each notebook gets an Open-in-Colab
+-- link (base URL from _variables.yml) and a download link to the copy that
+-- copy_notebooks.py puts in downloads/ (absolute site-url in the PDF). tools/release.py
+-- rewrites both URLs on release.
 local dates = {}
 
 local function read_file(path)
@@ -16,6 +18,11 @@ end
 local function colab_base(project)
   local vars = "\n" .. (read_file(project .. "/_variables.yml") or "")
   return vars:match("\ncolab:%s*(%S+)")
+end
+
+local function site_url(project)
+  local yml = "\n" .. (read_file(project .. "/_quarto.yml") or "")
+  return ((yml:match("\n%s*site%-url:%s*(%S+)") or ""):gsub("/$", ""))
 end
 
 -- "# Tutorial 1: circuits, simulators and sampling (Qiskit)" -> "Circuits, simulators and sampling"
@@ -47,11 +54,12 @@ local function notebooks(dir)
 end
 
 local function cell(inlines) return { pandoc.Plain(inlines) } end
+local function nbsp(s) return (s:gsub(" ", "\u{A0}")) end
 
 local function table_div(el)
   if el.identifier ~= "tutorial-table" then return nil end
   local project = quarto.project.directory
-  local base = colab_base(project)
+  local base, site = colab_base(project), site_url(project)
   local tutorials = project .. "/../tutorials"
   local rows, n = {}, #dates
   for i = 1, 20 do
@@ -61,15 +69,20 @@ local function table_div(el)
     local folder = string.format("tutorial-%02d", i)
     local student, solutions = notebooks(tutorials .. "/" .. folder)
     local function link(file)
-      local url = base .. "/tutorials/" .. folder .. "/" .. file
-      return cell { pandoc.Link("Open in Colab", url) }
+      local colab = base .. "/tutorials/" .. folder .. "/" .. file
+      local download = "downloads/" .. folder .. "/" .. file
+      if not quarto.doc.is_format("html") then download = site .. "/" .. download end
+      return cell {
+        pandoc.Link("Colab", colab), pandoc.Str("\u{A0}·"), pandoc.Space(),
+        pandoc.Link("Download", download, "", pandoc.Attr("", {}, { download = file })),
+      }
     end
     table.insert(rows, {
       cell { pandoc.Str("T" .. i) },
-      cell { pandoc.Str(dates[i] or "") },
+      cell { pandoc.Str(nbsp(dates[i] or "")) },
       cell { pandoc.Str(student and topic(tutorials .. "/" .. folder .. "/" .. student) or "") },
-      student and link(student) or cell { pandoc.Emph("not yet released") },
-      solutions and link(solutions) or cell { pandoc.Emph("after the tutorial") },
+      student and link(student) or cell { pandoc.Emph(nbsp("not yet released")) },
+      solutions and link(solutions) or cell { pandoc.Emph(nbsp("after the tutorial")) },
     })
   end
   local header = {}

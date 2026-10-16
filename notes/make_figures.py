@@ -224,45 +224,41 @@ sigma = 1.6
 envelope = np.exp(-t**2 / (2 * sigma**2))
 f_drive, f_off = 1.0, 1.35
 pulse = envelope * np.cos(2 * np.pi * f_drive * t)
-products = {
-    "resonant qubit": (pulse * np.cos(2 * np.pi * f_drive * t), ACCENT),
-    "off-resonant qubit": (pulse * np.cos(2 * np.pi * f_off * t), ORANGE),
-}
 
 
 def running_integral(y):
     return np.concatenate([[0.0], np.cumsum((y[1:] + y[:-1]) / 2 * np.diff(t))])
 
 
-fig, axes = plt.subplots(3, 1, figsize=(6.4, 4.6), sharex=True,
-                         gridspec_kw={"height_ratios": [1, 1, 1.1], "hspace": 0.45})
-ax = axes[0]
-ax.plot(t, envelope, color="0.55", lw=1.0, ls="--")
-ax.plot(t, -envelope, color="0.55", lw=1.0, ls="--")
-ax.plot(t, pulse, color="black", lw=1.2)
-ax.text(1.9, 0.75, "envelope", color="0.4", fontsize=9)
-ax.set_title("(a) the pulse: an oscillation at the carrier frequency, with a Gaussian envelope",
-             fontsize=9.5, loc="left")
-ax = axes[1]
-for label, (y, colour) in products.items():
-    ax.plot(t, y, color=colour, lw=1.1, label=label)
-ax.axhline(0, color="0.75", lw=0.6, zorder=0)
-ax.legend(loc="upper right", fontsize=8.5, frameon=False)
-ax.set_title("(b) the pulse times the oscillation of each qubit", fontsize=9.5, loc="left")
-ax = axes[2]
-for label, (y, colour) in products.items():
-    s = running_integral(y)
-    ax.plot(t, s, color=colour, lw=2.0)
-    ax.text(t[-1] + 0.15, s[-1], label.replace(" qubit", ""), color=colour, va="center", fontsize=9)
-ax.axhline(0, color="0.75", lw=0.6, zorder=0)
-ax.set_title("(c) accumulated effect: the running integral of (b)", fontsize=9.5, loc="left")
-ax.set_xlabel("time")
-for ax in axes:
+columns = [("resonant qubit", f_drive, ACCENT), ("off-resonant qubit", f_off, ORANGE)]
+fig, axes = plt.subplots(3, 2, figsize=(7.2, 4.8), sharex=True, sharey="row",
+                         gridspec_kw={"hspace": 0.55, "wspace": 0.08})
+for col, (label, f_q, colour) in enumerate(columns):
+    qubit = np.cos(2 * np.pi * f_q * t)
+    product = pulse * qubit
+    ax = axes[0, col]
+    ax.plot(t, qubit, color=colour, lw=0.8, ls="--", alpha=0.7, label="qubit oscillation")
+    ax.plot(t, pulse, color="black", lw=1.2, label="pulse")
+    ax.set_title("(a) pulse and qubit oscillation", fontsize=9.5, loc="left")
+    ax.text(0.5, 1.42, label.capitalize(), transform=ax.transAxes, ha="center",
+            fontsize=10.5, fontweight="bold", color=colour)
+    ax = axes[1, col]
+    ax.plot(t, product, color=colour, lw=1.1)
+    ax.axhline(0, color="0.75", lw=0.6, zorder=0)
+    ax.set_title("(b) their product", fontsize=9.5, loc="left")
+    ax = axes[2, col]
+    ax.plot(t, running_integral(product), color=colour, lw=2.0)
+    ax.axhline(0, color="0.75", lw=0.6, zorder=0)
+    ax.set_title("(c) accumulated effect", fontsize=9.5, loc="left")
+    ax.set_xlabel("time")
+axes[0, 0].legend(loc="upper left", fontsize=8, frameon=False, ncol=2,
+                  bbox_to_anchor=(0, 1.05))
+axes[0, 0].set_ylim(-1.15, 1.75)
+for ax in axes.flat:
     ax.set_yticks([])
     ax.set_xticks([])
     for side in ("top", "right", "left"):
         ax.spines[side].set_visible(False)
-axes[2].set_xlim(t[0], t[-1] + 2.6)
 save_fig(fig, "pulse-resonance")
 
 
@@ -336,3 +332,20 @@ ax.set_ylim(-1.3, 1.35)
 ax.set_aspect("equal")
 ax.axis("off")
 save_fig(fig, "prx-bloch")
+
+
+# ------------------------------------------- brick-wall circuit (exercise)
+
+n_q = 4
+brick = QuantumCircuit(n_q)
+k = 0
+for layer in range(2):
+    for q in range(n_q):
+        brick.rz(Parameter(f"α{k}"), q)
+        brick.rx(Parameter(f"β{k}"), q)
+        k += 1
+    for q in range(layer % 2, n_q - 1, 2):
+        brick.cz(q, q + 1)
+    brick.barrier()
+save_fig(brick.draw("mpl", style=STYLE, scale=0.9, plot_barriers=True,
+                    initial_state=False), "brick-wall")

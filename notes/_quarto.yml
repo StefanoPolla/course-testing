@@ -6,6 +6,9 @@ profile:
 project:
   type: book
   output-dir: _site
+  pre-render: copy_notebooks.py
+  resources:
+    - downloads/
 
 book:
   title: "Near-term Quantum Computing — lecture notes"
@@ -29,6 +32,7 @@ metadata-files:
 filters:
   - exercises.lua
   - tutorials.lua
+  - hints.lua
   - glossary.lua
   - changes.lua  # temporary: review highlighting
 crossref:
@@ -44,11 +48,14 @@ format:
     number-sections: true
     toc: true
     include-after-body: glossary-tooltips.html
+    css: styles.css
   pdf:
     documentclass: scrreprt
     pdf-engine: lualatex
     default-image-extension: pdf
-    include-in-header: macros.tex
+    include-in-header:
+      - macros.tex
+      - preamble.tex
     fig-pos: 'htb'
     number-sections: true
     colorlinks: true

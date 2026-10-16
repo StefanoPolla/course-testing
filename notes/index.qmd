@@ -11,8 +11,8 @@ lecture. [Chapters are added as the course goes on.]{.chg}
 ## How to use these notes {.unnumbered}
 
 - **Chapters.** Each chapter follows one lecture and goes into more detail than the
-  lecture can. The exercises of all chapters are also collected on the
-  [Exercises](exercises.qmd) page, with links back to the chapters.
+  lecture can. [On the website, the exercises of all chapters are also collected on the
+  [Exercises](exercises.qmd) page, with links back to the chapters.]{.content-visible when-format="html"}
 - **Glossary.** Underlined terms are explained in the [Glossary](glossary.qmd). On the
   website, hover over a term (or tap it on a phone) to see its definition, and click it
   to open the glossary.
@@ -45,7 +45,8 @@ is new to you, these short introductions cover what we need:
 ## Tutorials {.unnumbered}
 
 Each notebook opens in Google Colab. To keep your work, use **File → Save a copy in
-Drive** before you start. New notebooks and solutions appear in this table as they are
+Drive** before you start. If you prefer to work in your own environment, download the
+notebook instead. New notebooks and solutions appear in this table as they are
 released.
 
 ::: {#tutorial-table}

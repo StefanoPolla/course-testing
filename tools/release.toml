@@ -17,7 +17,7 @@ release = "stefanopolla.github.io/ntqc"
 # Never copied, and ignored by diff (build output, tooling, staging-only settings).
 exclude = [
   ".git", ".DS_Store", "__pycache__", "*.quarto_ipynb",
-  "notes/_site", "notes/.quarto",
+  "notes/_site", "notes/.quarto", "notes/downloads",
   "notes/_quarto-staging.yml",
   "tools",
 ]

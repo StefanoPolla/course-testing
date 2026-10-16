@@ -3,6 +3,7 @@
 -- chapter (lNN-*.qmd) listed in _quarto.yml, each with a link back to the original, so
 -- the page updates itself when a chapter is published. Exercises must not contain
 -- labelled elements (equations, figures): the copies drop the labels.
+-- Web only: in the PDF, the whole Exercises appendix is removed.
 
 local function read_file(path)
   local f = io.open(path, "r")
@@ -72,4 +73,16 @@ local function exercise_list(el)
   return out
 end
 
-return { { Div = exercise_list } }
+-- PDF: drop the appendix (its heading, #sec-exercises, up to the next chapter).
+local function drop_in_pdf(doc)
+  if quarto.doc.is_format("html") then return nil end
+  local out, skipping = pandoc.Blocks {}, false
+  for _, b in ipairs(doc.blocks) do
+    if b.t == "Header" and b.level == 1 then skipping = (b.identifier == "sec-exercises") end
+    if not skipping then out:insert(b) end
+  end
+  doc.blocks = out
+  return doc
+end
+
+return { { Div = exercise_list }, { Pandoc = drop_in_pdf } }

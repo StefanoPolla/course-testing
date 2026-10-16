@@ -40,7 +40,9 @@ returns a single random outcome, so every quantity is estimated from many repeti
 called shots (@sec-shots). And [error mitigation]{.gloss key="error-mitigation"}
 reduces the effect of the remaining noise on these estimates, without correcting the
 errors themselves, by running extra or modified circuits and combining their results.
-It costs more shots, and we return to it later in the course.
+Error mitigation is not the same as error correction: it only works if the circuit does
+not accumulate too much error in the first place, and its price is running more shots.
+We come back to it later in the course.
 ::::
 
 Correcting errors is possible in principle. [Quantum error correction]{.gloss key="qec"}
@@ -63,10 +65,11 @@ physical qubits. We come back to the stage in between, *early fault tolerance*, 
 end of the course.
 
 :::: {.chg}
-The cost goes beyond the number of qubits. A code protects stored information, but
-every gate on logical qubits must also be carried out without spreading errors, and only
-a small set of gates can be done this way at a low cost. Every other gate has to be
-built from this set, which changes which operations are expensive. In the most studied
+The cost of error correction is not only an increase in the number of physical qubits.
+A code protects stored information, but every gate on logical qubits must also be
+carried out without spreading errors, and only a small set of gates can be done this way
+at a low cost. Every other gate has to be built from this set, so the operations that
+are cheap on a NISQ device can be expensive on a fault-tolerant one, and the reverse. In the most studied
 codes, a CNOT between two logical qubits is relatively cheap. A single-qubit rotation by
 an arbitrary angle, which a NISQ device performs with a single pulse
 (@sec-driving-gates), must instead be approximated by a sequence of tens to about a
@@ -89,10 +92,9 @@ number of rotations. @tbl-nisq-ftqc summarises the differences.
 : NISQ and fault-tolerant quantum computing compared. {#tbl-nisq-ftqc}
 ::::
 
-This course works with physical qubits. We run circuits on them, estimate how much
-their noise affects the results, and use methods that reduce its effect without full
-error correction. One question will come back throughout: when a device produces a
-number, what would it take to believe it?
+[This course focuses on NISQ devices. We will learn how noise affects their results,
+how error mitigation can reduce its effect, and which algorithms can be run on today's
+devices.]{.chg}
 
 ## Physical qubits {#sec-platforms}
 
@@ -155,19 +157,19 @@ controlled.]{.chg}
 :::: {.chg}
 A [pulse]{.gloss key="pulse"} is a short burst of radiation at a chosen frequency, the
 carrier frequency, switched on and off smoothly. Its shape over time, the *envelope*, is
-often close to a Gaussian (@fig-pulse, a). Superconducting qubits are driven by
+often close to a Gaussian (@fig-pulse a). Superconducting qubits are driven by
 microwave pulses, trapped ions by laser or microwave pulses. A qubit with transition
 frequency $f_q$ oscillates at that frequency too, and in a simplified picture, the effect
 of a pulse on the qubit is the product of the pulse with this oscillation, added up over
 time. If the two frequencies are equal, the product keeps the same sign, and its effect
-builds up as long as the pulse lasts (@fig-pulse, b and c). The result is a rotation of
+builds up as long as the pulse lasts (@fig-pulse, left, b and c). The result is a rotation of
 the qubit, by an angle proportional to the area under the envelope. If the frequencies
 differ, the product alternates in sign, its contributions cancel, and the qubit is left
 almost unchanged. A pulse at the frequency of one qubit therefore acts on that qubit, and
 hardly on qubits with other frequencies. @sec-driving-gates shows how the shape and
 timing of a pulse set the rotation.
 
-![A Gaussian pulse acting on two qubits, one at the carrier frequency and one at a 35% higher frequency. The effect on the resonant qubit builds up to a value set by the area under the envelope; for the off-resonant qubit, it averages out to almost zero. The frequencies are scaled down to show the oscillations: a superconducting qubit oscillates a hundred times or more during a pulse, so that a much smaller difference in frequency is enough.](figures/pulse-resonance){#fig-pulse width=85%}
+![The same Gaussian pulse acting on a qubit at the carrier frequency (left) and on a qubit at a 35% higher frequency (right). (a) The pulse, with the qubit's own oscillation dashed; (b) the product of the two; (c) its running integral. The effect on the resonant qubit builds up to a value set by the area under the envelope; for the off-resonant qubit, it averages out to almost zero. The frequencies are scaled down to show the oscillations: a superconducting qubit oscillates a hundred times or more during a pulse, so that a much smaller difference in frequency is enough.](figures/pulse-resonance){#fig-pulse width=85%}
 ::::
 
 ### Superconducting qubits {#sec-superconducting}
@@ -256,6 +258,10 @@ factor), where $k_B$ is Boltzmann's constant. Use $h/k_B \approx 0.048$ K/GHz.
 (a) Compute $p_1/p_0$ for a 5 GHz qubit at room temperature (300 K), at 1 K and at 10 mK.
 
 (b) Below which temperature is $p_1/p_0$ smaller than $10^{-3}$?
+
+    :::: {.hint}
+    [Take the logarithm of both sides.]{.chg}
+    ::::
 :::
 
 ### Trapped ions {#sec-trapped-ions}
@@ -465,11 +471,17 @@ The Bloch sphere rotated by $\gate{PRX}(\theta,\varphi)$, a rotation by $\theta$
 
 ::: {#exr-prx}
 ## The PRX gate
-(a) Show that $(\cos\varphi\, X + \sin\varphi\, Y)^2 = I$. Hint: expand the square,
-and use that $X$ and $Y$ anticommute.
+(a) Show that $(\cos\varphi\, X + \sin\varphi\, Y)^2 = I$.
 
-(b) Use @eq-pauli-rotation to write $\gate{PRX}(\theta,\varphi)$ as a $2\times 2$
-matrix.
+    :::: {.hint}
+    [Expand the square, and use that $X$ and $Y$ anticommute.]{.chg}
+    ::::
+
+(b) Write $\gate{PRX}(\theta,\varphi)$ as a $2\times 2$ matrix.
+
+    :::: {.hint}
+    [Use @eq-pauli-rotation, which applies because of (a).]{.chg}
+    ::::
 
 (c) Check that $\gate{PRX}(\theta,0) = R_X(\theta)$ and
 $\gate{PRX}(\theta,\pi/2) = R_Y(\theta)$. Which rotation is $\gate{PRX}(\theta,\pi)$?
@@ -606,16 +618,31 @@ single-qubit rotations (@exr-swap-native).
 Let $P$ and $Q$ be Pauli strings that anticommute, $PQ = -QP$.
 
 (a) Show that $e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ$.
-Hint: write both exponentials with @eq-pauli-rotation, and use $PQP = -Q$.
 
-(b) Use (a) to show that $R_Y(\pi/2)$ turns $Z$ into $X$, and that $R_X(-\pi/2)$ turns
-$Z$ into $Y$.
+    :::: {.hint}
+    [Write both exponentials with @eq-pauli-rotation, and use $PQP = -Q$.]{.chg}
+    ::::
+
+(b) Show that $R_Y(\pi/2)$ turns $Z$ into $X$, and that $R_X(-\pi/2)$ turns $Z$ into
+$Y$.
+
+    :::: {.hint}
+    [Use (a), and the products of Pauli matrices.]{.chg}
+    ::::
 
 (c) Check that the circuit of @fig-pauli-rotation implements
 $e^{-i\theta\, Z\otimes Y\otimes X/2}$.
 
+    :::: {.hint}
+    [Use @eq-conjugation, the identity for CZ in the text, and (b).]{.chg}
+    ::::
+
 (d) Draw a circuit of CZ gates and $R_X$ or $R_Y$ rotations for $R_{ZZ}(\theta)$, and
 compare it with @fig-rzz.
+
+    :::: {.hint}
+    [Start from $R_X(\theta)$ on the second qubit, conjugate it by CZ, then turn the remaining $X$ into $Z$.]{.chg}
+    ::::
 :::
 ::::
 
@@ -682,12 +709,19 @@ That is one pulse, followed by a $Z$ rotation that is virtual.
 
 ::: {#exr-virtual-z}
 ## Virtual Z gates
-(a) [Use @exr-pauli-conjugation to show]{.chg} that
-$R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y$ and
+(a) Show that $R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y$ and
 $R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X$.
+
+    :::: {.hint}
+    [Use @exr-pauli-conjugation (a) with $P = Z$.]{.chg}
+    ::::
 
 (b) Write the Hadamard gate, up to a global phase, as a single $\gate{PRX}$ pulse
 followed by a $Z$ rotation.
+
+    :::: {.hint}
+    [Write the Hadamard gate as $R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)$ first, then use @eq-virtual-z-push.]{.chg}
+    ::::
 :::
 
 ### Connectivity {#sec-connectivity}
@@ -734,6 +768,10 @@ and simplifies the result. We return to its cost in later chapters.
 (b) [We want to implement a CNOT between the qubits at opposite ends of a line of $n$
 qubits. If the qubits may stay in their new positions after the operation, how many
 CNOTs are needed? And if they must be returned to their original positions?]{.chg}
+
+    :::: {.hint}
+    [Each SWAP moves a state one step along the line.]{.chg}
+    ::::
 :::
 
 :::: {.chg}
@@ -741,13 +779,20 @@ CNOTs are needed? And if they must be returned to their original positions?]{.ch
 ## SWAP from native gates
 On a device whose native gates are $\gate{PRX}$ and CZ, a SWAP must be built from these.
 
-(a) Let $A$ be a single-qubit unitary. Write
-$\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z$, and show that
+(a) Let $A$ be a single-qubit unitary. Show that
 $(I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)$ applies $AZA^\dagger$ to the second
 qubit if the first is in $\ket{1}$, and does nothing if it is in $\ket{0}$.
 
-(b) Find a $\gate{PRX}$ rotation $A$ with $AZA^\dagger = X$ (@exr-pauli-conjugation
-helps), and write a CNOT as one CZ and two $\gate{PRX}$ gates.
+    :::: {.hint}
+    [Write $\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z$.]{.chg}
+    ::::
+
+(b) Find a $\gate{PRX}$ rotation $A$ with $AZA^\dagger = X$, and write a CNOT as one CZ
+and two $\gate{PRX}$ gates.
+
+    :::: {.hint}
+    [@exr-pauli-conjugation (b) gives a suitable $A$.]{.chg}
+    ::::
 
 (c) Using @fig-swap, write a SWAP with three CZs and $\gate{PRX}$ gates only. How many
 $\gate{PRX}$ pulses does it need?
@@ -789,6 +834,7 @@ effects together with the remaining ones.
 | the qubit leaves the qubit levels | a pulse pushes a transmon into its third level (@fig-energy-levels) | [leakage]{.gloss key="leakage"} |
 | an operation on one qubit disturbs another | couplings that are never fully off; a laser beam that partly hits the next ion | crosstalk |
 | the readout is wrong | 0 reported as 1, or the reverse | readout error |
+| [many qubits fail at once]{.chg} | [a cosmic ray deposits energy in the chip and disturbs all qubits nearby]{.chg} | [correlated errors]{.chg} |
 | the device drifts | properties that change over hours | (recalibration) |
 
 : What can go wrong in a quantum device. {#tbl-noise}
@@ -920,10 +966,18 @@ device, and from a few minutes to several hours on an ion trap.]{.chg}
 (a) How many shots give a standard error of 0.01 when $\langle P\rangle \approx 0.9$?
 Compare with $\langle P\rangle \approx 0$.
 
+    :::: {.hint}
+    [Solve @eq-standard-error for $N$.]{.chg}
+    ::::
+
 (b) You need ten expectation values, each from its own circuit, each with a standard
-error of at most 0.005. Assume the worst case, $\langle P\rangle = 0$. Using
-@tbl-timescales, estimate the total time on a superconducting device and on an ion
-trap. Which part of the time dominates on each?
+error of at most 0.005. Assume the worst case, $\langle P\rangle = 0$. Estimate the
+total time on a superconducting device and on an ion trap. Which part of the time
+dominates on each?
+
+    :::: {.hint}
+    [Use the times per shot and per circuit of @tbl-timescales.]{.chg}
+    ::::
 :::
 
 :::: {.chg}
@@ -933,20 +987,35 @@ These exercises combine material from several sections of the chapter.
 
 ::: {#exr-error-budget}
 ## An error budget
-A circuit has 100 single-qubit gates and 40 two-qubit gates, and ends by measuring 10
-qubits. Assume that each operation fails independently, with probability $10^{-4}$ for a
-single-qubit gate, $5\times10^{-3}$ for a two-qubit gate and $10^{-2}$ for a
-measurement. $Z$ rotations are virtual and do not count.
+:::: {.chg}
+A device has the native gates $\gate{PRX}$ and CZ, with virtual $Z$ rotations. Its
+operations fail independently, with probability $10^{-4}$ for a $\gate{PRX}$ pulse,
+$5\times10^{-3}$ for a CZ and $10^{-2}$ for a measurement. On a line of 10 qubits, we run
+a brick-wall circuit: each layer applies $R_Z$ and $R_X$ to every qubit, followed by CZs
+between neighbouring qubits, on the pairs (1,2), (3,4), ... in odd layers and (2,3),
+(4,5), ... in even layers. @fig-brick-wall shows two layers on four qubits. The circuit
+has 8 layers and ends by measuring all qubits.
 
-(a) Estimate the probability that a run of the circuit has no error at all. Which kind
-of operation contributes most to the failures?
+![Two layers of a brick-wall circuit on four qubits.](figures/brick-wall){#fig-brick-wall width=70% fig-pos="H"}
+::::
 
-(b) On a device with limited connectivity, 10 of the 40 two-qubit gates act on qubits
-that are not neighbours, and each of them needs one SWAP first. Count each SWAP as three
-two-qubit gates, and redo (a).
+(a) [Count the native operations of each kind, and estimate the probability that a run
+of the circuit has no error at all. Which kind of operation contributes most to the
+failures?]{.chg}
 
-(c) Roughly how many two-qubit gates can a circuit contain before the probability of a
-run without error drops below one half? Hint: $(1-p)^n \approx e^{-np}$ for small $p$.
+    :::: {.hint}
+    [Which gates in @fig-brick-wall need a pulse?]{.chg}
+    ::::
+
+(b) [How does the answer to (a) change on a device without virtual $Z$ rotations, where
+each $R_Z$ needs a pulse with the same error as $\gate{PRX}$?]{.chg}
+
+(c) [Roughly how many layers can the circuit have before the probability of a run
+without error drops below one half?]{.chg}
+
+    :::: {.hint}
+    [$(1-p)^n \approx e^{-np}$ for small $p$.]{.chg}
+    ::::
 :::
 
 ::: {#exr-readout-bias}
@@ -960,9 +1029,17 @@ value $(1-2p)\langle Z\rangle$.
 (b) For a Pauli string $P$ acting on $k$ qubits, show that the recorded sign has
 expectation value $(1-2p)^k\langle P\rangle$.
 
+    :::: {.hint}
+    [The recorded sign is the true sign times one independent factor $\pm 1$ per qubit.]{.chg}
+    ::::
+
 (c) Take $p = 0.02$, $k = 4$ and $\langle P\rangle = 0.5$. Compare the bias of $\bar s$
-with its standard error (@eq-standard-error) for $N = 10^3$ and for $N = 10^5$ shots.
-When do more shots stop helping?
+with its standard error for $N = 10^3$ and for $N = 10^5$ shots. When do more shots stop
+helping?
+
+    :::: {.hint}
+    [The standard error is given by @eq-standard-error.]{.chg}
+    ::::
 
 (d) If $p$ is known, how can the estimate be corrected? What does the correction do to
 the standard error?
@@ -974,8 +1051,11 @@ A device has the native gates $\gate{PRX}$ and CZ, and measures in the computati
 basis.
 
 (a) Which $\gate{PRX}$ pulses must be applied before the measurement to estimate
-$\langle X\otimes Y\otimes Z\rangle$? Hint: on each qubit, you need a rotation $U$ with
-$U P_j U^\dagger = Z$; see @exr-pauli-conjugation.
+$\langle X\otimes Y\otimes Z\rangle$?
+
+    :::: {.hint}
+    [On each qubit, you need a rotation $U$ with $U P_j U^\dagger = Z$; see @exr-pauli-conjugation.]{.chg}
+    ::::
 
 (b) Can $\langle X\otimes I\rangle$ and $\langle X\otimes X\rangle$ be estimated from the
 same shots? And $\langle X\otimes X\rangle$ and $\langle Z\otimes Z\rangle$, if only
@@ -985,16 +1065,10 @@ single-qubit rotations are allowed before the measurement?
 
 ## Further reading {#sec-l01-reading}
 
-[For a first look at the hardware, with photos and no maths, @brubaker2026 visits
-laboratories building trapped-ion, neutral-atom and superconducting machines. For
-superconducting qubits, @kjaergaard2020 surveys the state of the field with readable
-introductory sections, and @roth2023 builds up the transmon step by step for readers
-with an engineering background. For trapped ions, @bernardini2024 is an introduction
-written for students and organised around the DiVincenzo criteria.]{.chg} For more
-depth, @krantz2019 is a thorough guide to superconducting qubits written for
-engineers, and @bruzewicz2019 reviews trapped ions. @henriet2020, @slussarenko2019 and
-@burkard2023 review neutral atoms, photonics and spin qubits. @preskill2018 introduced
-the NISQ era, and @nielsen2010 [chapter 4] covers the circuit model.
+For superconducting qubits, @krantz2019 is a thorough guide written for engineers; for
+trapped ions, see @bruzewicz2019. @henriet2020, @slussarenko2019 and @burkard2023
+review neutral atoms, photonics and spin qubits. @preskill2018 introduced the NISQ era,
+and @nielsen2010 [chapter 4] covers the circuit model.
 
 ## References {.unnumbered}
 
