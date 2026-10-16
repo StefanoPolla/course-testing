@@ -4,9 +4,9 @@
     "href": "index.html",
     "title": "Near-term Quantum Computing — lecture notes",
     "section": "",
-    "text": "Near-term Quantum Computing\nLecture notes for Near-term Quantum Computing (UvA, 2026-2027), one chapter per lecture. Chapters are added as the course goes on.\nVersion: 2026-10-16 (draft).",
+    "text": "About these notes\nLecture notes for Near-term Quantum Computing (UvA, 2026-2027), one chapter per lecture. Chapters are added as the course goes on.\nVersion: 2026-10-16 (draft).",
     "crumbs": [
-      "Near-term Quantum Computing"
+      "[About these notes]{.chg}"
     ]
   },
   {
@@ -16,7 +16,7 @@
     "section": "How to use these notes",
     "text": "How to use these notes\n\nChapters. Each chapter follows one lecture and goes into more detail than the lecture can. On the website, the exercises of all chapters are also collected on the Exercises page, with links back to the chapters.\nGlossary. Underlined terms are explained in the Glossary. On the website, hover over a term (or tap it on a phone) to see its definition, and click it to open the glossary.\nSearch. The search box at the top of the sidebar searches all chapters; on a computer, the shortcut is /.\nPDF. The download icon next to the title gives all published chapters as one PDF, with the same numbering, for printing or reading offline. Glossary terms are in italics there, and the glossary is an appendix.",
     "crumbs": [
-      "Near-term Quantum Computing"
+      "[About these notes]{.chg}"
     ]
   },
   {
@@ -26,7 +26,7 @@
     "section": "Prerequisites",
     "text": "Prerequisites\nThe notes assume basic quantum mechanics and the circuit model: Dirac notation, Pauli matrices, density matrices, expectation values and their statistical error.\n\nThe tutorials are Jupyter notebooks in Python, which run in Google Colab. They assume basic Python (variables, functions, loops, lists and dictionaries) and a little familiarity with Jupyter notebooks, NumPy arrays and Matplotlib plots. If any of these is new to you, these short introductions cover what we need:\n\nPython: the official Python tutorial, sections 3 to 5;\nJupyter notebooks in Colab: Overview of Colab;\nNumPy: NumPy: the absolute basics for beginners;\nMatplotlib: Quick start guide.",
     "crumbs": [
-      "Near-term Quantum Computing"
+      "[About these notes]{.chg}"
     ]
   },
   {
@@ -36,7 +36,7 @@
     "section": "Tutorials",
     "text": "Tutorials\nEach notebook opens in Google Colab. To keep your work, use File → Save a copy in Drive before you start. If you prefer to work in your own environment, download the notebook instead. New notebooks and solutions appear in this table as they are released.\n\n\n\nTutorial\nDate\nTopic\nNotebook\nSolutions\n\n\n\n\nT1\nFri 30 Oct\nCircuits, simulators and sampling\nColab · Download\nafter the tutorial\n\n\nT2\nFri 6 Nov\n\nnot yet released\nafter the tutorial\n\n\nT3\nFri 13 Nov\n\nnot yet released\nafter the tutorial\n\n\nT4\nFri 20 Nov\n\nnot yet released\nafter the tutorial\n\n\nT5\nFri 27 Nov\n\nnot yet released\nafter the tutorial\n\n\nT6\nFri 4 Dec\n\nnot yet released\nafter the tutorial\n\n\nT7\nFri 11 Dec\n\nnot yet released\nafter the tutorial",
     "crumbs": [
-      "Near-term Quantum Computing"
+      "[About these notes]{.chg}"
     ]
   },
   {
