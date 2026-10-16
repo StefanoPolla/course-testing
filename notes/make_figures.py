@@ -213,3 +213,126 @@ draw_graph(axes[3], pos, edges, "(d) all-to-all")
 
 fig.subplots_adjust(wspace=0.15)
 save_fig(fig, "coupling-graphs")
+
+
+# ------------------------------------------------------- pulse and resonance
+
+ORANGE = "#c2560c"  # second series colour; with ACCENT, passes the CVD checks on white
+
+t = np.linspace(-6, 6, 4000)  # time, in periods of the carrier
+sigma = 1.6
+envelope = np.exp(-t**2 / (2 * sigma**2))
+f_drive, f_off = 1.0, 1.35
+pulse = envelope * np.cos(2 * np.pi * f_drive * t)
+products = {
+    "resonant qubit": (pulse * np.cos(2 * np.pi * f_drive * t), ACCENT),
+    "off-resonant qubit": (pulse * np.cos(2 * np.pi * f_off * t), ORANGE),
+}
+
+
+def running_integral(y):
+    return np.concatenate([[0.0], np.cumsum((y[1:] + y[:-1]) / 2 * np.diff(t))])
+
+
+fig, axes = plt.subplots(3, 1, figsize=(6.4, 4.6), sharex=True,
+                         gridspec_kw={"height_ratios": [1, 1, 1.1], "hspace": 0.45})
+ax = axes[0]
+ax.plot(t, envelope, color="0.55", lw=1.0, ls="--")
+ax.plot(t, -envelope, color="0.55", lw=1.0, ls="--")
+ax.plot(t, pulse, color="black", lw=1.2)
+ax.text(1.9, 0.75, "envelope", color="0.4", fontsize=9)
+ax.set_title("(a) the pulse: an oscillation at the carrier frequency, with a Gaussian envelope",
+             fontsize=9.5, loc="left")
+ax = axes[1]
+for label, (y, colour) in products.items():
+    ax.plot(t, y, color=colour, lw=1.1, label=label)
+ax.axhline(0, color="0.75", lw=0.6, zorder=0)
+ax.legend(loc="upper right", fontsize=8.5, frameon=False)
+ax.set_title("(b) the pulse times the oscillation of each qubit", fontsize=9.5, loc="left")
+ax = axes[2]
+for label, (y, colour) in products.items():
+    s = running_integral(y)
+    ax.plot(t, s, color=colour, lw=2.0)
+    ax.text(t[-1] + 0.15, s[-1], label.replace(" qubit", ""), color=colour, va="center", fontsize=9)
+ax.axhline(0, color="0.75", lw=0.6, zorder=0)
+ax.set_title("(c) accumulated effect: the running integral of (b)", fontsize=9.5, loc="left")
+ax.set_xlabel("time")
+for ax in axes:
+    ax.set_yticks([])
+    ax.set_xticks([])
+    for side in ("top", "right", "left"):
+        ax.spines[side].set_visible(False)
+axes[2].set_xlim(t[0], t[-1] + 2.6)
+save_fig(fig, "pulse-resonance")
+
+
+# ------------------------------------------- Pauli rotation from CZ and R_X
+
+from qiskit import QuantumRegister
+
+q1, q2, q3 = (QuantumRegister(1, name) for name in ("q1", "q2", "q3"))
+pauli = QuantumCircuit(q1, q2, q3)
+pauli.rx(np.pi / 2, q2)
+pauli.cz(q1, q3)
+pauli.cz(q2, q3)
+pauli.rx(theta, q3)
+pauli.cz(q2, q3)
+pauli.cz(q1, q3)
+pauli.rx(-np.pi / 2, q2)
+save(pauli, "pauli-rotation-cz")
+
+
+# ------------------------------------------- Bloch sphere rotated by PRX (static, PDF)
+
+def view(az=np.radians(30), el=np.radians(20)):
+    d = np.array([np.cos(el) * np.cos(az), np.cos(el) * np.sin(az), np.sin(el)])
+    r = np.array([-np.sin(az), np.cos(az), 0.0])
+    u = np.array([-np.sin(el) * np.cos(az), -np.sin(el) * np.sin(az), np.cos(el)])
+    return lambda p: (np.asarray(p) @ r, np.asarray(p) @ u, np.asarray(p) @ d)
+
+
+def curve(ax, proj, pts, colour, lw=1.0, back_style="--", **kw):
+    """Draw a 3D curve, dashed and faint where it runs behind the sphere."""
+    x, y, depth = proj(pts)
+    front = depth >= -1e-9
+    for mask, style, alpha in ((front, "-", 1.0), (~front, back_style, 0.45)):
+        xs, ys = np.where(mask, x, np.nan), np.where(mask, y, np.nan)
+        ax.plot(xs, ys, color=colour, lw=lw, ls=style, alpha=alpha, **kw)
+
+
+proj = view()
+fig, ax = plt.subplots(figsize=(3.6, 3.6))
+ax.add_patch(plt.Circle((0, 0), 1, fill=False, color="0.35", lw=1.0))
+s = np.linspace(0, 2 * np.pi, 400)
+curve(ax, proj, np.stack([np.cos(s), np.sin(s), 0 * s], 1), "0.55", lw=0.8)  # equator
+for vec, name in (((1, 0, 0), "$x$"), ((0, 1, 0), "$y$"), ((0, 0, 1), "$z$")):
+    x, y, _ = proj(np.array(vec) * 1.0)
+    ax.plot([0, x], [0, y], color="0.35", lw=0.8)
+    x, y, _ = proj(np.array(vec) * 1.18)
+    ax.text(x, y, name, ha="center", va="center")
+phi_ex, theta_ex = np.radians(50), np.radians(120)
+n = np.array([np.cos(phi_ex), np.sin(phi_ex), 0.0])
+curve(ax, proj, np.outer(np.linspace(-1, 0, 60), n), ORANGE, lw=1.8)  # back half, dashed
+x, y, _ = proj(n * 1.25)
+ax.annotate("", xy=(x, y), xytext=(0, 0),
+            arrowprops=dict(arrowstyle="-|>", color=ORANGE, lw=1.8, mutation_scale=12))
+ax.text(x - 0.05, y - 0.1, "rotation\naxis", color=ORANGE, fontsize=9, va="top", ha="center")
+arc = np.linspace(0, phi_ex, 50)
+curve(ax, proj, 0.35 * np.stack([np.cos(arc), np.sin(arc), 0 * arc], 1), ORANGE, lw=1.0)
+x, y, _ = proj(0.45 * np.array([np.cos(phi_ex / 2), np.sin(phi_ex / 2), 0]))
+ax.text(x, y - 0.02, r"$\varphi$", color=ORANGE, ha="center", va="top")
+# path of |0> under the rotation: (sin φ sin t, -cos φ sin t, cos t)
+ts = np.linspace(0, theta_ex, 120)
+path = np.stack([np.sin(phi_ex) * np.sin(ts), -np.cos(phi_ex) * np.sin(ts), np.cos(ts)], 1)
+curve(ax, proj, path, ACCENT, lw=2.0)
+for p, label, dx in ((path[0], r"$|0\rangle$", 0.08), (path[-1], "", 0)):
+    x, y, _ = proj(p)
+    ax.plot(x, y, "o", color=ACCENT, ms=5)
+    ax.text(x + dx, y + 0.05, label, fontsize=10)
+x, y, _ = proj(path[60] * 1.12)
+ax.text(x, y, r"$\theta$", color=ACCENT, ha="center", va="center")
+ax.set_xlim(-1.35, 1.35)
+ax.set_ylim(-1.3, 1.35)
+ax.set_aspect("equal")
+ax.axis("off")
+save_fig(fig, "prx-bloch")

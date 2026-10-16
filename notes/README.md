@@ -35,6 +35,7 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
 | `macros.tex` + `_macros.qmd` | LaTeX macros, once for the PDF and once for the web; keep them in step |
 | `references.bib` | Bibliography |
+| `figures/CREDITS.txt` | Source and licence of every third-party image in `figures/` (CC BY requires credit and a note of changes) |
 
 ## Deploying to GitHub Pages
 

@@ -2,16 +2,18 @@
 
 {{< include _macros.qmd >}}
 
-On paper, a quantum algorithm is a circuit, a sequence of gates on ideal qubits followed
-by measurements. A real quantum computer is a physical device, and its physics decides
-which operations it can perform, between which qubits, how fast and how reliably. This
-chapter is about that physical side and what it means for the circuits we can run. By
-the end of it, you should be able to explain what a physical system needs to serve as a
-qubit, and how superconducting circuits and trapped ions meet those needs. You should
-be able to explain why devices have different native gates, why rotations about the
-$z$-axis are usually free, and what limited connectivity costs. And you should be able
-to estimate how many shots an expectation value needs, and how long they take on each
-platform.
+:::: {.chg}
+On paper, a quantum algorithm is a circuit: gates on ideal qubits, followed by
+measurements. A real quantum computer is a physical device, whose physics decides which
+operations it can perform, between which qubits, how fast and how reliably. In this
+chapter, we look at this physical side and at what it means for the circuits we can run.
+
+By the end of the chapter, you should be able to explain what a quantum computer needs
+from its qubits and how superconducting circuits and trapped ions provide it; why
+devices have different native gates, why $Z$ rotations are usually free, and what
+limited connectivity costs; and how many shots an expectation value needs and how long
+they take.
+::::
 
 ## Noisy qubits and fault tolerance {#sec-nisq}
 
@@ -27,6 +29,19 @@ intermediate-scale quantum* [@preskill2018]. *Intermediate scale* means tens to
 thousands of qubits, enough that many of their circuits are hard to simulate on a
 classical computer, but far from the millions of qubits that the best-known quantum
 algorithms need. *Noisy* means that their errors are not corrected.
+
+:::: {.chg}
+Getting useful results from a NISQ device means working within the limit set by noise.
+Circuits are kept short, so that errors have little chance to build up. The quantities
+to keep small are the circuit's [depth]{.gloss key="depth"}, the number of layers of
+gates that must run one after another, and its number of two-qubit gates, the least
+reliable operations on current devices (@sec-noise-sources). Each run of a circuit
+returns a single random outcome, so every quantity is estimated from many repetitions,
+called shots (@sec-shots). And [error mitigation]{.gloss key="error-mitigation"}
+reduces the effect of the remaining noise on these estimates, without correcting the
+errors themselves, by running extra or modified circuits and combining their results.
+It costs more shots, and we return to it later in the course.
+::::
 
 Correcting errors is possible in principle. [Quantum error correction]{.gloss key="qec"}
 stores each qubit of information redundantly in many
@@ -47,6 +62,33 @@ device to protect a single logical qubit, however, and useful computations still
 physical qubits. We come back to the stage in between, *early fault tolerance*, at the
 end of the course.
 
+:::: {.chg}
+The cost goes beyond the number of qubits. A code protects stored information, but
+every gate on logical qubits must also be carried out without spreading errors, and only
+a small set of gates can be done this way at a low cost. Every other gate has to be
+built from this set, which changes which operations are expensive. In the most studied
+codes, a CNOT between two logical qubits is relatively cheap. A single-qubit rotation by
+an arbitrary angle, which a NISQ device performs with a single pulse
+(@sec-driving-gates), must instead be approximated by a sequence of tens to about a
+hundred protected gates, some of which need a costly extra procedure of their own
+[@ross2016; @litinski2019]. The cost of a NISQ circuit is dominated by its depth and its
+two-qubit gates, while the cost of a fault-tolerant circuit is often dominated by its
+number of rotations. @tbl-nisq-ftqc summarises the differences.
+
+| | NISQ | Fault tolerant |
+|---|---|---|
+| Qubits | physical qubits | logical qubits, each encoded in many physical qubits |
+| Errors | uncorrected; they accumulate with every operation | corrected, if the physical error rates are below the threshold |
+| Circuit size | limited by noise | limited by the number of qubits and the run time |
+| Cheap operations | single-qubit rotations at any angle | CNOT and a few other gates |
+| Expensive operations | two-qubit gates | single-qubit rotations at arbitrary angles |
+| Cost of a circuit | mainly its depth and number of two-qubit gates | mainly its number of rotations |
+| Dealing with noise | short circuits, many shots, error mitigation | error correction |
+| Status | available today | first demonstrations; useful machines still to be built |
+
+: NISQ and fault-tolerant quantum computing compared. {#tbl-nisq-ftqc}
+::::
+
 This course works with physical qubits. We run circuits on them, estimate how much
 their noise affects the results, and use methods that reduce its effect without full
 error correction. One question will come back throughout: when a device produces a
@@ -54,30 +96,46 @@ number, what would it take to believe it?
 
 ## Physical qubits {#sec-platforms}
 
-The device physics in this section is descriptive, and you are not expected to derive
-it. What matters later are its consequences for gates, connectivity and speed. Terms we
-leave unexplained are in the glossary; on the web version, hover over an underlined
-term to see its definition.
+[This section is a high-level introduction to the most common designs of two kinds of
+hardware, superconducting circuits and trapped ions. Quantum hardware is a very active
+field of research, and there are many variations on everything we describe here.]{.chg}
+The device physics is descriptive, and you are not expected to derive it. What matters
+later are its consequences for gates, connectivity and speed. Terms we leave unexplained
+are in the glossary; on the web version, hover over an underlined term to see its
+definition.
 
-### What a qubit needs {#sec-qubit-needs}
+### [Requirements for a quantum computer]{.chg} {#sec-qubit-needs}
 
 A qubit is a quantum system with two states, $\ket{0}$ and $\ket{1}$, that we can
-control. Almost every quantum system has more than two states, so most qubits are the
-two lowest energy levels of a larger system, such as an atom or an electrical circuit.
+control. [Quantum systems such as atoms and small electrical circuits can only take
+certain values of energy, their *energy levels*, and they usually have many more than
+two. Most qubits are therefore]{.chg} the two lowest energy levels of a larger system.
 The other levels are still there, and a qubit can end up in them by accident.
 
-For a two-level system to work as a qubit, we must be able to
+:::: {.chg}
+A universal, [digital]{.gloss key="digital-qc"} quantum computer is built by assembling
+many physical qubits and controlling them individually. DiVincenzo listed what this
+requires [@divincenzo2000]:
 
-- prepare it in a known state, usually $\ket{0}$;
-- apply gates to it, both rotations of a single qubit and an interaction between two
-  qubits, which together form a universal set of gates;
-- measure it;
-- keep its quantum state long enough, which means that its
-  [coherence time]{.gloss key="coherence-time"} must be long compared with the duration
-  of a gate.
+- a scalable system of well-characterised qubits: their levels and interactions are
+  known, and more qubits can be added;
+- a way to prepare the qubits in a known state, usually $\ket{0\cdots 0}$;
+- a universal set of gates, usually rotations of single qubits together with an
+  interaction between two qubits;
+- a way to measure individual qubits;
+- [coherence times]{.gloss key="coherence-time"}, the times for which the qubits keep
+  their quantum state, that are long compared with the duration of a gate.
 
-Together with the requirement that the system can be scaled up to many qubits, these
-are the [DiVincenzo criteria]{.gloss key="divincenzo"} [@divincenzo2000].
+These are the [DiVincenzo criteria]{.gloss key="divincenzo"}. Two further criteria
+concern sending qubits between distant devices, which we will not need.
+
+One property of measurement matters well before @sec-measurement, where readout is
+described in detail. On the platforms in this chapter, a measurement asks each qubit
+whether it is in $\ket{0}$ or in $\ket{1}$: it projects the qubit onto one of these two
+states and returns one bit. This is a measurement in the *computational basis*, also
+called the $Z$ basis, since $\ket{0}$ and $\ket{1}$ are the eigenstates of $Z$. To
+measure in another basis, we first rotate that basis onto the computational one.
+::::
 
 The requirements pull in opposite directions. A qubit keeps its state longest when it
 is well isolated from its surroundings, since every interaction with the environment
@@ -85,28 +143,60 @@ disturbs it. Yet to apply gates and to measure, we have to interact with it, str
 and quickly. Every platform is a compromise between isolation and control, and this
 compromise explains many of the numbers in this chapter.
 
-### Superconducting qubits {#sec-superconducting}
+### [Energy levels, frequencies and pulses]{.chg} {#sec-pulses}
 
 Quantum mechanics links energy and frequency. An energy difference $E$ between two
 levels corresponds to a frequency $f = E/h$, where $h$ is Planck's constant, and
 radiation at that frequency drives transitions between the two levels, while radiation
 at other frequencies hardly affects them. This selectivity is called
-[resonance]{.gloss key="resonance"}. It is how individual qubits are addressed: to
-rotate a qubit, we send it a pulse at its own frequency.
+[resonance]{.gloss key="resonance"}[, and on most platforms it is how qubits are
+controlled.]{.chg}
 
-A superconducting qubit is a small electrical circuit on a chip. Once cooled, its metal
-becomes superconducting. Current then flows without resistance, so no energy is lost as
-heat, and the circuit behaves as a quantum system with discrete energy levels; we treat
-this part as a black box. A simple circuit of this kind has evenly spaced levels, like a
-mass on a spring (@fig-energy-levels, left). That makes it useless as a qubit, because a
-pulse at the frequency $f_{01}$ of the $\ket{0} \to \ket{1}$ transition is just as
-resonant with $\ket{1} \to \ket{2}$, $\ket{2} \to \ket{3}$ and so on. A circuit element
-called a [Josephson junction]{.gloss key="josephson-junction"} makes the spacing uneven.
-In the most common design, the [transmon]{.gloss key="transmon"}, the
+:::: {.chg}
+A [pulse]{.gloss key="pulse"} is a short burst of radiation at a chosen frequency, the
+carrier frequency, switched on and off smoothly. Its shape over time, the *envelope*, is
+often close to a Gaussian (@fig-pulse, a). Superconducting qubits are driven by
+microwave pulses, trapped ions by laser or microwave pulses. A qubit with transition
+frequency $f_q$ oscillates at that frequency too, and in a simplified picture, the effect
+of a pulse on the qubit is the product of the pulse with this oscillation, added up over
+time. If the two frequencies are equal, the product keeps the same sign, and its effect
+builds up as long as the pulse lasts (@fig-pulse, b and c). The result is a rotation of
+the qubit, by an angle proportional to the area under the envelope. If the frequencies
+differ, the product alternates in sign, its contributions cancel, and the qubit is left
+almost unchanged. A pulse at the frequency of one qubit therefore acts on that qubit, and
+hardly on qubits with other frequencies. @sec-driving-gates shows how the shape and
+timing of a pulse set the rotation.
+
+![A Gaussian pulse acting on two qubits, one at the carrier frequency and one at a 35% higher frequency. The effect on the resonant qubit builds up to a value set by the area under the envelope; for the off-resonant qubit, it averages out to almost zero. The frequencies are scaled down to show the oscillations: a superconducting qubit oscillates a hundred times or more during a pulse, so that a much smaller difference in frequency is enough.](figures/pulse-resonance){#fig-pulse width=85%}
+::::
+
+### Superconducting qubits {#sec-superconducting}
+
+A superconducting qubit is a small electrical circuit on a chip. [The chip is
+*fabricated* like a conventional microchip: in a clean room, thin layers of
+superconducting metal are deposited on it and etched into shape
+(@fig-sc-chip).]{.chg} Once cooled, its metal becomes superconducting. Current then flows without resistance, so no energy is
+lost as heat, and the circuit behaves as a quantum system with discrete energy levels;
+we treat this part as a black box. A simple circuit of this kind has evenly spaced
+levels, like a mass on a spring (@fig-energy-levels, left). That makes it useless as a
+qubit, because a pulse at the frequency $f_{01}$ of the $\ket{0} \to \ket{1}$ transition
+is just as resonant with $\ket{1} \to \ket{2}$, $\ket{2} \to \ket{3}$ and so on. A
+circuit element called a [Josephson junction]{.gloss key="josephson-junction"} makes the
+spacing uneven. In the most common design, the [transmon]{.gloss key="transmon"}, the
 $\ket{1} \to \ket{2}$ transition is a few percent lower in frequency than the qubit
 transition (@fig-energy-levels, right), so a pulse at $f_{01}$ drives only the qubit.
 
 ![Energy levels of an oscillator and of a transmon. With even spacing, every transition has the same frequency, so the two lowest levels cannot be driven on their own. The transmon's uneven spacing makes the qubit transition unique. Not to scale: in a real transmon, $f_{12}$ is only a few percent below $f_{01}$.](figures/energy-levels){#fig-energy-levels width=85%}
+
+:::: {.chg}
+::: {#fig-sc-chip layout="[[62,38]]" layout-valign="center"}
+![Two transmons and a coupler.](figures/photo-transmons-sung2021.jpg){#fig-sc-transmons}
+
+![A Josephson junction.](figures/photo-junction-vandamme2024.jpg){#fig-sc-junction}
+
+Superconducting qubits under the microscope. (a) Two transmon qubits (blue and red, false colour) with a third transmon between them, used as a tunable coupler (grey) [@sung2021]. The cross-shaped pads are the transmons' capacitors, and their Josephson junctions sit in the small structures at the ends of the arms. Qubit 2 and the coupler have two junctions in a loop, so that their frequencies can be tuned. Green lines carry the drive pulses, pink lines the currents that tune the frequencies, and the brown structures belong to the readout (@sec-readout). (b) A Josephson junction from a different device, seen in an electron microscope: two aluminium wires (Al) cross on a silicon chip (Si), separated by a thin oxide barrier, shown in cross-section in the inset [@vandamme2024]. Scale bars: 1 µm; inset, 50 nm. Both images adapted (cropped) under the [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licence.
+:::
+::::
 
 Transmon frequencies are typically 4-6 GHz, in the microwave range. At room
 temperature, the thermal energy is about a thousand times larger than $hf$, so heat
@@ -115,15 +205,50 @@ alone would excite the qubit at random. Superconducting chips therefore sit in a
 of a degree above absolute zero (@exr-thermal), and cables bring the microwave pulses
 down to them from electronics at room temperature.
 
-Because the qubits are fabricated, no two of them come out identical. Each has its own
-frequency, its own coherence time and its own error rates, which the provider's
-calibration data list qubit by qubit. The couplings between qubits are built into the
-chip, which fixes which pairs can interact. Superconducting gates are fast, taking tens
-to hundreds of nanoseconds, but the quantum state of a qubit typically survives only for
-tens to hundreds of microseconds.
+:::: {.chg}
+Superconducting qubits are fast. A transmon is large for a quantum system, a fraction of
+a millimetre across, and it behaves like a small antenna that couples strongly to
+microwaves, so a pulse of a few tens of nanoseconds is enough for a single-qubit gate.
+The same antenna would pick up any stray radiation, so the chip is shielded, inside a
+metal package and the nested shields of the refrigerator, and its control lines are
+heavily filtered. Ideally, these lines are the qubit's only contact with the outside
+world. The shielding is never perfect, and the quantum state of a qubit typically
+survives for tens to hundreds of microseconds.
+
+Each qubit has its own frequency, and this is how the qubits on a chip are addressed
+separately. Every qubit usually has its own control line, but part of a pulse leaks to
+the neighbouring qubits, and coupled qubits feel each other's drive. Neighbouring qubits
+are therefore given different frequencies, so that a pulse meant for one of them is off
+resonance for the others (@fig-pulse). In many designs, the frequency can also be
+tuned. The Josephson junction is then replaced by a small loop with two junctions, and a
+magnetic field through the loop, set by the current in a nearby control line, changes
+the frequency of the qubit. Tuning lets the electronics move qubits towards each other
+in frequency and away again, which is one way to switch on a two-qubit gate.
+
+Fabrication is never perfectly precise, so no two qubits come out identical. Each has
+its own frequency, its own coherence time and its own error rates. Every pulse must
+therefore be [calibrated]{.gloss key="calibration"}: its frequency, strength and
+duration are measured and adjusted, qubit by qubit and pair by pair, in a long sequence
+of automated experiments. The properties of the qubits also drift, over hours to days,
+so calibration is repeated regularly, and providers publish the resulting calibration
+data for each qubit (@sec-noise-sources).
+
+Two qubits can interact only if they are coupled, directly through a capacitor or
+through a small circuit between them, a [coupler]{.gloss key="coupler"}
+(@fig-sc-chip). The couplings
+are built into the chip, so which pairs can interact is fixed when the chip is made
+(@sec-connectivity). A coupling makes an interaction possible, and the electronics
+decide when it acts. Like a qubit and a pulse, two coupled qubits exchange energy
+efficiently only when their frequencies match. While their frequencies are kept apart,
+or the coupler is tuned to cancel the coupling, they hardly interact. A two-qubit gate
+switches the interaction on for a short time, by tuning the qubits or the coupler, or by
+driving one of the qubits (@sec-driving-gates). The interaction never switches off
+completely, and what remains is a source of errors called
+[crosstalk]{.gloss key="crosstalk"}.
+::::
 
 ::: {#exr-thermal}
-## Why so cold?
+## [Thermal excitation]{.chg}
 In thermal equilibrium at temperature $T$, the excited and ground states of a qubit with
 frequency $f$ are populated in the ratio $p_1/p_0 = e^{-hf/k_B T}$ (the Boltzmann
 factor), where $k_B$ is Boltzmann's constant. Use $h/k_B \approx 0.048$ K/GHz.
@@ -135,25 +260,45 @@ factor), where $k_B$ is Boltzmann's constant. Use $h/k_B \approx 0.048$ K/GHz.
 
 ### Trapped ions {#sec-trapped-ions}
 
+:::: {.chg}
 A trapped-ion qubit is a single [ion]{.gloss key="ion"}, an atom with one electron
-removed, typically of ytterbium, barium or calcium. Two of its internal energy levels
-form the qubit. All ions of an element are exactly the same, so, unlike fabricated
-circuits, the qubits of an ion-trap computer are identical by nature.
+removed, typically of ytterbium, barium or calcium. The electrons of an atom can only be
+in certain states, each with its own energy. These are the atom's *internal* energy
+levels, as opposed to the motion of the atom as a whole, which will also matter below.
+Two of these levels form the qubit. All ions of an element are exactly the same, so,
+unlike fabricated circuits, the qubits of an ion-trap computer are identical by nature.
+As a consequence, they all have the same frequency, and a pulse cannot select one qubit
+by its frequency. Instead, most designs aim a laser beam at a single ion
+(@fig-ion-chain). In exchange, calibration is simpler, since all qubits share their
+frequency and most of their properties.
+::::
 
 The ions are held in vacuum by electric fields in an [ion trap]{.gloss key="ion-trap"},
 lined up in a chain a few micrometres apart, and laser beams slow them down until they
 are almost at rest ([laser cooling]{.gloss key="laser-cooling"}). Laser beams, or in some
-designs microwaves, also drive the gates; a beam focused on one ion rotates that ion's
-qubit. The qubit levels can be chosen so that stray magnetic fields and other
-disturbances hardly affect them, and trapped-ion qubits keep their quantum state for a
-second or more, thousands of times longer than superconducting qubits.
+designs microwaves, also drive the gates. The qubit levels can be chosen so that stray
+magnetic fields and other disturbances hardly affect them, and trapped-ion qubits keep
+their quantum state for a second or more, thousands of times longer than superconducting
+qubits. [@fig-ion-photos shows a trap chip and a chain of ions.]{.chg}
+
+:::: {.chg}
+::: {#fig-ion-photos}
+![An ion-trap chip.](figures/photo-ion-trap-nist.jpg){#fig-ion-trap width=70%}
+
+![A chain of twenty ions.](figures/photo-ion-string-friis2018.png){#fig-ion-string width=100%}
+
+Trapped ions. (a) An ion trap made at NIST: a square gold chip, 7.4 mm on a side, on its circuit board. In experiments, two ions hover above the middle of the chip, and microwaves fed in through the three thick lines at the lower right drive their gates (photo: Y. Colombe/NIST, public domain). (b) Twenty calcium ions in a linear trap at Innsbruck, seen through the light they scatter: each bright spot is one ion, and the chain is about 0.1 mm long [@friis2018]. Adapted (cropped) under the [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licence.
+:::
+::::
 
 The ions are charged and repel each other, so the chain behaves like a row of balls
 joined by springs (@fig-ion-chain). Push one ion, and the whole chain starts to vibrate.
-Like the energy of an atom, the energy of these vibrations comes in discrete units,
-called [phonons]{.gloss key="phonon"}. Every ion takes part in the same vibrations, so
-they act as a shared channel, the [phonon bus]{.gloss key="phonon-bus"}, through which
-any ion can interact with any other. The two-qubit gates are built on it.
+Like the [internal]{.chg} energy of an atom, the energy of these vibrations comes in
+discrete units, called [phonons]{.gloss key="phonon"}. Every ion takes part in the same
+vibrations, so they act as a shared channel, the
+[phonon bus]{.gloss key="phonon-bus"}, through which any ion can interact with any
+other. [The two-qubit gates are built by exploiting this phonon bus, so they can be
+applied to any pair of qubits: the connectivity is all-to-all (@sec-connectivity).]{.chg}
 
 ![A trapped-ion chain as balls joined by springs. The ions repel each other, so they move together; shown here is the vibration in which the whole chain moves as one. A laser beam focused on a single ion drives that ion's qubit.](figures/ion-chain){#fig-ion-chain width=85%}
 
@@ -182,7 +327,7 @@ chip industry, but current devices have at most a few tens of qubits [@burkard20
 
 | Platform | Qubit | Two qubits interact through | Strengths | Main limitations |
 |---|---|---|---|---|
-| Superconducting | energy levels of a circuit on a chip | couplings built into the chip | fast gates; mature fabrication | short coherence; fixed connectivity; qubits not identical |
+| Superconducting | energy levels of a circuit on a chip | couplings built into the chip | fast gates; mature fabrication [technology]{.chg} | short coherence; fixed connectivity; qubits not identical |
 | Trapped ions | energy levels of an ion | shared vibrations of the chain | identical qubits; long coherence; any pair can interact | slow gates; long chains are hard to control |
 | Neutral atoms | energy levels of an atom | excitation to large Rydberg states | many qubits; atoms can be rearranged | slow; atoms get lost and must be replaced |
 | Photonics | a photon | interference and detection | little decoherence; photons travel far | entangling operations often fail; photons get lost |
@@ -192,10 +337,12 @@ chip industry, but current devices have at most a few tens of qubits [@burkard20
 
 ## Native gates and connectivity {#sec-native-gates}
 
-A circuit as written in an SDK is not what runs on a device. The hardware implements a
-small set of [native gates]{.gloss key="native-gate"}, each one a calibrated control
-pulse, and two-qubit gates only between pairs of qubits that are physically coupled.
-Every other gate must be compiled into these.
+[The circuits we write can use any gate that is convenient. A device, however,
+implements only a small set of [native gates]{.gloss key="native-gate"}, each one a
+calibrated pulse or a short sequence of pulses, and it applies two-qubit gates only
+between pairs of qubits that are physically coupled. An additional step, compilation,
+translates every circuit into these native operations. This section explains which gates
+are native and why, and what the translation costs.]{.chg}
 
 ### Pauli rotations {#sec-pauli-rotations}
 
@@ -233,7 +380,10 @@ $$
 e^{-i\theta P/2} = \cos\frac{\theta}{2}\, I - i \sin\frac{\theta}{2}\, P .
 $$ {#eq-pauli-rotation}
 The derivation used only $P^2 = I$, so @eq-pauli-rotation holds for any operator with
-that property, not only for Pauli strings.
+that property. [Such operators are called *involutory*. For Hermitian operators, like
+all those in this chapter, being involutory is the same as being a *reflection*: the
+eigenvalues are $\pm 1$, so the operator flips the sign of one subspace and leaves the
+orthogonal subspace unchanged.]{.chg}
 
 Applied to single Pauli matrices, @eq-pauli-rotation gives the familiar rotations of a
 qubit about the axes of the Bloch sphere, for example
@@ -247,15 +397,25 @@ global phase, every single-qubit unitary can be written as
 $R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)$ for some angles [@nielsen2010, sec. 4.2].
 
 Applied to the two-qubit Pauli string $Z \otimes Z$, @eq-pauli-rotation gives
+
+:::: {.chg}
 $$
 R_{ZZ}(\theta) = e^{-i\theta\, Z\otimes Z/2}
-= \operatorname{diag}\!\left(e^{-i\theta/2}, e^{i\theta/2}, e^{i\theta/2}, e^{-i\theta/2}\right)
+= \begin{pmatrix}
+e^{-i\theta/2} & 0 & 0 & 0 \\
+0 & e^{i\theta/2} & 0 & 0 \\
+0 & 0 & e^{i\theta/2} & 0 \\
+0 & 0 & 0 & e^{-i\theta/2}
+\end{pmatrix}
 $$ {#eq-rzz}
+::::
+
 in the basis $\ket{00}, \ket{01}, \ket{10}, \ket{11}$. $R_{ZZ}$ applies a phase that
 depends only on whether the two bits are equal or different, their parity. That is why
 it can be built from two CNOTs and a single $R_Z$ (@fig-rzz). The first CNOT writes the
 parity of the two bits into the second qubit, $R_Z$ applies the phase, and the second
-CNOT undoes the first.
+CNOT undoes the first. [@sec-compiling extends this construction to rotations about any
+Pauli string, built from native gates.]{.chg}
 
 ![$R_{ZZ}(\theta)$ built from two CNOTs and one $R_Z(\theta)$.](figures/rzz-decomposition){#fig-rzz width=40%}
 
@@ -263,74 +423,210 @@ CNOT undoes the first.
 evolution, which are built from Pauli rotations, and in the parameter-shift rule, which
 gives exact gradients of variational circuits.
 
-### How gates are driven {#sec-driving-gates}
+### [Physical implementation of gates]{.chg} {#sec-driving-gates}
 
-The native gates of a platform are not an arbitrary choice. They are what its physical
-interactions do easily.
+:::: {.chg}
+The native gates of a qubit platform are set by the physical mechanisms that control
+its qubits. This section describes these mechanisms, for single-qubit and for two-qubit
+gates, and the gates they produce.
 
-A single-qubit gate on a superconducting qubit is a short microwave pulse, a few tens of
-nanoseconds long, at the qubit's frequency. Since each qubit has its own frequency, the
-pulse leaves the other qubits almost untouched. The strength and duration of the pulse
-set the rotation angle $\theta$. Its phase, that is, the timing of the microwave
-oscillation relative to a reference clock, sets the axis of rotation, which lies in the
-$xy$-plane of the Bloch sphere at an angle $\varphi$ from the $x$-axis. Laser or
-microwave pulses on trapped ions work in the same way. On both platforms, the natural
-single-qubit gate is therefore a rotation by any angle about any axis in the
-$xy$-plane, which IQM calls $\gate{PRX}$:
+A single-qubit gate on a superconducting qubit is a microwave pulse at the qubit's
+frequency, a few tens of nanoseconds long (@sec-pulses). The area under the envelope of
+the pulse, set by its strength and duration, sets the rotation angle $\theta$
+(@fig-pulse). The phase of the pulse, that is, the timing of the microwave oscillation
+relative to a reference clock in the control electronics, sets the axis of rotation,
+which lies in the $xy$-plane of the Bloch sphere at an angle $\varphi$ from the
+$x$-axis. Delaying the oscillation by a fraction of its period turns the axis by the
+same fraction of a full turn. Laser or microwave pulses on trapped ions work in the same
+way. On both platforms, the natural single-qubit gate is therefore a rotation by any
+angle about any axis in the $xy$-plane, which IQM calls $\gate{PRX}$:
+::::
+
 $$
 \gate{PRX}(\theta,\varphi) = \exp\!\left[-i\frac{\theta}{2}\left(\cos\varphi\, X + \sin\varphi\, Y\right)\right].
 $$ {#eq-prx}
-The operator $\cos\varphi\, X + \sin\varphi\, Y$ squares to the identity, so
-@eq-pauli-rotation applies to it too. For $\varphi = 0$ and $\varphi = \pi/2$, PRX
-reduces to $R_X(\theta)$ and $R_Y(\theta)$. Rotations about the $z$-axis are missing from
-this family, and @sec-virtual-z shows that they need no pulse at all.
+The operator $\cos\varphi\, X + \sin\varphi\, Y$ squares to the identity
+[(@exr-prx)]{.chg}, so @eq-pauli-rotation applies to it too. For $\varphi = 0$ and
+$\varphi = \pi/2$, PRX reduces to $R_X(\theta)$ and $R_Y(\theta)$. [@fig-prx shows how
+$\gate{PRX}$ rotates the Bloch sphere.]{.chg} Rotations about the $z$-axis are missing
+from this family, and @sec-virtual-z shows that they need no pulse at all.
+
+:::: {.chg}
+::: {#fig-prx}
+::: {.content-visible when-format="html"}
+{{< include _prx-widget.qmd >}}
+:::
+::: {.content-visible unless-format="html"}
+![](figures/prx-bloch){width=45%}
+:::
+
+The Bloch sphere rotated by $\gate{PRX}(\theta,\varphi)$, a rotation by $\theta$ about the axis in the $xy$-plane at an angle $\varphi$ from the $x$-axis. The blue path shows where $\ket{0}$ goes as the rotation angle grows from $0$ to $\theta$. In the web version, the figure is interactive: the sliders set $\theta$ and $\varphi$, the blue grid turns with the sphere, and dragging changes the view.
+:::
+
+::: {#exr-prx}
+## The PRX gate
+(a) Show that $(\cos\varphi\, X + \sin\varphi\, Y)^2 = I$. Hint: expand the square,
+and use that $X$ and $Y$ anticommute.
+
+(b) Use @eq-pauli-rotation to write $\gate{PRX}(\theta,\varphi)$ as a $2\times 2$
+matrix.
+
+(c) Check that $\gate{PRX}(\theta,0) = R_X(\theta)$ and
+$\gate{PRX}(\theta,\pi/2) = R_Y(\theta)$. Which rotation is $\gate{PRX}(\theta,\pi)$?
+:::
 
 During a two-qubit gate, the two qubits should interact, and at all other times they
-should not. On most current superconducting devices, a tunable element between two
-neighbouring qubits switches their interaction on for a short time, and holding it on
-for the right time produces a controlled-Z (CZ) gate. Older IBM devices instead have
-couplings that are always on, and drive one qubit at the frequency of its neighbour
-([cross-resonance]{.gloss key="cross-resonance"}). This produces a gate called ECR,
-which is equivalent to a CNOT up to single-qubit rotations.
+should not (@sec-superconducting). Superconducting devices switch the interaction on in
+three main ways, and each gives a different native gate.
+
+- **Tuning two qubits into resonance.** When two coupled qubits have the same frequency,
+  an excitation moves back and forth between them: $\ket{01}$ turns into $\ket{10}$ and
+  back again, while $\ket{00}$ and $\ket{11}$ are unchanged. A complete transfer gives
+  the iSWAP gate, which exchanges $\ket{01}$ and $\ket{10}$ and multiplies both by $i$.
+  Stopping halfway gives its square root, $\sqrt{\gate{iSWAP}}$.
+- **Using the third level.** A transmon has a third level, $\ket{2}$, not far above the
+  qubit levels (@fig-energy-levels). The frequencies can be tuned so that the two-qubit
+  state $\ket{11}$ has the same energy as $\ket{20}$, in which the first transmon holds
+  both excitations. These two states then exchange instead. After one complete exchange,
+  there and back, $\ket{11}$ returns with its sign flipped (up to phases on the single
+  qubits, which are easy to correct), while $\ket{00}$, $\ket{01}$
+  and $\ket{10}$, which have no partner at the same energy, are unchanged. This is the
+  controlled-Z gate, CZ, which flips the sign of $\ket{11}$ only. On most current
+  devices, a tunable coupler between the qubits switches the interaction, and CZ is the
+  most common native gate.
+- **Driving one qubit at its neighbour's frequency.** IBM's older Eagle devices, retired
+  in 2026, have qubits with fixed frequencies and couplings that are always on. A pulse on one qubit at the
+  frequency of its neighbour ([cross-resonance]{.gloss key="cross-resonance"}) makes the
+  neighbour rotate about its $x$-axis, in a direction that depends on the state of the
+  first qubit: a rotation generated by $Z\otimes X$. In practice, it is applied as a gate
+  called ECR, for echoed cross-resonance, which equals a CNOT up to single-qubit gates.
+::::
 
 On trapped ions, laser beams on two ions couple their qubit states to the shared
-vibrations of the chain. Through the phonon bus, the two qubits interact. At the end of
-the gate the vibration returns to its starting state, so that it carries away no
-information about the qubits. This [Mølmer-Sørensen gate]{.gloss key="molmer-sorensen"}
-is a rotation generated by $X \otimes X$, of the form of @eq-pauli-rotation, with an
-angle set by the duration and strength of the laser pulses. It is available at any
-angle, not only as a maximally entangling gate. Combined with single-qubit rotations, it
-gives $R_{ZZ}(\theta)$ at any angle, the native two-qubit gate of current trapped-ion
-devices.
+vibrations of the chain[, the phonon bus of @sec-trapped-ions. The light pushes each ion
+with a force that depends on its qubit state, so the chain vibrates in a way that
+depends on both qubits, and through this vibration]{.chg} the two qubits interact. At
+the end of the gate the vibration returns to its starting state, so that it carries away
+no information about the qubits. This
+[Mølmer-Sørensen gate]{.gloss key="molmer-sorensen"} is a rotation generated by
+$X \otimes X$, of the form of @eq-pauli-rotation, with an angle set by the duration and
+strength of the laser pulses. It is available at any angle, [from small rotations up to
+a maximally entangling one, and between any pair of ions in the chain]{.chg}. Combined
+with single-qubit rotations, it gives $R_{ZZ}(\theta)$ at any angle, the native
+two-qubit gate of current trapped-ion devices.
 
 ### Native gate sets {#sec-native-gate-sets}
 
 @tbl-native lists the native gates of some current devices. Names and details change
-with each hardware generation, but the pattern does not: a continuous family of
-single-qubit rotations and one entangling gate, sometimes two. Together they are
-universal, so any circuit can be compiled into them, at the cost of extra gates. Several
-entries in the table are vendor names for $xy$-plane rotations. IBM's $\sqrt{X}$ is
-$R_X(\pi/2)$ up to a global phase, Google's PhasedXZ is an $xy$-plane rotation followed
-by a $Z$ rotation, and IonQ's GPi and GPi2 are rotations by $\pi$ and $\pi/2$ about an
-axis in the $xy$-plane.
+with each hardware generation, but the pattern [stays the same: a continuous family of
+single-qubit rotations, and one or a few entangling gates]{.chg}. Together they are
+universal, so any circuit can be compiled into them, at the cost of extra gates.
 
+:::: {.chg}
 | Device family | Single-qubit | Two-qubit |
 |---|---|---|
-| IQM (superconducting) | $\gate{PRX}(\theta,\varphi)$ | CZ |
-| IBM (superconducting) | $\sqrt{X}$, $X$ | CZ (newer devices) or ECR (older devices) |
-| Google (superconducting) | PhasedXZ | CZ |
-| Quantinuum (trapped ions) | $R_{xy}(\theta,\varphi)$, the same as $\gate{PRX}$ | $R_{ZZ}(\theta)$, any angle |
-| IonQ (trapped ions) | GPi, GPi2 | $ZZ(\theta)$, any angle |
+| IQM (superconducting) | $\gate{PRX}(\theta,\varphi)$ | CZ; on star devices, also MOVE to and from the central resonator |
+| IBM (superconducting) | $\sqrt{X}$, $X$; experimental: $R_X(\theta)$ | CZ (Heron, Nighthawk); ECR on the retired Eagle devices; experimental: $R_{ZZ}(\theta)$ |
+| Google (superconducting) | PhasedXZ | CZ (Willow); $\sqrt{\gate{iSWAP}}$ and others on the older Sycamore |
+| Quantinuum (trapped ions) | $R_{xy}(\theta,\varphi)$ | $R_{ZZ}(\theta)$, any angle |
+| IonQ (trapped ions) | GPi($\varphi$), GPi2($\varphi$) | MS (Aria), ZZ($\theta$) (Forte), any angle |
 
 : Native gates of some current devices, as of 2026. All of them also offer virtual $Z$ rotations (@sec-virtual-z). {#tbl-native}
 
+The single-qubit gates in the table are rotations about axes in the $xy$-plane under
+different names, in one case followed by a $Z$ rotation:
+
+- $\sqrt{X}$ and $X$ (IBM) are $R_X(\pi/2)$ and $R_X(\pi)$, up to a global phase; IBM's
+  Heron devices also offer $R_X(\theta)$ at any angle, as an experimental option;
+- PhasedXZ (Google) is an $xy$-plane rotation followed by a $Z$ rotation;
+- $R_{xy}(\theta,\varphi)$ (Quantinuum, also called U1q) is $\gate{PRX}(\theta,\varphi)$
+  under another name;
+- GPi($\varphi$) and GPi2($\varphi$) (IonQ) are $\gate{PRX}(\pi,\varphi)$ and
+  $\gate{PRX}(\pi/2,\varphi)$, up to a global phase. IonQ measures angles in *turns*,
+  so that an angle of 1 is a full turn, $2\pi$.
+
+The two-qubit gates are either fixed gates or rotations with an adjustable angle. The
+fixed ones are CZ, $\sqrt{\gate{iSWAP}}$ and ECR. In the basis
+$\ket{00}, \ket{01}, \ket{10}, \ket{11}$,
+$$
+\gate{CZ} = \begin{pmatrix} 1&0&0&0\\ 0&1&0&0\\ 0&0&1&0\\ 0&0&0&-1 \end{pmatrix}, \qquad
+\sqrt{\gate{iSWAP}} = \begin{pmatrix} 1&0&0&0\\ 0&\frac{1}{\sqrt2}&\frac{i}{\sqrt2}&0\\ 0&\frac{i}{\sqrt2}&\frac{1}{\sqrt2}&0\\ 0&0&0&1 \end{pmatrix},
+$$
+and ECR equals a CNOT up to single-qubit gates on both qubits. The adjustable ones are
+$R_{ZZ}(\theta)$ of @eq-rzz, IonQ's ZZ($\theta$), which is the same gate with its angle
+in turns, and the Mølmer-Sørensen gate MS, generated by $X \otimes X$. With an adjustable angle, an
+entangling rotation of any strength is a single native gate, which saves gates in
+circuits built from Pauli rotations.
+::::
+
+### [Compiling into native gates]{.chg} {#sec-compiling}
+
+:::: {.chg}
+Compiling a circuit into native gates relies on an identity that we will use several
+times: conjugating an exponential conjugates its exponent,
+$$
+U e^{A}\, U^\dagger = e^{U A U^\dagger}
+$$ {#eq-conjugation}
+for any unitary $U$ and any square matrix $A$. To see this, expand both sides as power
+series: the inner factors $U^\dagger U = I$ cancel in $(UAU^\dagger)^k = U A^k U^\dagger$.
+For a Pauli rotation, @eq-conjugation says that
+$U e^{-i\theta P/2} U^\dagger = e^{-i\theta\, UPU^\dagger/2}$: conjugated by $U$, a
+rotation about $P$ becomes a rotation about $UPU^\dagger$, by the same angle. To rotate
+about a long Pauli string, it is therefore enough to find a circuit $U$ of native gates
+that turns a simple Pauli matrix, such as $X$ on a single qubit, into that string.
+
+Two kinds of conjugation do the job. First, single-qubit rotations turn one Pauli
+matrix into another; for example, $R_Y(\pi/2)$ turns $Z$ into $X$, and $R_X(-\pi/2)$
+turns $Z$ into $Y$ (@exr-pauli-conjugation). Second, CZ attaches a $Z$ to an $X$ on the
+other qubit:
+$$
+\gate{CZ}\,(I\otimes X)\,\gate{CZ} = Z\otimes X .
+$$
+To check this, apply both sides to a basis state $\ket{ab}$. On the left, the first CZ
+gives a sign $(-1)^{ab}$, $X$ flips $b$, and the second CZ gives a sign
+$(-1)^{a(1-b)}$, so the result is $(-1)^{a}\ket{a,1-b}$, which is the action of
+$Z \otimes X$. Each further CZ on the same qubit attaches one more $Z$: writing
+$\gate{CZ}_{jk}$ for a CZ on qubits $j$ and $k$, and labelling single-qubit Paulis by
+their qubit, conjugation by $\gate{CZ}_{13}\gate{CZ}_{23}$ turns $X_3$ into
+$Z_1 Z_2 X_3$. Single-qubit conjugations then turn each factor into the Pauli matrix we
+need. @fig-pauli-rotation shows the result for $P = Z\otimes Y\otimes X$. Every gate in
+it is native on a device with PRX and CZ, since $R_X(\alpha) = \gate{PRX}(\alpha, 0)$.
+
+![$e^{-i\theta\, Z\otimes Y\otimes X/2}$ built from CZ and $R_X$ rotations. The CZs turn the $X$ rotation on $q_3$ into a rotation about $Z\otimes Z\otimes X$, and the outer $R_X$ rotations on $q_2$ turn its $Z$ into $Y$.](figures/pauli-rotation-cz){#fig-pauli-rotation width=60%}
+
+A rotation about a Pauli string on $k$ qubits costs $2(k-1)$ CZs this way, the same
+number of two-qubit gates as the CNOT construction of @fig-rzz. In @fig-pauli-rotation,
+all CZs act on the qubit that carries the rotation, which suits a device where that
+qubit is coupled to all the others. On a line of qubits, a chain of CNOTs between
+neighbours collects the parity step by step instead, and each CNOT is one CZ between two
+single-qubit rotations (@exr-swap-native).
+
+::: {#exr-pauli-conjugation}
+## Turning one Pauli into another
+Let $P$ and $Q$ be Pauli strings that anticommute, $PQ = -QP$.
+
+(a) Show that $e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ$.
+Hint: write both exponentials with @eq-pauli-rotation, and use $PQP = -Q$.
+
+(b) Use (a) to show that $R_Y(\pi/2)$ turns $Z$ into $X$, and that $R_X(-\pi/2)$ turns
+$Z$ into $Y$.
+
+(c) Check that the circuit of @fig-pauli-rotation implements
+$e^{-i\theta\, Z\otimes Y\otimes X/2}$.
+
+(d) Draw a circuit of CZ gates and $R_X$ or $R_Y$ rotations for $R_{ZZ}(\theta)$, and
+compare it with @fig-rzz.
+:::
+::::
+
 ### Virtual Z gates {#sec-virtual-z}
 
-$\gate{PRX}$ contains no rotations about the $z$-axis, yet circuits are full of them. The
-phase gates $S$ and $T$ are $Z$ rotations, and so are many parametrised gates in
-algorithms. On most devices, superconducting and trapped-ion alike, $Z$ rotations are
-implemented without any pulse, as [virtual Z gates]{.gloss key="virtual-z"}. The trick
-follows from Pauli algebra.
+$\gate{PRX}$ contains no rotations about the $z$-axis, yet circuits are full of them[,
+for example in the decomposition $R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)$ of a general
+single-qubit gate (@sec-pauli-rotations) and in many parametrised gates of
+algorithms]{.chg}. On most devices, superconducting and trapped-ion alike, $Z$ rotations
+are implemented without any pulse, as [virtual Z gates]{.gloss key="virtual-z"}. The
+trick follows from Pauli algebra.
 
 Conjugation by a $Z$ rotation rotates $X$ and $Y$ within the $xy$-plane:
 $$
@@ -339,8 +635,8 @@ R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X
 $$
 (@exr-virtual-z). By the angle-addition formulas, it therefore maps
 $\cos\varphi\, X + \sin\varphi\, Y$ to $\cos(\varphi+\alpha)\, X + \sin(\varphi+\alpha)\, Y$.
-Conjugation also commutes with the exponential, $U e^{A} U^\dagger = e^{UAU^\dagger}$ for
-any unitary $U$, so conjugating a $\gate{PRX}$ pulse by a $Z$ rotation shifts its phase:
+[By @eq-conjugation,]{.chg} conjugating a $\gate{PRX}$ pulse by a $Z$ rotation
+[therefore]{.chg} shifts its phase:
 $$
 R_Z(\alpha)\, \gate{PRX}(\theta,\varphi)\, R_Z(\alpha)^\dagger = \gate{PRX}(\theta,\varphi+\alpha).
 $$ {#eq-virtual-z}
@@ -357,9 +653,10 @@ Now take a circuit with a $Z$ rotation on one qubit (@fig-vz-before), and move t
 rotation forward in time. Each $\gate{PRX}$ it passes gets its phase shifted by
 $-\alpha$. CZ is diagonal, like $R_Z$, so the two commute and the $Z$ rotation passes
 through unchanged. At the end, the $Z$ rotation sits just before a measurement in the
-computational basis. There it only changes the phases of $\ket{0}$ and $\ket{1}$, not the
-probabilities of measuring them, so it can be dropped. The result (@fig-vz-after)
-contains no $Z$ rotation at all.
+computational basis. [A measurement only asks whether each qubit is in $\ket{0}$ or in
+$\ket{1}$ (@sec-qubit-needs), and the $Z$ rotation]{.chg} only changes the phases of
+$\ket{0}$ and $\ket{1}$, not the probabilities of measuring them, so it can be dropped.
+The result (@fig-vz-after) contains no $Z$ rotation at all.
 
 ::: {#fig-virtual-z layout-ncol=2}
 ![With a $Z$ rotation on $q_0$.](figures/virtual-z-before){#fig-vz-before}
@@ -385,9 +682,9 @@ That is one pulse, followed by a $Z$ rotation that is virtual.
 
 ::: {#exr-virtual-z}
 ## Virtual Z gates
-(a) Show that $R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y$ and
-$R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X$. Hint: write
-$R_Z(\alpha)$ with @eq-pauli-rotation, and use the products of Pauli matrices.
+(a) [Use @exr-pauli-conjugation to show]{.chg} that
+$R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y$ and
+$R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X$.
 
 (b) Write the Hadamard gate, up to a global phase, as a single $\gate{PRX}$ pulse
 followed by a $Z$ rotation.
@@ -434,16 +731,34 @@ and simplifies the result. We return to its cost in later chapters.
 ## The cost of distance
 (a) Check @fig-swap on the four computational basis states.
 
-(b) On a line of $n$ qubits, how many CNOTs does a CNOT between the two end qubits cost
-if the qubits may stay in their new positions afterwards? And if they must be returned
-to their original positions?
+(b) [We want to implement a CNOT between the qubits at opposite ends of a line of $n$
+qubits. If the qubits may stay in their new positions after the operation, how many
+CNOTs are needed? And if they must be returned to their original positions?]{.chg}
 :::
 
-## Where noise comes from {#sec-noise-sources}
+:::: {.chg}
+::: {#exr-swap-native}
+## SWAP from native gates
+On a device whose native gates are $\gate{PRX}$ and CZ, a SWAP must be built from these.
+
+(a) Let $A$ be a single-qubit unitary. Write
+$\gate{CZ} = \ket{0}\bra{0}\otimes I + \ket{1}\bra{1}\otimes Z$, and show that
+$(I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)$ applies $AZA^\dagger$ to the second
+qubit if the first is in $\ket{1}$, and does nothing if it is in $\ket{0}$.
+
+(b) Find a $\gate{PRX}$ rotation $A$ with $AZA^\dagger = X$ (@exr-pauli-conjugation
+helps), and write a CNOT as one CZ and two $\gate{PRX}$ gates.
+
+(c) Using @fig-swap, write a SWAP with three CZs and $\gate{PRX}$ gates only. How many
+$\gate{PRX}$ pulses does it need?
+:::
+::::
+
+## [Sources of noise]{.chg} {#sec-noise-sources}
 
 Every wire or laser beam used to control a qubit is also a way in for disturbances. This
-section describes in words what can go wrong, and the next chapter gives each effect its
-mathematical description.
+section describes in words what can go wrong[; the next chapter goes deeper into the
+mathematical description of noise and its effects]{.chg}.
 
 The most important effect is that an excited qubit loses its energy. Left alone,
 $\ket{1}$ decays to $\ket{0}$, a process called [relaxation]{.gloss key="relaxation"}.
@@ -472,9 +787,9 @@ effects together with the remaining ones.
 | the relative phase of a superposition wanders | fluctuating magnetic fields | dephasing ($T_2$) |
 | a gate rotates by the wrong amount | a pulse slightly too long | coherent error |
 | the qubit leaves the qubit levels | a pulse pushes a transmon into its third level (@fig-energy-levels) | [leakage]{.gloss key="leakage"} |
-| an operation on one qubit disturbs another | couplings that are never fully off; a laser beam that partly hits the next ion | [crosstalk]{.gloss key="crosstalk"} |
+| an operation on one qubit disturbs another | couplings that are never fully off; a laser beam that partly hits the next ion | crosstalk |
 | the readout is wrong | 0 reported as 1, or the reverse | readout error |
-| the device drifts | properties that change over hours | ([recalibration]{.gloss key="calibration"}) |
+| the device drifts | properties that change over hours | (recalibration) |
 
 : What can go wrong in a quantum device. {#tbl-noise}
 
@@ -487,10 +802,12 @@ For now, read it as one minus the probability that the operation goes wrong; the
 chapter gives the precise definition. Typical values on current devices are
 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for
 readout, so two-qubit gates and readout are the weakest links.
+<!-- L02-LINK: when the L02 chapter exists, link "the next chapter gives the precise
+definition" to the definition of fidelity there. -->
 
 ## Measurement {#sec-measurement}
 
-### How readout works {#sec-readout}
+### [Readout]{.chg} {#sec-readout}
 
 On superconducting devices, each qubit is coupled to a small resonant circuit, its
 readout resonator, whose frequency shifts slightly depending on whether the qubit is in
@@ -502,9 +819,9 @@ scatters light and appears bright, while an ion in the other state stays dark. A
 or photon detectors count the light from each ion, and this fluorescence readout takes
 from a hundred microseconds to a millisecond.
 
-On both platforms, a measurement returns one bit per qubit, in the computational basis.
-It projects each qubit onto $\ket{0}$ or $\ket{1}$, and measuring in another basis means
-first rotating that basis onto the computational basis.
+On both platforms, a measurement returns one bit per qubit, in the computational basis
+[(@sec-qubit-needs)]{.chg}. It projects each qubit onto $\ket{0}$ or $\ket{1}$, and
+measuring in another basis means first rotating that basis onto the computational basis.
 
 ### Shots and expectation values {#sec-shots}
 
@@ -515,10 +832,9 @@ circuit many times.
 
 Most quantities in this course are expectation values $\langle P\rangle$ of Pauli
 strings. To estimate one, we rotate each qubit so that its factor of $P$ becomes $Z$
-(nothing for $Z$, a Hadamard for $X$, and $S^\dagger$ followed by a Hadamard for $Y$),
-and measure. A $Z$ measurement with outcome bit $b$ corresponds to the eigenvalue
-$(-1)^b$ of $Z$, so the outcome of $P$ is the product of these signs over the qubits on
-which $P$ acts:
+[(nothing for $Z$, a Hadamard for $X$, and $R_X(\pi/2)$ for $Y$)]{.chg}, and measure.
+A $Z$ measurement with outcome bit $b$ corresponds to the eigenvalue $(-1)^b$ of $Z$, so
+the outcome of $P$ is the product of these signs over the qubits on which $P$ acts:
 $$
 s = (-1)^{\sum_{j:\, P_j \neq I} b_j} = \pm 1 .
 $$
@@ -529,37 +845,6 @@ $$
 $$ {#eq-sample-mean}
 is our estimate of $\langle P\rangle$. A rule like this, which turns data into an
 estimate, is called an [estimator]{.gloss key="estimator"}.
-
-### Timescales {#sec-timescales}
-
-@tbl-timescales collects typical timescales of current devices. They vary between
-devices and improve every year, so read them as orders of magnitude.
-
-| Time per | Superconducting | Trapped ions |
-|---|---|---|
-| single-qubit gate | 20-60 ns | 10-150 µs |
-| two-qubit gate | 20-700 ns | 50 µs-1 ms |
-| readout | 0.5-2.5 µs | 0.1-1 ms |
-| coherence ($T_2$) | 20-350 µs | about 1 s or more |
-| shot (reset, circuit, readout) | 0.3-4 ms | 10 ms to several seconds |
-| switching to a new circuit | much longer than a shot, plus any queue | the same |
-
-: Typical timescales of current devices, as orders of magnitude. {#tbl-timescales}
-
-The coherence time divided by the two-qubit gate time is between about a thousand and
-ten thousand on both platforms, although their speeds differ by a factor of about a
-thousand. Coherence alone would allow circuits of thousands of gates in sequence. In
-practice, gate errors of 0.1-1% per two-qubit gate limit useful circuits much earlier.
-
-Where the time goes differs between the platforms. On superconducting devices, the gates
-are fast, and most of a shot is spent measuring the qubits and resetting them to
-$\ket{0}$; devices run hundreds to thousands of shots per second. Switching to a
-different circuit costs much more, since the circuit must be compiled and loaded into
-the control electronics, and on a shared cloud device it may wait in a queue. Many shots
-of one circuit are cheap, many different circuits are not. On trapped ions, the gates
-themselves are slow, and each shot also includes cooling the ions and, on some devices,
-moving them between zones, which takes most of the time. There, the number of shots is
-the main cost.
 
 ### Shot noise {#sec-shot-noise}
 
@@ -584,16 +869,51 @@ The error is largest when $\langle P\rangle = 0$, where every shot is a coin fli
 vanishes when $\langle P\rangle = \pm 1$, where every shot gives the same result. It
 decreases only as $1/\sqrt{N}$, so each extra digit of precision costs a hundred times
 more shots. To estimate an expectation value near zero with a standard error of 0.01,
-for example, we need $N = 1/0.01^2 = 10^4$ shots. By @tbl-timescales, that takes seconds
-to a minute on a superconducting device, and from a quarter of an hour to a few hours
-on an ion trap.
+for example, we need $N = 1/0.01^2 = 10^4$ shots. [@sec-timescales shows how long they
+take on each platform.]{.chg}
 
-Shot noise is not the only error in an estimated expectation value. Noise in the device
-also shifts $\langle P\rangle$ itself, usually towards zero, and more shots cannot
-remove that shift; they only estimate the shifted value more precisely. The next chapter
-separates these two kinds of error. Tutorial 1 practises @eq-sample-mean and
-@eq-standard-error in code:
+[Shot noise is one of two kinds of error in an estimated expectation value.]{.chg}
+Noise in the device also shifts $\langle P\rangle$ itself, usually towards zero, and
+more shots cannot remove that shift; they only estimate the shifted value more
+precisely. The next chapter separates these two kinds of error. Tutorial 1 practises
+@eq-sample-mean and @eq-standard-error in code:
 [open the T1 notebook in Colab]({{< var colab >}}/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb).
+
+### Timescales {#sec-timescales}
+
+@tbl-timescales collects typical timescales of current devices. They vary between
+devices and improve every year, so read them as orders of magnitude.
+
+| Time per | Superconducting | Trapped ions |
+|---|---|---|
+| single-qubit gate | 20-60 ns | 10-150 µs |
+| two-qubit gate | 20-700 ns | 50 µs-1 ms |
+| readout | 0.5-2.5 µs | 0.1-1 ms |
+| coherence ($T_2$) | 20-350 µs | about 1 s or more |
+| shot (reset, circuit, readout) | 0.3-4 ms | 10 ms to several seconds |
+| switching to a new circuit | much longer than a shot, plus any queue | the same |
+
+: Typical timescales of current devices, as orders of magnitude. {#tbl-timescales}
+
+The coherence time divided by the two-qubit gate time is between about a thousand and
+ten thousand on both platforms, although their speeds differ by a factor of about a
+thousand. [Both platforms thus meet DiVincenzo's requirement of coherence times that are
+long compared with gate times (@sec-qubit-needs), by a similar margin and in opposite
+ways: superconducting qubits with fast gates, trapped ions with long coherence.]{.chg}
+Coherence alone would allow circuits of thousands of gates in sequence. In practice,
+gate errors of 0.1-1% per two-qubit gate limit useful circuits much earlier.
+
+Where the time goes differs between the platforms. On superconducting devices, the gates
+are fast, and most of a shot is spent measuring the qubits and resetting them to
+$\ket{0}$; devices run hundreds to thousands of shots per second. Switching to a
+different circuit costs much more, since the circuit must be compiled and loaded into
+the control electronics, and on a shared cloud device it may wait in a queue. Many shots
+of one circuit are cheap[; many different circuits are expensive]{.chg}. On trapped
+ions, the gates themselves are slow, and each shot also includes cooling the ions and,
+on some devices, moving them between zones, which takes most of the time. There, the
+number of shots is the main cost. [For the $10^4$ shots of the example in
+@sec-shot-noise, this means between a few seconds and a minute on a superconducting
+device, and from a few minutes to several hours on an ion trap.]{.chg}
 
 ::: {#exr-shot-budget}
 ## A shot budget
@@ -606,27 +926,75 @@ error of at most 0.005. Assume the worst case, $\langle P\rangle = 0$. Using
 trap. Which part of the time dominates on each?
 :::
 
-## Summary {#sec-l01-summary}
+:::: {.chg}
+## More exercises {#sec-l01-exercises}
 
-- Noise limits the size of circuits on current devices. Error correction will lift the
-  limit, at a cost of about a thousand physical qubits per logical qubit.
-- A qubit is two controllable levels of a larger system that keep their quantum state
-  long enough. Isolation and control pull in opposite directions.
-- Superconducting qubits are fast, each has its own frequency, and their couplings are
-  fixed. Trapped ions are identical, long-lived and fully connected through their shared
-  vibrations, but slow.
-- Native gates are what the physics does easily: rotations about axes in the
-  $xy$-plane and one entangling gate. $Z$ rotations are virtual and free, and two-qubit
-  gates between distant qubits cost SWAPs.
-- A measurement gives one bit per qubit. The standard error of a Pauli expectation value
-  is $\sqrt{(1-\langle P\rangle^2)/N}$, so precision costs shots, and shots cost time.
+These exercises combine material from several sections of the chapter.
+
+::: {#exr-error-budget}
+## An error budget
+A circuit has 100 single-qubit gates and 40 two-qubit gates, and ends by measuring 10
+qubits. Assume that each operation fails independently, with probability $10^{-4}$ for a
+single-qubit gate, $5\times10^{-3}$ for a two-qubit gate and $10^{-2}$ for a
+measurement. $Z$ rotations are virtual and do not count.
+
+(a) Estimate the probability that a run of the circuit has no error at all. Which kind
+of operation contributes most to the failures?
+
+(b) On a device with limited connectivity, 10 of the 40 two-qubit gates act on qubits
+that are not neighbours, and each of them needs one SWAP first. Count each SWAP as three
+two-qubit gates, and redo (a).
+
+(c) Roughly how many two-qubit gates can a circuit contain before the probability of a
+run without error drops below one half? Hint: $(1-p)^n \approx e^{-np}$ for small $p$.
+:::
+
+::: {#exr-readout-bias}
+## Readout errors bias the estimate
+Suppose that the readout of each qubit reports the wrong bit with probability $p$,
+independently in every shot and for both outcomes.
+
+(a) Show that the recorded sign $s$ of a single-qubit $Z$ measurement has expectation
+value $(1-2p)\langle Z\rangle$.
+
+(b) For a Pauli string $P$ acting on $k$ qubits, show that the recorded sign has
+expectation value $(1-2p)^k\langle P\rangle$.
+
+(c) Take $p = 0.02$, $k = 4$ and $\langle P\rangle = 0.5$. Compare the bias of $\bar s$
+with its standard error (@eq-standard-error) for $N = 10^3$ and for $N = 10^5$ shots.
+When do more shots stop helping?
+
+(d) If $p$ is known, how can the estimate be corrected? What does the correction do to
+the standard error?
+:::
+
+::: {#exr-measure-basis}
+## Measuring in other bases
+A device has the native gates $\gate{PRX}$ and CZ, and measures in the computational
+basis.
+
+(a) Which $\gate{PRX}$ pulses must be applied before the measurement to estimate
+$\langle X\otimes Y\otimes Z\rangle$? Hint: on each qubit, you need a rotation $U$ with
+$U P_j U^\dagger = Z$; see @exr-pauli-conjugation.
+
+(b) Can $\langle X\otimes I\rangle$ and $\langle X\otimes X\rangle$ be estimated from the
+same shots? And $\langle X\otimes X\rangle$ and $\langle Z\otimes Z\rangle$, if only
+single-qubit rotations are allowed before the measurement?
+:::
+::::
 
 ## Further reading {#sec-l01-reading}
 
-For superconducting qubits, @krantz2019 is a thorough guide written for engineers; for
-trapped ions, see @bruzewicz2019. @henriet2020, @slussarenko2019 and @burkard2023
-review neutral atoms, photonics and spin qubits. @preskill2018 introduced the NISQ era,
-and @nielsen2010 [chapter 4] covers the circuit model.
+[For a first look at the hardware, with photos and no maths, @brubaker2026 visits
+laboratories building trapped-ion, neutral-atom and superconducting machines. For
+superconducting qubits, @kjaergaard2020 surveys the state of the field with readable
+introductory sections, and @roth2023 builds up the transmon step by step for readers
+with an engineering background. For trapped ions, @bernardini2024 is an introduction
+written for students and organised around the DiVincenzo criteria.]{.chg} For more
+depth, @krantz2019 is a thorough guide to superconducting qubits written for
+engineers, and @bruzewicz2019 reviews trapped ions. @henriet2020, @slussarenko2019 and
+@burkard2023 review neutral atoms, photonics and spin qubits. @preskill2018 introduced
+the NISQ era, and @nielsen2010 [chapter 4] covers the circuit model.
 
 ## References {.unnumbered}
 

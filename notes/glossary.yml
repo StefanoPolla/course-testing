@@ -7,6 +7,12 @@ glossary:
   qec:
     term: quantum error correction
     def: "Encoding quantum information redundantly in many physical qubits, so that errors can be detected and corrected without disturbing the encoded information."
+  depth:
+    term: depth
+    def: "The number of layers of gates in a circuit that must run one after another. Gates on different qubits can share a layer."
+  error-mitigation:
+    term: error mitigation
+    def: "Methods that reduce the effect of noise on estimated quantities without correcting the errors, typically by running extra or modified circuits and combining their results. They cost extra shots."
   physical-qubit:
     term: physical qubit
     def: "A qubit as implemented in hardware, for example one transmon or one ion, with all its imperfections."
@@ -16,6 +22,9 @@ glossary:
   threshold:
     term: threshold
     def: "The physical error rate per operation below which error correction helps: below it, larger codes give lower logical error rates."
+  digital-qc:
+    term: digital quantum computer
+    def: "A quantum computer that runs circuits: sequences of gates from a fixed universal set, applied to qubits and followed by measurements. Also called gate-based, as opposed to analog devices that imitate the time evolution of a physical system directly."
   coherence-time:
     term: coherence time
     def: "How long a qubit keeps its quantum state, in particular a superposition, before noise from its surroundings destroys it."
@@ -25,12 +34,18 @@ glossary:
   resonance:
     term: resonance
     def: "Radiation drives a transition between two energy levels only when its frequency matches their energy difference divided by Planck's constant. This is how individual qubits are addressed."
+  pulse:
+    term: pulse
+    def: "A short burst of microwave or laser radiation at a chosen frequency, switched on and off smoothly, used to drive a qubit. Its frequency selects which qubit responds; its area and phase set the rotation."
   josephson-junction:
     term: Josephson junction
     def: "A thin insulating barrier between two superconductors. In a circuit it makes the energy levels unevenly spaced, which is what turns the circuit into a usable qubit."
   transmon:
     term: transmon
     def: "The most common superconducting qubit: a small circuit with a Josephson junction, whose two lowest energy levels form the qubit."
+  coupler:
+    term: coupler
+    def: "A circuit element between two superconducting qubits through which they interact. A tunable coupler can switch the interaction on and off."
   dilution-refrigerator:
     term: dilution refrigerator
     def: "A refrigerator that reaches about 10 millikelvin, cold enough that heat no longer excites superconducting qubits."
