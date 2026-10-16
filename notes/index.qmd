@@ -2,12 +2,11 @@
 tutorial-dates: ["Fri 30 Oct", "Fri 6 Nov", "Fri 13 Nov", "Fri 20 Nov", "Fri 27 Nov", "Fri 4 Dec", "Fri 11 Dec"]
 ---
 
-# [About these notes]{.chg} {#sec-about .unnumbered .web-only}
+# About these notes {#sec-about .unnumbered .web-only}
 
 Lecture notes for *Near-term Quantum Computing* (UvA, 2026-2027), one chapter per
-lecture. [Chapters are added as the course goes on.]{.chg}
+lecture. Chapters are added as the course goes on.
 
-::: {.chg}
 ## How to use these notes {.unnumbered}
 
 - **Chapters.** Each chapter follows one lecture and goes into more detail than the
@@ -21,14 +20,12 @@ lecture. [Chapters are added as the course goes on.]{.chg}
 - **PDF.** The download icon next to the title gives all published chapters as one
   PDF, with the same numbering, for printing or reading offline. Glossary terms are in
   italics there, and the glossary is an appendix.
-:::
 
 ## Prerequisites {.unnumbered}
 
 The notes assume basic quantum mechanics and the circuit model: Dirac notation, Pauli
 matrices, density matrices, expectation values and their statistical error.
 
-::: {.chg}
 The tutorials are Jupyter notebooks in Python, which run in Google Colab. They assume
 basic Python (variables, functions, loops, lists and dictionaries) and a little
 familiarity with Jupyter notebooks, NumPy arrays and Matplotlib plots. If any of these
@@ -39,9 +36,7 @@ is new to you, these short introductions cover what we need:
 - Jupyter notebooks in Colab: [Overview of Colab](https://colab.research.google.com/notebooks/basic_features_overview.ipynb);
 - NumPy: [NumPy: the absolute basics for beginners](https://numpy.org/doc/stable/user/absolute_beginners.html);
 - Matplotlib: [Quick start guide](https://matplotlib.org/stable/users/explain/quick_start.html).
-:::
 
-::: {.chg}
 ## Tutorials {.unnumbered}
 
 Each notebook opens in Google Colab. To keep your work, use **File → Save a copy in
@@ -51,6 +46,5 @@ released.
 
 ::: {#tutorial-table}
 :::
-:::
 
-Version: 2026-10-16 (draft).
+Version: 2026-10-16.

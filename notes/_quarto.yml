@@ -34,7 +34,6 @@ filters:
   - tutorials.lua
   - hints.lua
   - glossary.lua
-  - changes.lua  # temporary: review highlighting
 crossref:
   chapters: true
 

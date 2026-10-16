@@ -33,7 +33,6 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `copy_notebooks.py` | Pre-render step: copies the tutorial notebooks into `downloads/` (git-ignored), published with the site so the tutorial table can offer direct downloads |
 | `styles.css`, `preamble.tex` | Web and PDF styling: exercises in a box, hint buttons (PDF: `tcolorbox`) |
 | `_prx-widget.qmd` | Interactive Bloch sphere for PRX (raw HTML and JavaScript, web only), included in L1 |
-| `changes.lua` | Temporary: colours text marked `[...]{.chg}` or `::: {.chg}` during a review round; remove it and the markers once the changes are accepted |
 | `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths) |
 | `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
 | `macros.tex` + `_macros.qmd` | LaTeX macros, once for the PDF and once for the web; keep them in step |
