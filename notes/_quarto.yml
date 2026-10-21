@@ -16,7 +16,7 @@ book:
   date: "2026-10-16"
   chapters:
     - index.qmd
-    - l01-platforms-and-measurement.qmd
+    - L1-platforms-and-measurement.qmd
   appendices:
     - exercises.qmd
     - glossary.qmd

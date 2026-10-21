@@ -818,7 +818,7 @@ For now, read it as one minus the probability that the operation goes wrong; the
 chapter gives the precise definition. Typical values on current devices are
 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for
 readout, so two-qubit gates and readout are the weakest links.
-<!-- L02-LINK: when the L02 chapter exists, link "the next chapter gives the precise
+<!-- L2-LINK: when the L2 chapter exists, link "the next chapter gives the precise
 definition" to the definition of fidelity there. -->
 
 ## Measurement {#sec-measurement}
@@ -950,7 +950,7 @@ dominates on each?
     ::::
 :::
 
-## More exercises {#sec-l01-exercises}
+## More exercises {#sec-L1-exercises}
 
 These exercises combine material from several sections of the chapter.
 
@@ -1029,7 +1029,7 @@ same shots? And $\langle X\otimes X\rangle$ and $\langle Z\otimes Z\rangle$, if 
 single-qubit rotations are allowed before the measurement?
 :::
 
-## Further reading {#sec-l01-reading}
+## Further reading {#sec-L1-reading}
 
 For superconducting qubits, @krantz2019 is a thorough guide written for engineers; for
 trapped ions, see @bruzewicz2019. @henriet2020, @slussarenko2019 and @burkard2023

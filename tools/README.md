@@ -23,9 +23,9 @@ Run from the repository root with any Python 3.11 or newer:
 ```sh
 python3 tools/release.py check                      # this repository (TODOs are warnings)
 python3 tools/release.py diff ../ntqc               # drift: what differs, file by file
-python3 tools/release.py diff ../ntqc --show notes/l02-noise.qmd
-python3 tools/release.py copy ../ntqc notes/l02-noise.qmd notes/figures --dry-run
-python3 tools/release.py copy ../ntqc notes/l02-noise.qmd notes/figures
+python3 tools/release.py diff ../ntqc --show notes/L2-noise.qmd
+python3 tools/release.py copy ../ntqc notes/L2-noise.qmd notes/figures --dry-run
+python3 tools/release.py copy ../ntqc notes/L2-noise.qmd notes/figures
 python3 tools/release.py check ../ntqc --release    # release rules: errors, not warnings
 ```
 
