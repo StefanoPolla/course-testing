@@ -47,4 +47,4 @@ released.
 ::: {#tutorial-table}
 :::
 
-Version: 2026-10-16.
+Version: 2026-10-21.

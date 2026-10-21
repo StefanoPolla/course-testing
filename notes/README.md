@@ -1,7 +1,7 @@
 # Lecture notes (test)
 
 The Quarto lecture notes, built as a website with a PDF download. One chapter per
-lecture (`lNN-<topic>.qmd`); so far Lecture 1. Releasing to the ntqc repository: see
+lecture (`LN-<topic>.qmd`); so far Lectures 1 and 2. Releasing to the ntqc repository: see
 [../tools/README.md](../tools/README.md). It was moved here from the format trial in the planning
 repository (`agent-sandbox/lecture-notes-format-trial/`).
 
@@ -26,17 +26,18 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `_quarto.yml` | Book structure (the published chapters), web and PDF settings |
 | `_quarto-staging.yml` | Staging-only settings (`noindex`); not copied to the release |
 | `_variables.yml` | Repository name and Colab base URL, used as `{{< var colab >}}`; never write the repository name directly in the text |
-| `index.qmd`, `L1-platforms-and-measurement.qmd`, `exercises.qmd`, `glossary.qmd` | Content |
-| `exercises.lua` | Fills the Exercises appendix; also removes every chapter whose heading has the class `.web-only` (About page, Exercises) from the PDF with the exercises (`exr-` boxes) of every `lNN-*.qmd` chapter listed in `_quarto.yml`, with links back; exercises must not contain labelled equations or figures |
+| `index.qmd`, `L1-platforms-and-measurement.qmd`, `L2-noise.qmd`, `exercises.qmd`, `glossary.qmd` | Content |
+| `exercises.lua` | Fills the Exercises appendix with the exercises (`exr-` boxes) of every `LN-*.qmd` chapter listed in `_quarto.yml`, with links back; exercises must not contain labelled equations or figures. Also removes every chapter whose heading has the class `.web-only` (About page, Exercises) from the PDF, keeping Quarto's file markers so that the following chapter stays numbered |
 | `tutorials.lua` | Builds the tutorial table on the index page from `../tutorials/tutorial-NN/` (`*_qiskit.ipynb`, `*_qiskit_solutions.ipynb`) and the dates in `index.qmd`; it updates itself when a notebook is added |
 | `hints.lua` | Exercise hints: `::: {.hint}` becomes a "Hint" button on the web and an inline "Hint:" in the PDF |
 | `copy_notebooks.py` | Pre-render step: copies the tutorial notebooks into `downloads/` (git-ignored), published with the site so the tutorial table can offer direct downloads |
 | `styles.css`, `preamble.tex` | Web and PDF styling: exercises in a box, hint buttons (PDF: `tcolorbox`) |
 | `_prx-widget.qmd` | Interactive Bloch sphere for PRX (raw HTML and JavaScript, web only), included in L1 |
+| `_channel-widget.qmd` | Interactive Bloch ball under single-qubit channels (web only), included in L2 |
 | `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths) |
 | `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
 | `macros.tex` + `_macros.qmd` | LaTeX macros, once for the PDF and once for the web; keep them in step |
-| `references.bib` | Bibliography |
+| `references.bib` | Bibliography. Each chapter ends with its own reference list on the web only; the PDF has one list at the end (`reference-section-title` in `_quarto.yml`) |
 | `figures/CREDITS.txt` | Source and licence of every third-party image in `figures/` (CC BY requires credit and a note of changes) |
 
 ## Deploying to GitHub Pages

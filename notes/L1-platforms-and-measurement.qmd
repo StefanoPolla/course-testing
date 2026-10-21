@@ -772,8 +772,8 @@ $\gate{PRX}$ pulses does it need?
 ## Sources of noise {#sec-noise-sources}
 
 Every wire or laser beam used to control a qubit is also a way in for disturbances. This
-section describes in words what can go wrong; the next chapter goes deeper into the
-mathematical description of noise and its effects.
+section describes in words what can go wrong; the next chapter (@sec-noise) goes deeper
+into the mathematical description of noise and its effects.
 
 The most important effect is that an excited qubit loses its energy. Left alone,
 $\ket{1}$ decays to $\ket{0}$, a process called [relaxation]{.gloss key="relaxation"}.
@@ -788,7 +788,7 @@ fluctuating magnetic fields or electric charges near the qubit, the phase wander
 the superposition gradually becomes a random mixture of $\ket{0}$ and $\ket{1}$. This is
 called [dephasing]{.gloss key="dephasing"}. The time over which a qubit relaxes is called
 $T_1$, and the time over which it dephases is called $T_2$. These are the coherence times
-quoted for every device, and the next chapter defines them precisely.
+quoted for every device, and @def-t1-t2 defines them precisely.
 
 A third kind of error is a gate that rotates by the wrong amount, because a pulse is
 slightly too long, too short or off axis, or because a laser's intensity fluctuates.
@@ -798,14 +798,14 @@ effects together with the remaining ones.
 
 | What happens | Example | Name in the next chapter |
 |---|---|---|
-| $\ket{1}$ decays to $\ket{0}$ | energy absorbed by defects in the chip | relaxation ($T_1$) |
-| the relative phase of a superposition wanders | fluctuating magnetic fields | dephasing ($T_2$) |
-| a gate rotates by the wrong amount | a pulse slightly too long | coherent error |
-| the qubit leaves the qubit levels | a pulse pushes a transmon into its third level (@fig-energy-levels) | [leakage]{.gloss key="leakage"} |
-| an operation on one qubit disturbs another | couplings that are never fully off; a laser beam that partly hits the next ion | crosstalk |
-| the readout is wrong | 0 reported as 1, or the reverse | readout error |
-| many qubits fail at once | a cosmic ray deposits energy in the chip and disturbs all qubits nearby | correlated errors |
-| the device drifts | properties that change over hours | (recalibration) |
+| $\ket{1}$ decays to $\ket{0}$ | energy absorbed by defects in the chip | relaxation ($T_1$, @sec-t1-t2) |
+| the relative phase of a superposition wanders | fluctuating magnetic fields | dephasing ($T_2$, @sec-t1-t2) |
+| a gate rotates by the wrong amount | a pulse slightly too long | coherent error (@sec-gate-errors) |
+| the qubit leaves the qubit levels | a pulse pushes a transmon into its third level (@fig-energy-levels) | [leakage]{.gloss key="leakage"} (@sec-gate-errors) |
+| an operation on one qubit disturbs another | couplings that are never fully off; a laser beam that partly hits the next ion | crosstalk (@sec-multi-qubit-noise) |
+| the readout is wrong | 0 reported as 1, or the reverse | readout error (@sec-readout-errors) |
+| many qubits fail at once | a cosmic ray deposits energy in the chip and disturbs all qubits nearby | correlated errors (@sec-multi-qubit-noise) |
+| the device drifts | properties that change over hours | (recalibration, @sec-budgets) |
 
 : What can go wrong in a quantum device. {#tbl-noise}
 
@@ -814,12 +814,10 @@ calibration data, the error rates of each qubit and gate at the last calibration
 data are a snapshot, and a few hours later the device may behave differently.
 
 Providers summarise the quality of each operation by a [fidelity]{.gloss key="fidelity"}.
-For now, read it as one minus the probability that the operation goes wrong; the next
-chapter gives the precise definition. Typical values on current devices are
+For now, read it as one minus the probability that the operation goes wrong;
+@def-fidelity gives the precise definition. Typical values on current devices are
 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for
 readout, so two-qubit gates and readout are the weakest links.
-<!-- L2-LINK: when the L2 chapter exists, link "the next chapter gives the precise
-definition" to the definition of fidelity there. -->
 
 ## Measurement {#sec-measurement}
 
@@ -891,7 +889,7 @@ take on each platform.
 Shot noise is one of two kinds of error in an estimated expectation value.
 Noise in the device also shifts $\langle P\rangle$ itself, usually towards zero, and
 more shots cannot remove that shift; they only estimate the shifted value more
-precisely. The next chapter separates these two kinds of error. Tutorial 1 practises
+precisely. @sec-bias-variance separates these two kinds of error. Tutorial 1 practises
 @eq-sample-mean and @eq-standard-error in code:
 [open the T1 notebook in Colab]({{< var colab >}}/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb).
 
@@ -1036,7 +1034,9 @@ trapped ions, see @bruzewicz2019. @henriet2020, @slussarenko2019 and @burkard202
 review neutral atoms, photonics and spin qubits. @preskill2018 introduced the NISQ era,
 and @nielsen2010 [chapter 4] covers the circuit model.
 
+::: {.content-visible when-format="html"}
 ## References {.unnumbered}
 
 ::: {#refs}
+:::
 :::

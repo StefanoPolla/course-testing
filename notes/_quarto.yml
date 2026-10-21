@@ -13,10 +13,11 @@ project:
 book:
   title: "Near-term Quantum Computing — lecture notes"
   author: "Stefano Polla"
-  date: "2026-10-16"
+  date: "2026-10-21"
   chapters:
     - index.qmd
     - L1-platforms-and-measurement.qmd
+    - L2-noise.qmd
   appendices:
     - exercises.qmd
     - glossary.qmd
@@ -49,6 +50,8 @@ format:
     include-after-body: glossary-tooltips.html
     css: styles.css
   pdf:
+    # One reference list at the end of the PDF; each chapter's list is web-only.
+    reference-section-title: References
     documentclass: scrreprt
     pdf-engine: lualatex
     default-image-extension: pdf

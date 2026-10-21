@@ -349,3 +349,156 @@ for layer in range(2):
     brick.barrier()
 save_fig(brick.draw("mpl", style=STYLE, scale=0.9, plot_barriers=True,
                     initial_state=False), "brick-wall")
+
+
+# ------------------------------------------- L2: Bloch ball under single-qubit channels
+
+def convex_hull(points):
+    """Monotone-chain convex hull of 2D points, as a closed list of vertices."""
+    pts = sorted(set(map(tuple, np.round(points, 6))))
+    if len(pts) < 3:
+        return np.array(pts)
+
+    def turn(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    def half(seq):
+        out = []
+        for p in seq:
+            while len(out) >= 2 and turn(out[-2], out[-1], p) <= 0:
+                out.pop()
+            out.append(p)
+        return out[:-1]
+    return np.array(half(pts) + half(pts[::-1]))
+
+
+def bloch_channel(ax, f, c=(0.0, 0.0, 0.0), title="", note=""):
+    """The Bloch sphere (grey) and its image under r -> (f_x r_x, f_y r_y, f_z r_z) + c (blue)."""
+    proj = view()
+    f, c = np.asarray(f, float), np.asarray(c, float)
+    d = proj(np.eye(3))[2]  # viewing direction, as the depth of the unit vectors
+    # reference sphere: outline, equator and axes
+    ax.add_patch(plt.Circle((0, 0), 1, fill=False, color="0.55", lw=0.9))
+    s = np.linspace(0, 2 * np.pi, 400)
+    curve(ax, proj, np.stack([np.cos(s), np.sin(s), 0 * s], 1), "0.6", lw=0.7)
+    for vec, name in (((1, 0, 0), "$x$"), ((0, 1, 0), "$y$"), ((0, 0, 1), "$z$")):
+        x, y, _ = proj(np.array(vec) * 1.0)
+        ax.plot([0, x], [0, y], color="0.55", lw=0.7)
+        x, y, _ = proj(np.array(vec) * 1.17)
+        ax.text(x, y, name, ha="center", va="center", fontsize=9, color="0.3")
+    # image of the sphere: filled silhouette, then grid lines, dashed where hidden
+    uu, vv = np.meshgrid(np.linspace(0, np.pi, 40), np.linspace(0, 2 * np.pi, 80))
+    sphere = np.stack([np.sin(uu) * np.cos(vv), np.sin(uu) * np.sin(vv), np.cos(uu)], -1).reshape(-1, 3)
+    xy = np.stack(proj(sphere * f + c)[:2], 1)
+    hull = convex_hull(xy)
+    if len(hull) >= 3:
+        ax.fill(hull[:, 0], hull[:, 1], color=ACCENT, alpha=0.13, lw=0)
+    cof = np.array([f[1] * f[2], f[0] * f[2], f[0] * f[1]])  # normal of the image ~ cof * u
+
+    def grid_line(u, lw):
+        x, y, _ = proj(u * f + c)
+        front = (u * cof) @ d >= -1e-9
+        for mask, style, alpha in ((front, "-", 1.0), (~front, "--", 0.4)):
+            ax.plot(np.where(mask, x, np.nan), np.where(mask, y, np.nan), color=ACCENT,
+                    lw=lw, ls=style, alpha=alpha)
+    for z in (-0.6, 0.0, 0.6):
+        r = np.sqrt(1 - z * z)
+        grid_line(np.stack([r * np.cos(s), r * np.sin(s), z + 0 * s], 1), 1.4 if z == 0 else 0.9)
+    for k in range(4):
+        b = k * np.pi / 4
+        grid_line(np.stack([np.sin(s) * np.cos(b), np.sin(s) * np.sin(b), np.cos(s)], 1), 0.9)
+    for pole, label in (((0, 0, 1), r"$|0\rangle$"), ((0, 0, -1), r"$|1\rangle$")):
+        x, y, _ = proj(np.array(pole) * f + c)
+        ax.plot(x, y, "o", color=ACCENT, ms=3.5)
+        x0, y0, _ = proj(np.array(pole) * 1.0)
+        ax.text(x0 + 0.12, y0 + (0.1 if pole[2] > 0 else -0.12), label, fontsize=9,
+                ha="left", va="center", color="0.3")
+    ax.set_xlim(-1.3, 1.3)
+    ax.set_ylim(-1.3, 1.3)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.set_title(title, fontsize=10)
+    ax.text(0, -1.42, note, ha="center", va="top", fontsize=9)
+
+
+fig, axes = plt.subplots(1, 3, figsize=(7.6, 2.95))
+bloch_channel(axes[0], (1, 0.5, 0.5), title="(a) bit flip, $p = 0.25$",
+              note="$f_x = 1,\\ f_y = f_z = 0.5$")
+bloch_channel(axes[1], (0.5, 0.5, 1), title="(b) phase flip, $p = 0.25$",
+              note="$f_x = f_y = 0.5,\\ f_z = 1$")
+bloch_channel(axes[2], (0.6, 0.6, 0.6), title="(c) depolarising, $p = 0.4$",
+              note="$f_x = f_y = f_z = 0.6$")
+fig.subplots_adjust(wspace=0.05, bottom=0.12)
+save_fig(fig, "bloch-pauli-channels")
+
+g = 0.5
+fig, axes = plt.subplots(1, 2, figsize=(5.4, 3.1))
+bloch_channel(axes[0], (np.sqrt(1 - g), np.sqrt(1 - g), 1 - g), c=(0, 0, g),
+              title=r"(a) amplitude damping, $\gamma = 0.5$",
+              note="$f_x = f_y = 0.71,\\ f_z = 0.5$,\ncentre moved up by $0.5$")
+bloch_channel(axes[1], (0.3, 0.3, 1), title="(b) pure dephasing",
+              note="$f_x = f_y = 0.3,\\ f_z = 1$\n ")
+fig.subplots_adjust(wspace=0.05, bottom=0.12)
+save_fig(fig, "bloch-relaxation-dephasing")
+
+
+# ------------------------------------------- L2: Ramsey and echo sequences, decay curves
+
+fig, (ax_seq, ax_dec) = plt.subplots(1, 2, figsize=(7.4, 2.5), gridspec_kw={"width_ratios": [1.15, 1]})
+
+
+def sequence(ax, y, pulses, label):
+    ax.plot([0, 10.3], [y, y], color="0.4", lw=1.0, zorder=1)
+    ax.text(-0.3, y, label, ha="right", va="center", fontsize=9.5)
+    for x, text in pulses:
+        ax.add_patch(Rectangle((x - 0.6, y - 0.3), 1.2, 0.6, facecolor="white", edgecolor="black", lw=1.0, zorder=2))
+        ax.text(x, y, text, ha="center", va="center", fontsize=8.5, zorder=3)
+    ax.add_patch(Rectangle((10.3, y - 0.3), 0.9, 0.6, facecolor="0.85", edgecolor="black", lw=1.0, zorder=2))
+    ax.text(10.75, y, "M", ha="center", va="center", fontsize=8.5, zorder=3)
+
+
+sequence(ax_seq, 1.6, [(0.6, r"$\pi/2$"), (9.3, r"$\pi/2$")], "Ramsey")
+sequence(ax_seq, 0.0, [(0.6, r"$\pi/2$"), (4.95, "$X$"), (9.3, r"$\pi/2$")], "echo")
+for y, (a, b, text) in ((1.6, (1.2, 8.7, "wait $t$")), (0.0, (1.2, 4.35, "$t/2$")), (0.0, (5.55, 8.7, "$t/2$"))):
+    ax_seq.annotate("", xy=(b, y + 0.5), xytext=(a, y + 0.5),
+                    arrowprops=dict(arrowstyle="<->", lw=0.8, color="0.3"))
+    ax_seq.text((a + b) / 2, y + 0.62, text, ha="center", va="bottom", fontsize=8.5)
+ax_seq.set_xlim(-2.2, 11.4)
+ax_seq.set_ylim(-0.6, 2.6)
+ax_seq.axis("off")
+ax_seq.set_title("(a) pulse sequences", fontsize=9.5, loc="left")
+
+tt = np.linspace(0, 2.5, 300)  # time in units of T2
+t_slow = 0.6                   # time of the slow, shot-to-shot noise, in units of T2
+ax_dec.plot(tt, np.exp(-tt), color=ACCENT, lw=1.8, label=r"echo: $e^{-t/T_2}$")
+ax_dec.plot(tt, np.exp(-tt) * np.exp(-(tt / t_slow) ** 2), color=ORANGE, lw=1.8,
+            label=r"Ramsey: decays with $T_2^*$")
+ax_dec.set_xlabel(r"waiting time $t / T_2$")
+ax_dec.set_ylabel("coherence left")
+ax_dec.set_ylim(0, 1.05)
+ax_dec.set_xlim(0, 2.5)
+ax_dec.legend(frameon=False, fontsize=8.5)
+for side in ("top", "right"):
+    ax_dec.spines[side].set_visible(False)
+ax_dec.set_title("(b) decay of the coherence", fontsize=9.5, loc="left")
+fig.subplots_adjust(wspace=0.25)
+save_fig(fig, "ramsey-echo")
+
+
+# ------------------------------------------- L2: coherent vs incoherent accumulation
+
+eps = 0.02
+n = np.arange(1, 101)
+fig, ax = plt.subplots(figsize=(4.6, 2.9))
+ax.loglog(n, np.sin(n * eps / 2) ** 2, color=ORANGE, lw=1.8,
+          label=r"fixed angle $\varepsilon$: grows as $n^2$")
+ax.loglog(n, (1 - np.exp(-n * eps**2 / 2)) / 2, color=ACCENT, lw=1.8,
+          label=r"random angles, $\sigma = \varepsilon$: grows as $n$")
+ax.set_xlabel("number of gates $n$")
+ax.set_ylabel("error probability")
+ax.set_xlim(1, 100)
+ax.set_ylim(5e-5, 1)
+ax.legend(frameon=False, fontsize=8.5, loc="upper left")
+for side in ("top", "right"):
+    ax.spines[side].set_visible(False)
+save_fig(fig, "coherent-incoherent")
