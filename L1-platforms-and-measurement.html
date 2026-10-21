@@ -55,7 +55,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./exercises.html" rel="next">
+<link href="./L2-noise.html" rel="next">
 <link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -304,7 +304,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./l01-platforms-and-measurement.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./L1-platforms-and-measurement.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -342,8 +342,14 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./l01-platforms-and-measurement.html" class="sidebar-item-text sidebar-link active">
+  <a href="./L1-platforms-and-measurement.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L2-noise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -405,8 +411,8 @@ window.Quarto = {
   <li><a href="#sec-shot-noise" id="toc-sec-shot-noise" class="nav-link" data-scroll-target="#sec-shot-noise"><span class="header-section-number">1.5.3</span> Shot noise</a></li>
   <li><a href="#sec-timescales" id="toc-sec-timescales" class="nav-link" data-scroll-target="#sec-timescales"><span class="header-section-number">1.5.4</span> Timescales</a></li>
   </ul></li>
-  <li><a href="#sec-l01-exercises" id="toc-sec-l01-exercises" class="nav-link" data-scroll-target="#sec-l01-exercises"><span class="header-section-number">1.6</span> More exercises</a></li>
-  <li><a href="#sec-l01-reading" id="toc-sec-l01-reading" class="nav-link" data-scroll-target="#sec-l01-reading"><span class="header-section-number">1.7</span> Further reading</a></li>
+  <li><a href="#sec-L1-exercises" id="toc-sec-L1-exercises" class="nav-link" data-scroll-target="#sec-L1-exercises"><span class="header-section-number">1.6</span> More exercises</a></li>
+  <li><a href="#sec-L1-reading" id="toc-sec-L1-reading" class="nav-link" data-scroll-target="#sec-L1-reading"><span class="header-section-number">1.7</span> Further reading</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -439,6 +445,7 @@ window.Quarto = {
 \newcommand{\ket}[1]{\left|#1\right\rangle}
 \newcommand{\bra}[1]{\left\langle#1\right|}
 \newcommand{\gate}[1]{\mathrm{#1}}
+\newcommand{\tr}{\mathrm{tr}}
 \]</span></p>
 </div>
 <p>On paper, a quantum algorithm is a circuit: gates on ideal qubits, followed by measurements. A real quantum computer is a physical device, whose physics decides which operations it can perform, between which qubits, how fast and how reliably. In this chapter, we look at this physical side and at what it means for the circuits we can run.</p>
@@ -446,11 +453,11 @@ window.Quarto = {
 <section id="sec-nisq" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="sec-nisq"><span class="header-section-number">1.1</span> Noisy qubits and fault tolerance</h2>
 <p>Every physical qubit is imperfect. Each gate has a small chance of going wrong, the stored quantum state degrades even when nothing is done to it, and measurements sometimes return the wrong result. These errors add up. If each gate fails with probability 0.1%, a circuit of a thousand gates runs without any error only about 37% of the time, since <span class="math inline">\(0.999^{1000} \approx e^{-1}\)</span>. Noise therefore limits the size of the circuits that a device can run usefully.</p>
-<p>Preskill called the devices of this era <a href="glossary.html#gloss-nisq" class="gloss" data-gloss="Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.">NISQ</a> devices, for <em>noisy intermediate-scale quantum</em> <span class="citation" data-cites="preskill2018">(<a href="l01-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">Preskill 2018</a>)</span>. <em>Intermediate scale</em> means tens to thousands of qubits, enough that many of their circuits are hard to simulate on a classical computer, but far from the millions of qubits that the best-known quantum algorithms need. <em>Noisy</em> means that their errors are not corrected.</p>
+<p>Preskill called the devices of this era <a href="glossary.html#gloss-nisq" class="gloss" data-gloss="Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.">NISQ</a> devices, for <em>noisy intermediate-scale quantum</em> <span class="citation" data-cites="preskill2018">(<a href="L1-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">Preskill 2018</a>)</span>. <em>Intermediate scale</em> means tens to thousands of qubits, enough that many of their circuits are hard to simulate on a classical computer, but far from the millions of qubits that the best-known quantum algorithms need. <em>Noisy</em> means that their errors are not corrected.</p>
 <p>Getting useful results from a NISQ device means working within the limit set by noise. Circuits are kept short, so that errors have little chance to build up. The quantities to keep small are the circuit’s <a href="glossary.html#gloss-depth" class="gloss" data-gloss="The number of layers of gates in a circuit that must run one after another. Gates on different qubits can share a layer.">depth</a>, the number of layers of gates that must run one after another, and its number of two-qubit gates, the least reliable operations on current devices (<a href="#sec-noise-sources" class="quarto-xref"><span>Section 1.4</span></a>). Each run of a circuit returns a single random outcome, so every quantity is estimated from many repetitions, called shots (<a href="#sec-shots" class="quarto-xref"><span>Section 1.5.2</span></a>). And <a href="glossary.html#gloss-error-mitigation" class="gloss" data-gloss="Methods that reduce the effect of noise on estimated quantities without correcting the errors, typically by running extra or modified circuits and combining their results. They cost extra shots.">error mitigation</a> reduces the effect of the remaining noise on these estimates, without correcting the errors themselves, by running extra or modified circuits and combining their results. Error mitigation is not the same as error correction: it only works if the circuit does not accumulate too much error in the first place, and its price is running more shots. We come back to it later in the course.</p>
 <p>Correcting errors is possible in principle. <a href="glossary.html#gloss-qec" class="gloss" data-gloss="Encoding quantum information redundantly in many physical qubits, so that errors can be detected and corrected without disturbing the encoded information.">Quantum error correction</a> stores each qubit of information redundantly in many <a href="glossary.html#gloss-physical-qubit" class="gloss" data-gloss="A qubit as implemented in hardware, for example one transmon or one ion, with all its imperfections.">physical qubits</a>, which together form one <a href="glossary.html#gloss-logical-qubit" class="gloss" data-gloss="A qubit of information encoded in many physical qubits by an error-correcting code. Its error rate can be much lower than that of the physical qubits.">logical qubit</a>. Repeated checks on the physical qubits reveal errors without disturbing the stored information, so that the errors can be undone. This only helps if the physical qubits are good enough. Below a certain error rate per operation, the <a href="glossary.html#gloss-threshold" class="gloss" data-gloss="The physical error rate per operation below which error correction helps: below it, larger codes give lower logical error rates.">threshold</a>, larger codes give lower logical error rates, as low as a computation requires, and the computer is called <em>fault tolerant</em>.</p>
-<p>Fault tolerance is expensive. Useful algorithms are estimated to need of order a thousand physical qubits for every logical qubit, and around a million physical qubits in total <span class="citation" data-cites="fowler2012 gidney2025">(<a href="l01-platforms-and-measurement.html#ref-fowler2012" role="doc-biblioref">Fowler et al. 2012</a>; <a href="l01-platforms-and-measurement.html#ref-gidney2025" role="doc-biblioref">Gidney 2025</a>)</span>. Experiments are now crossing the threshold: in 2024, a superconducting device ran an error-correcting code whose logical error rate halved each time the code was made larger <span class="citation" data-cites="google2025">(<a href="l01-platforms-and-measurement.html#ref-google2025" role="doc-biblioref">Google Quantum AI and Collaborators 2025</a>)</span>. Such experiments use a whole device to protect a single logical qubit, however, and useful computations still run on physical qubits. We come back to the stage in between, <em>early fault tolerance</em>, at the end of the course.</p>
-<p>The cost of error correction is not only an increase in the number of physical qubits. A code protects stored information, but every gate on logical qubits must also be carried out without spreading errors, and only a small set of gates can be done this way at a low cost. Every other gate has to be built from this set, so the operations that are cheap on a NISQ device can be expensive on a fault-tolerant one, and the reverse. In the most studied codes, a CNOT between two logical qubits is relatively cheap. A single-qubit rotation by an arbitrary angle, which a NISQ device performs with a single pulse (<a href="#sec-driving-gates" class="quarto-xref"><span>Section 1.3.2</span></a>), must instead be approximated by a sequence of tens to about a hundred protected gates, some of which need a costly extra procedure of their own <span class="citation" data-cites="ross2016 litinski2019">(<a href="l01-platforms-and-measurement.html#ref-ross2016" role="doc-biblioref">Ross and Selinger 2016</a>; <a href="l01-platforms-and-measurement.html#ref-litinski2019" role="doc-biblioref">Litinski 2019</a>)</span>. The cost of a NISQ circuit is dominated by its depth and its two-qubit gates, while the cost of a fault-tolerant circuit is often dominated by its number of rotations. <a href="#tbl-nisq-ftqc" class="quarto-xref">Table&nbsp;<span>1.1</span></a> summarises the differences.</p>
+<p>Fault tolerance is expensive. Useful algorithms are estimated to need of order a thousand physical qubits for every logical qubit, and around a million physical qubits in total <span class="citation" data-cites="fowler2012 gidney2025">(<a href="L1-platforms-and-measurement.html#ref-fowler2012" role="doc-biblioref">Fowler et al. 2012</a>; <a href="L1-platforms-and-measurement.html#ref-gidney2025" role="doc-biblioref">Gidney 2025</a>)</span>. Experiments are now crossing the threshold: in 2024, a superconducting device ran an error-correcting code whose logical error rate halved each time the code was made larger <span class="citation" data-cites="google2025">(<a href="L1-platforms-and-measurement.html#ref-google2025" role="doc-biblioref">Google Quantum AI and Collaborators 2025</a>)</span>. Such experiments use a whole device to protect a single logical qubit, however, and useful computations still run on physical qubits. We come back to the stage in between, <em>early fault tolerance</em>, at the end of the course.</p>
+<p>The cost of error correction is not only an increase in the number of physical qubits. A code protects stored information, but every gate on logical qubits must also be carried out without spreading errors, and only a small set of gates can be done this way at a low cost. Every other gate has to be built from this set, so the operations that are cheap on a NISQ device can be expensive on a fault-tolerant one, and the reverse. In the most studied codes, a CNOT between two logical qubits is relatively cheap. A single-qubit rotation by an arbitrary angle, which a NISQ device performs with a single pulse (<a href="#sec-driving-gates" class="quarto-xref"><span>Section 1.3.2</span></a>), must instead be approximated by a sequence of tens to about a hundred protected gates, some of which need a costly extra procedure of their own <span class="citation" data-cites="ross2016 litinski2019">(<a href="L1-platforms-and-measurement.html#ref-ross2016" role="doc-biblioref">Ross and Selinger 2016</a>; <a href="L1-platforms-and-measurement.html#ref-litinski2019" role="doc-biblioref">Litinski 2019</a>)</span>. The cost of a NISQ circuit is dominated by its depth and its two-qubit gates, while the cost of a fault-tolerant circuit is often dominated by its number of rotations. <a href="#tbl-nisq-ftqc" class="quarto-xref">Table&nbsp;<span>1.1</span></a> summarises the differences.</p>
 <div id="tbl-nisq-ftqc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-nisq-ftqc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -524,7 +531,7 @@ Table&nbsp;1.1: NISQ and fault-tolerant quantum computing compared.
 <section id="sec-qubit-needs" class="level3" data-number="1.2.1">
 <h3 data-number="1.2.1" class="anchored" data-anchor-id="sec-qubit-needs"><span class="header-section-number">1.2.1</span> Requirements for a quantum computer</h3>
 <p>A qubit is a quantum system with two states, <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span>, that we can control. Quantum systems such as atoms and small electrical circuits can only take certain values of energy, their <em>energy levels</em>, and they usually have many more than two. Most qubits are therefore the two lowest energy levels of a larger system. The other levels are still there, and a qubit can end up in them by accident.</p>
-<p>A universal, <a href="glossary.html#gloss-digital-qc" class="gloss" data-gloss="A quantum computer that runs circuits: sequences of gates from a fixed universal set, applied to qubits and followed by measurements. Also called gate-based, as opposed to analog devices that imitate the time evolution of a physical system directly.">digital</a> quantum computer is built by assembling many physical qubits and controlling them individually. DiVincenzo listed what this requires <span class="citation" data-cites="divincenzo2000">(<a href="l01-platforms-and-measurement.html#ref-divincenzo2000" role="doc-biblioref">DiVincenzo 2000</a>)</span>:</p>
+<p>A universal, <a href="glossary.html#gloss-digital-qc" class="gloss" data-gloss="A quantum computer that runs circuits: sequences of gates from a fixed universal set, applied to qubits and followed by measurements. Also called gate-based, as opposed to analog devices that imitate the time evolution of a physical system directly.">digital</a> quantum computer is built by assembling many physical qubits and controlling them individually. DiVincenzo listed what this requires <span class="citation" data-cites="divincenzo2000">(<a href="L1-platforms-and-measurement.html#ref-divincenzo2000" role="doc-biblioref">DiVincenzo 2000</a>)</span>:</p>
 <ul>
 <li>a scalable system of well-characterised qubits: their levels and interactions are known, and more qubits can be added;</li>
 <li>a way to prepare the qubits in a known state, usually <span class="math inline">\(\ket{0\cdots 0}\)</span>;</li>
@@ -595,7 +602,7 @@ Figure&nbsp;1.2: Energy levels of an oscillator and of a transmon. With even spa
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sc-chip-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.3: Superconducting qubits under the microscope. (a) Two transmon qubits (blue and red, false colour) with a third transmon between them, used as a tunable coupler (grey) <span class="citation" data-cites="sung2021">(<a href="l01-platforms-and-measurement.html#ref-sung2021" role="doc-biblioref"><span class="nocase">Sung et al.</span> 2021</a>)</span>. The cross-shaped pads are the transmons’ capacitors, and their Josephson junctions sit in the small structures at the ends of the arms. Qubit 2 and the coupler have two junctions in a loop, so that their frequencies can be tuned. Green lines carry the drive pulses, pink lines the currents that tune the frequencies, and the brown structures belong to the readout (<a href="#sec-readout" class="quarto-xref"><span>Section 1.5.1</span></a>). (b) A Josephson junction from a different device, seen in an electron microscope: two aluminium wires (Al) cross on a silicon chip (Si), separated by a thin oxide barrier, shown in cross-section in the inset <span class="citation" data-cites="vandamme2024">(<a href="l01-platforms-and-measurement.html#ref-vandamme2024" role="doc-biblioref"><span class="nocase">Van Damme et al.</span> 2024</a>)</span>. Scale bars: 1 µm; inset, 50 nm. Both images adapted (cropped) under the <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> licence.
+Figure&nbsp;1.3: Superconducting qubits under the microscope. (a) Two transmon qubits (blue and red, false colour) with a third transmon between them, used as a tunable coupler (grey) <span class="citation" data-cites="sung2021">(<a href="L1-platforms-and-measurement.html#ref-sung2021" role="doc-biblioref"><span class="nocase">Sung et al.</span> 2021</a>)</span>. The cross-shaped pads are the transmons’ capacitors, and their Josephson junctions sit in the small structures at the ends of the arms. Qubit 2 and the coupler have two junctions in a loop, so that their frequencies can be tuned. Green lines carry the drive pulses, pink lines the currents that tune the frequencies, and the brown structures belong to the readout (<a href="#sec-readout" class="quarto-xref"><span>Section 1.5.1</span></a>). (b) A Josephson junction from a different device, seen in an electron microscope: two aluminium wires (Al) cross on a silicon chip (Si), separated by a thin oxide barrier, shown in cross-section in the inset <span class="citation" data-cites="vandamme2024">(<a href="L1-platforms-and-measurement.html#ref-vandamme2024" role="doc-biblioref"><span class="nocase">Van Damme et al.</span> 2024</a>)</span>. Scale bars: 1 µm; inset, 50 nm. Both images adapted (cropped) under the <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> licence.
 </figcaption>
 </figure>
 </div>
@@ -644,11 +651,11 @@ Figure&nbsp;1.3: Superconducting qubits under the microscope. (a) Two transmon q
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ion-photos-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.4: Trapped ions. (a) An ion trap made at NIST: a square gold chip, 7.4 mm on a side, on its circuit board. In experiments, two ions hover above the middle of the chip, and microwaves fed in through the three thick lines at the lower right drive their gates (photo: Y. Colombe/NIST, public domain). (b) Twenty calcium ions in a linear trap at Innsbruck, seen through the light they scatter: each bright spot is one ion, and the chain is about 0.1 mm long <span class="citation" data-cites="friis2018">(<a href="l01-platforms-and-measurement.html#ref-friis2018" role="doc-biblioref"><span class="nocase">Friis et al.</span> 2018</a>)</span>. Adapted (cropped) under the <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> licence.
+Figure&nbsp;1.4: Trapped ions. (a) An ion trap made at NIST: a square gold chip, 7.4 mm on a side, on its circuit board. In experiments, two ions hover above the middle of the chip, and microwaves fed in through the three thick lines at the lower right drive their gates (photo: Y. Colombe/NIST, public domain). (b) Twenty calcium ions in a linear trap at Innsbruck, seen through the light they scatter: each bright spot is one ion, and the chain is about 0.1 mm long <span class="citation" data-cites="friis2018">(<a href="L1-platforms-and-measurement.html#ref-friis2018" role="doc-biblioref"><span class="nocase">Friis et al.</span> 2018</a>)</span>. Adapted (cropped) under the <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> licence.
 </figcaption>
 </figure>
 </div>
-<p>The ions are charged and repel each other, so the chain behaves like a row of balls joined by springs (<a href="#fig-ion-chain" class="quarto-xref">Figure&nbsp;<span>1.5</span></a>). Push one ion, and the whole chain starts to vibrate. Like the internal energy of an atom, the energy of these vibrations comes in discrete units, called <a href="glossary.html#gloss-phonon" class="gloss" data-gloss="A quantum of vibration. In an ion trap, phonons are the quanta of the vibrations that the whole chain of ions shares.">phonons</a>. Every ion takes part in the same vibrations, so they act as a shared channel, the <a href="glossary.html#gloss-phonon-bus" class="gloss" data-gloss="The shared vibrations of a chain of trapped ions, used as a common channel through which any two ions can interact in a two-qubit gate.">phonon bus</a>, through which any ion can interact with any other. The two-qubit gates are built by exploiting this phonon bus, so they can be applied to any pair of qubits: the connectivity is all-to-all (<a href="#sec-connectivity" class="quarto-xref"><span>Section 1.3.6</span></a>).</p>
+<p>The ions are charged and repel each other, so the chain behaves like a row of balls joined by springs (<a href="#fig-ion-chain" class="quarto-xref">Figure&nbsp;<span>1.5</span></a>). Push one ion, and the whole chain starts to vibrate. Like the internal energy of an atom, the energy of these vibrations comes in discrete units, called <a href="glossary.html#gloss-phonon" class="gloss" data-gloss="A quantum of vibration. In an ion trap, phonons are the quanta of the vibrations that the whole chain of ions shares; in a solid, such as a qubit chip, they are the quanta of the vibrations of the crystal.">phonons</a>. Every ion takes part in the same vibrations, so they act as a shared channel, the <a href="glossary.html#gloss-phonon-bus" class="gloss" data-gloss="The shared vibrations of a chain of trapped ions, used as a common channel through which any two ions can interact in a two-qubit gate.">phonon bus</a>, through which any ion can interact with any other. The two-qubit gates are built by exploiting this phonon bus, so they can be applied to any pair of qubits: the connectivity is all-to-all (<a href="#sec-connectivity" class="quarto-xref"><span>Section 1.3.6</span></a>).</p>
 <div id="fig-ion-chain" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ion-chain-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -663,7 +670,7 @@ Figure&nbsp;1.5: A trapped-ion chain as balls joined by springs. The ions repel 
 </section>
 <section id="sec-other-platforms" class="level3" data-number="1.2.5">
 <h3 data-number="1.2.5" class="anchored" data-anchor-id="sec-other-platforms"><span class="header-section-number">1.2.5</span> Other platforms</h3>
-<p>Several other platforms are developing quickly, following the same recipe of a two-level system, a way to drive it, an interaction between qubits and a readout. In <em>neutral-atom</em> devices, uncharged atoms are held, and can be moved, by tightly focused laser beams (<a href="glossary.html#gloss-optical-tweezers" class="gloss" data-gloss="Tightly focused laser beams that hold single neutral atoms in place and can move them.">optical tweezers</a>), and they interact when lasers excite them to very large <a href="glossary.html#gloss-rydberg" class="gloss" data-gloss="A state of an atom in which one electron is excited very far from the nucleus. Atoms in Rydberg states interact strongly over micrometre distances.">Rydberg states</a>; arrays of hundreds to thousands of atoms have been built <span class="citation" data-cites="henriet2020">(<a href="l01-platforms-and-measurement.html#ref-henriet2020" role="doc-biblioref">Henriet et al. 2020</a>)</span>. <em>Photonic</em> devices carry qubits on particles of light, which hardly interact with their surroundings but, for the same reason, hardly with each other either, so their entangling operations succeed only some of the time <span class="citation" data-cites="slussarenko2019">(<a href="l01-platforms-and-measurement.html#ref-slussarenko2019" role="doc-biblioref">Slussarenko and Pryde 2019</a>)</span>. <em>Spin qubits</em> use the <a href="glossary.html#gloss-spin" class="gloss" data-gloss="An intrinsic two-level property of an electron (up or down), which can serve as a qubit.">spin</a> of single electrons trapped in tiny semiconductor structures (<a href="glossary.html#gloss-quantum-dot" class="gloss" data-gloss="A tiny region in a semiconductor that can trap single electrons.">quantum dots</a>); they can be made with the techniques of the chip industry, but current devices have at most a few tens of qubits <span class="citation" data-cites="burkard2023">(<a href="l01-platforms-and-measurement.html#ref-burkard2023" role="doc-biblioref">Burkard et al. 2023</a>)</span>. <a href="#tbl-platforms" class="quarto-xref">Table&nbsp;<span>1.2</span></a> compares the five platforms.</p>
+<p>Several other platforms are developing quickly, following the same recipe of a two-level system, a way to drive it, an interaction between qubits and a readout. In <em>neutral-atom</em> devices, uncharged atoms are held, and can be moved, by tightly focused laser beams (<a href="glossary.html#gloss-optical-tweezers" class="gloss" data-gloss="Tightly focused laser beams that hold single neutral atoms in place and can move them.">optical tweezers</a>), and they interact when lasers excite them to very large <a href="glossary.html#gloss-rydberg" class="gloss" data-gloss="A state of an atom in which one electron is excited very far from the nucleus. Atoms in Rydberg states interact strongly over micrometre distances.">Rydberg states</a>; arrays of hundreds to thousands of atoms have been built <span class="citation" data-cites="henriet2020">(<a href="L1-platforms-and-measurement.html#ref-henriet2020" role="doc-biblioref">Henriet et al. 2020</a>)</span>. <em>Photonic</em> devices carry qubits on particles of light, which hardly interact with their surroundings but, for the same reason, hardly with each other either, so their entangling operations succeed only some of the time <span class="citation" data-cites="slussarenko2019">(<a href="L1-platforms-and-measurement.html#ref-slussarenko2019" role="doc-biblioref">Slussarenko and Pryde 2019</a>)</span>. <em>Spin qubits</em> use the <a href="glossary.html#gloss-spin" class="gloss" data-gloss="An intrinsic two-level property of an electron (up or down), which can serve as a qubit.">spin</a> of single electrons trapped in tiny semiconductor structures (<a href="glossary.html#gloss-quantum-dot" class="gloss" data-gloss="A tiny region in a semiconductor that can trap single electrons.">quantum dots</a>); they can be made with the techniques of the chip industry, but current devices have at most a few tens of qubits <span class="citation" data-cites="burkard2023">(<a href="L1-platforms-and-measurement.html#ref-burkard2023" role="doc-biblioref">Burkard et al. 2023</a>)</span>. <a href="#tbl-platforms" class="quarto-xref">Table&nbsp;<span>1.2</span></a> compares the five platforms.</p>
 <div id="tbl-platforms" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-platforms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -754,7 +761,7 @@ e^{-i\theta P/2} = \cos\frac{\theta}{2}\, I - i \sin\frac{\theta}{2}\, P .
 R_X(\theta) = e^{-i\theta X/2} = \begin{pmatrix} \cos\frac{\theta}{2} &amp; -i\sin\frac{\theta}{2} \\
 -i\sin\frac{\theta}{2} &amp; \cos\frac{\theta}{2} \end{pmatrix}, \qquad
 R_Z(\theta) = e^{-i\theta Z/2} = \begin{pmatrix} e^{-i\theta/2} &amp; 0 \\ 0 &amp; e^{i\theta/2} \end{pmatrix}.
-\tag{1.2}\]</span></span> Rotations about two different axes are enough to build any single-qubit gate. Up to a global phase, every single-qubit unitary can be written as <span class="math inline">\(R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)\)</span> for some angles <span class="citation" data-cites="nielsen2010">(<a href="l01-platforms-and-measurement.html#ref-nielsen2010" role="doc-biblioref">Nielsen and Chuang 2010, sec. 4.2</a>)</span>.</p>
+\tag{1.2}\]</span></span> Rotations about two different axes are enough to build any single-qubit gate. Up to a global phase, every single-qubit unitary can be written as <span class="math inline">\(R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)\)</span> for some angles <span class="citation" data-cites="nielsen2010">(<a href="L1-platforms-and-measurement.html#ref-nielsen2010" role="doc-biblioref">Nielsen and Chuang 2010, sec. 4.2</a>)</span>.</p>
 <p>Applied to the two-qubit Pauli string <span class="math inline">\(Z \otimes Z\)</span>, <a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a> gives</p>
 <p><span id="eq-rzz"><span class="math display">\[
 R_{ZZ}(\theta) = e^{-i\theta\, Z\otimes Z/2}
@@ -1192,9 +1199,9 @@ Figure&nbsp;1.11: SWAP as three CNOTs with alternating control.
 </section>
 <section id="sec-noise-sources" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="sec-noise-sources"><span class="header-section-number">1.4</span> Sources of noise</h2>
-<p>Every wire or laser beam used to control a qubit is also a way in for disturbances. This section describes in words what can go wrong; the next chapter goes deeper into the mathematical description of noise and its effects.</p>
-<p>The most important effect is that an excited qubit loses its energy. Left alone, <span class="math inline">\(\ket{1}\)</span> decays to <span class="math inline">\(\ket{0}\)</span>, a process called <a href="glossary.html#gloss-relaxation" class="gloss" data-gloss="Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1.">relaxation</a>. In superconducting qubits, the energy is absorbed by tiny defects in the materials of the chip. The qubit levels of trapped ions hardly decay on their own, but the lasers used for gates occasionally knock an ion out of its qubit state.</p>
-<p>A qubit can also lose its phase without losing energy. A superposition of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span> carries a relative phase between its two parts, and the qubit’s frequency sets how fast this phase turns. If the frequency fluctuates, for example because of fluctuating magnetic fields or electric charges near the qubit, the phase wanders, and the superposition gradually becomes a random mixture of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span>. This is called <a href="glossary.html#gloss-dephasing" class="gloss" data-gloss="Loss of the relative phase of a superposition, for example because the qubit frequency fluctuates. Its characteristic time is called T2.">dephasing</a>. The time over which a qubit relaxes is called <span class="math inline">\(T_1\)</span>, and the time over which it dephases is called <span class="math inline">\(T_2\)</span>. These are the coherence times quoted for every device, and the next chapter defines them precisely.</p>
+<p>Every wire or laser beam used to control a qubit is also a way in for disturbances. This section describes in words what can go wrong; the next chapter (<a href="L2-noise.html" class="quarto-xref"><span>Chapter 2</span></a>) goes deeper into the mathematical description of noise and its effects.</p>
+<p>The most important effect is that an excited qubit loses its energy. Left alone, <span class="math inline">\(\ket{1}\)</span> decays to <span class="math inline">\(\ket{0}\)</span>, a process called <a href="glossary.html#gloss-relaxation" class="gloss" data-gloss="Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1, and the amplitude-damping channel describes it.">relaxation</a>. In superconducting qubits, the energy is absorbed by tiny defects in the materials of the chip. The qubit levels of trapped ions hardly decay on their own, but the lasers used for gates occasionally knock an ion out of its qubit state.</p>
+<p>A qubit can also lose its phase without losing energy. A superposition of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span> carries a relative phase between its two parts, and the qubit’s frequency sets how fast this phase turns. If the frequency fluctuates, for example because of fluctuating magnetic fields or electric charges near the qubit, the phase wanders, and the superposition gradually becomes a random mixture of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span>. This is called <a href="glossary.html#gloss-dephasing" class="gloss" data-gloss="Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency fluctuates. The coherence time T2 includes both dephasing and relaxation; the time of pure dephasing alone is called Tφ.">dephasing</a>. The time over which a qubit relaxes is called <span class="math inline">\(T_1\)</span>, and the time over which it dephases is called <span class="math inline">\(T_2\)</span>. These are the coherence times quoted for every device, and <a href="L2-noise.html#def-t1-t2" class="quarto-xref">Definition&nbsp;<span>2.5</span></a> defines them precisely.</p>
 <p>A third kind of error is a gate that rotates by the wrong amount, because a pulse is slightly too long, too short or off axis, or because a laser’s intensity fluctuates. Unlike relaxation and dephasing, such <a href="glossary.html#gloss-coherent-error" class="gloss" data-gloss="A systematic error in which a gate applies the wrong unitary, for example a rotation by a slightly wrong angle, in the same way every time.">coherent errors</a> are systematic: the same gate makes the same mistake every time. <a href="#tbl-noise" class="quarto-xref">Table&nbsp;<span>1.4</span></a> lists these effects together with the remaining ones.</p>
 <div id="tbl-noise" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1214,42 +1221,42 @@ Table&nbsp;1.4: What can go wrong in a quantum device.
 <tr class="odd">
 <td><span class="math inline">\(\ket{1}\)</span> decays to <span class="math inline">\(\ket{0}\)</span></td>
 <td>energy absorbed by defects in the chip</td>
-<td>relaxation (<span class="math inline">\(T_1\)</span>)</td>
+<td>relaxation (<span class="math inline">\(T_1\)</span>, <a href="L2-noise.html#sec-t1-t2" class="quarto-xref"><span>Section 2.2.3</span></a>)</td>
 </tr>
 <tr class="even">
 <td>the relative phase of a superposition wanders</td>
 <td>fluctuating magnetic fields</td>
-<td>dephasing (<span class="math inline">\(T_2\)</span>)</td>
+<td>dephasing (<span class="math inline">\(T_2\)</span>, <a href="L2-noise.html#sec-t1-t2" class="quarto-xref"><span>Section 2.2.3</span></a>)</td>
 </tr>
 <tr class="odd">
 <td>a gate rotates by the wrong amount</td>
 <td>a pulse slightly too long</td>
-<td>coherent error</td>
+<td>coherent error (<a href="L2-noise.html#sec-gate-errors" class="quarto-xref"><span>Section 2.4</span></a>)</td>
 </tr>
 <tr class="even">
 <td>the qubit leaves the qubit levels</td>
 <td>a pulse pushes a transmon into its third level (<a href="#fig-energy-levels" class="quarto-xref">Figure&nbsp;<span>1.2</span></a>)</td>
-<td><a href="glossary.html#gloss-leakage" class="gloss" data-gloss="An error in which a qubit leaves its two qubit levels, for example when a transmon is pushed into its third level.">leakage</a></td>
+<td><a href="glossary.html#gloss-leakage" class="gloss" data-gloss="An error in which a qubit leaves its two qubit levels, for example when a transmon is pushed into its third level.">leakage</a> (<a href="L2-noise.html#sec-gate-errors" class="quarto-xref"><span>Section 2.4</span></a>)</td>
 </tr>
 <tr class="odd">
 <td>an operation on one qubit disturbs another</td>
 <td>couplings that are never fully off; a laser beam that partly hits the next ion</td>
-<td>crosstalk</td>
+<td>crosstalk (<a href="L2-noise.html#sec-multi-qubit-noise" class="quarto-xref"><span>Section 2.3</span></a>)</td>
 </tr>
 <tr class="even">
 <td>the readout is wrong</td>
 <td>0 reported as 1, or the reverse</td>
-<td>readout error</td>
+<td>readout error (<a href="L2-noise.html#sec-readout-errors" class="quarto-xref"><span>Section 2.5</span></a>)</td>
 </tr>
 <tr class="odd">
 <td>many qubits fail at once</td>
 <td>a cosmic ray deposits energy in the chip and disturbs all qubits nearby</td>
-<td>correlated errors</td>
+<td>correlated errors (<a href="L2-noise.html#sec-multi-qubit-noise" class="quarto-xref"><span>Section 2.3</span></a>)</td>
 </tr>
 <tr class="even">
 <td>the device drifts</td>
 <td>properties that change over hours</td>
-<td>(recalibration)</td>
+<td>(recalibration, <a href="L2-noise.html#sec-budgets" class="quarto-xref"><span>Section 2.6.3</span></a>)</td>
 </tr>
 </tbody>
 </table>
@@ -1257,8 +1264,7 @@ Table&nbsp;1.4: What can go wrong in a quantum device.
 </figure>
 </div>
 <p>The last row explains why providers recalibrate their devices regularly and publish calibration data, the error rates of each qubit and gate at the last calibration. These data are a snapshot, and a few hours later the device may behave differently.</p>
-<p>Providers summarise the quality of each operation by a <a href="glossary.html#gloss-fidelity" class="gloss" data-gloss="A number between 0 and 1 measuring how close an operation or state is to the intended one. Informally, one minus the probability of an error. Defined precisely in the chapter on noise.">fidelity</a>. For now, read it as one minus the probability that the operation goes wrong; the next chapter gives the precise definition. Typical values on current devices are 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for readout, so two-qubit gates and readout are the weakest links. <!-- L02-LINK: when the L02 chapter exists, link "the next chapter gives the precise
-definition" to the definition of fidelity there. --></p>
+<p>Providers summarise the quality of each operation by a <a href="glossary.html#gloss-fidelity" class="gloss" data-gloss="A number between 0 and 1 measuring how close a state or operation is to the intended one. The state fidelity is the probability that a state passes a test for the target state; the average gate fidelity averages it over all input states. Informally, one minus the probability of an error.">fidelity</a>. For now, read it as one minus the probability that the operation goes wrong; <a href="L2-noise.html#def-fidelity" class="quarto-xref">Definition&nbsp;<span>2.6</span></a> gives the precise definition. Typical values on current devices are 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for readout, so two-qubit gates and readout are the weakest links.</p>
 </section>
 <section id="sec-measurement" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="sec-measurement"><span class="header-section-number">1.5</span> Measurement</h2>
@@ -1280,11 +1286,11 @@ s = (-1)^{\sum_{j:\, P_j \neq I} b_j} = \pm 1 .
 <h3 data-number="1.5.3" class="anchored" data-anchor-id="sec-shot-noise"><span class="header-section-number">1.5.3</span> Shot noise</h3>
 <p>How many shots does an estimate need? Each shot gives <span class="math inline">\(s = +1\)</span> or <span class="math inline">\(s = -1\)</span> at random, and the expectation value of <span class="math inline">\(s\)</span> is <span class="math inline">\(\langle P\rangle\)</span>. The sample mean <span class="math inline">\(\bar s\)</span> of <a href="#eq-sample-mean" class="quarto-xref">Equation&nbsp;<span>1.8</span></a> is therefore correct on average, or <em>unbiased</em>. Its random error comes from the spread of single shots. Since <span class="math inline">\(s^2 = 1\)</span> for every shot (this is <span class="math inline">\(P^2 = I\)</span> again), the variance of a single shot is <span class="math display">\[
 \mathrm{Var}(s) = \langle s^2\rangle - \langle s\rangle^2 = 1 - \langle P\rangle^2 .
-\]</span> The mean of <span class="math inline">\(N\)</span> independent samples has <span class="math inline">\(1/N\)</span> times the variance of a single sample (for a refresher on this and other basic statistics, see <span class="citation" data-cites="blitzstein2019">Blitzstein and Hwang (<a href="l01-platforms-and-measurement.html#ref-blitzstein2019" role="doc-biblioref">2019</a>)</span>). The typical size of the random error of <span class="math inline">\(\bar s\)</span>, its <em>standard error</em>, is therefore <span id="eq-standard-error"><span class="math display">\[
+\]</span> The mean of <span class="math inline">\(N\)</span> independent samples has <span class="math inline">\(1/N\)</span> times the variance of a single sample (for a refresher on this and other basic statistics, see <span class="citation" data-cites="blitzstein2019">Blitzstein and Hwang (<a href="L1-platforms-and-measurement.html#ref-blitzstein2019" role="doc-biblioref">2019</a>)</span>). The typical size of the random error of <span class="math inline">\(\bar s\)</span>, its <em>standard error</em>, is therefore <span id="eq-standard-error"><span class="math display">\[
 \sigma_{\bar s} = \sqrt{\frac{1-\langle P\rangle^2}{N}} .
 \tag{1.9}\]</span></span> In practice <span class="math inline">\(\langle P\rangle\)</span> is unknown, and we evaluate <a href="#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> with <span class="math inline">\(\bar s\)</span> in its place.</p>
 <p>The error is largest when <span class="math inline">\(\langle P\rangle = 0\)</span>, where every shot is a coin flip, and vanishes when <span class="math inline">\(\langle P\rangle = \pm 1\)</span>, where every shot gives the same result. It decreases only as <span class="math inline">\(1/\sqrt{N}\)</span>, so each extra digit of precision costs a hundred times more shots. To estimate an expectation value near zero with a standard error of 0.01, for example, we need <span class="math inline">\(N = 1/0.01^2 = 10^4\)</span> shots. <a href="#sec-timescales" class="quarto-xref"><span>Section 1.5.4</span></a> shows how long they take on each platform.</p>
-<p>Shot noise is one of two kinds of error in an estimated expectation value. Noise in the device also shifts <span class="math inline">\(\langle P\rangle\)</span> itself, usually towards zero, and more shots cannot remove that shift; they only estimate the shifted value more precisely. The next chapter separates these two kinds of error. Tutorial 1 practises <a href="#eq-sample-mean" class="quarto-xref">Equation&nbsp;<span>1.8</span></a> and <a href="#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> in code: <a href="https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb">open the T1 notebook in Colab</a>.</p>
+<p>Shot noise is one of two kinds of error in an estimated expectation value. Noise in the device also shifts <span class="math inline">\(\langle P\rangle\)</span> itself, usually towards zero, and more shots cannot remove that shift; they only estimate the shifted value more precisely. <a href="L2-noise.html#sec-bias-variance" class="quarto-xref"><span>Section 2.7</span></a> separates these two kinds of error. Tutorial 1 practises <a href="#eq-sample-mean" class="quarto-xref">Equation&nbsp;<span>1.8</span></a> and <a href="#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> in code: <a href="https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-01/T1-circuits-and-sampling_qiskit.ipynb">open the T1 notebook in Colab</a>.</p>
 </section>
 <section id="sec-timescales" class="level3" data-number="1.5.4">
 <h3 data-number="1.5.4" class="anchored" data-anchor-id="sec-timescales"><span class="header-section-number">1.5.4</span> Timescales</h3>
@@ -1361,8 +1367,8 @@ Table&nbsp;1.5: Typical timescales of current devices, as orders of magnitude.
 </div>
 </section>
 </section>
-<section id="sec-l01-exercises" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="sec-l01-exercises"><span class="header-section-number">1.6</span> More exercises</h2>
+<section id="sec-L1-exercises" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="sec-L1-exercises"><span class="header-section-number">1.6</span> More exercises</h2>
 <p>These exercises combine material from several sections of the chapter.</p>
 <div id="exr-error-budget" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.8 (An error budget)</strong></span> A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, with virtual <span class="math inline">\(Z\)</span> rotations. Its operations fail independently, with probability <span class="math inline">\(10^{-4}\)</span> for a <span class="math inline">\(\gate{PRX}\)</span> pulse, <span class="math inline">\(5\times10^{-3}\)</span> for a CZ and <span class="math inline">\(10^{-2}\)</span> for a measurement. On a line of 10 qubits, we run a brick-wall circuit: each layer applies <span class="math inline">\(R_Z\)</span> and <span class="math inline">\(R_X\)</span> to every qubit, followed by CZs between neighbouring qubits, on the pairs (1,2), (3,4), … in odd layers and (2,3), (4,5), … in even layers. <a href="#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> shows two layers on four qubits. The circuit has 8 layers and ends by measuring all qubits.</p>
@@ -1414,9 +1420,9 @@ Figure&nbsp;1.12: Two layers of a brick-wall circuit on four qubits.
 </ol>
 </div>
 </section>
-<section id="sec-l01-reading" class="level2" data-number="1.7">
-<h2 data-number="1.7" class="anchored" data-anchor-id="sec-l01-reading"><span class="header-section-number">1.7</span> Further reading</h2>
-<p>For superconducting qubits, <span class="citation" data-cites="krantz2019">Krantz et al. (<a href="l01-platforms-and-measurement.html#ref-krantz2019" role="doc-biblioref">2019</a>)</span> is a thorough guide written for engineers; for trapped ions, see <span class="citation" data-cites="bruzewicz2019">Bruzewicz et al. (<a href="l01-platforms-and-measurement.html#ref-bruzewicz2019" role="doc-biblioref">2019</a>)</span>. <span class="citation" data-cites="henriet2020">Henriet et al. (<a href="l01-platforms-and-measurement.html#ref-henriet2020" role="doc-biblioref">2020</a>)</span>, <span class="citation" data-cites="slussarenko2019">Slussarenko and Pryde (<a href="l01-platforms-and-measurement.html#ref-slussarenko2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="burkard2023">Burkard et al. (<a href="l01-platforms-and-measurement.html#ref-burkard2023" role="doc-biblioref">2023</a>)</span> review neutral atoms, photonics and spin qubits. <span class="citation" data-cites="preskill2018">Preskill (<a href="l01-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">2018</a>)</span> introduced the NISQ era, and <span class="citation" data-cites="nielsen2010">Nielsen and Chuang (<a href="l01-platforms-and-measurement.html#ref-nielsen2010" role="doc-biblioref">2010, chap. 4</a>)</span> covers the circuit model.</p>
+<section id="sec-L1-reading" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="sec-L1-reading"><span class="header-section-number">1.7</span> Further reading</h2>
+<p>For superconducting qubits, <span class="citation" data-cites="krantz2019">Krantz et al. (<a href="L1-platforms-and-measurement.html#ref-krantz2019" role="doc-biblioref">2019</a>)</span> is a thorough guide written for engineers; for trapped ions, see <span class="citation" data-cites="bruzewicz2019">Bruzewicz et al. (<a href="L1-platforms-and-measurement.html#ref-bruzewicz2019" role="doc-biblioref">2019</a>)</span>. <span class="citation" data-cites="henriet2020">Henriet et al. (<a href="L1-platforms-and-measurement.html#ref-henriet2020" role="doc-biblioref">2020</a>)</span>, <span class="citation" data-cites="slussarenko2019">Slussarenko and Pryde (<a href="L1-platforms-and-measurement.html#ref-slussarenko2019" role="doc-biblioref">2019</a>)</span> and <span class="citation" data-cites="burkard2023">Burkard et al. (<a href="L1-platforms-and-measurement.html#ref-burkard2023" role="doc-biblioref">2023</a>)</span> review neutral atoms, photonics and spin qubits. <span class="citation" data-cites="preskill2018">Preskill (<a href="L1-platforms-and-measurement.html#ref-preskill2018" role="doc-biblioref">2018</a>)</span> introduced the NISQ era, and <span class="citation" data-cites="nielsen2010">Nielsen and Chuang (<a href="L1-platforms-and-measurement.html#ref-nielsen2010" role="doc-biblioref">2010, chap. 4</a>)</span> covers the circuit model.</p>
 </section>
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
@@ -1476,6 +1482,22 @@ Litinski, Daniel. 2019. <span>“A Game of Surface Codes: Large-Scale
 Quantum Computing with Lattice Surgery.”</span> <em>Quantum</em> 3: 128.
 <a href="https://doi.org/10.22331/q-2019-03-05-128">https://doi.org/10.22331/q-2019-03-05-128</a>.
 </div>
+<div id="ref-magesan2011" class="csl-entry" role="listitem">
+Magesan, Easwar, Jay M. Gambetta, and Joseph Emerson. 2011.
+<span>“Scalable and Robust Randomized Benchmarking of Quantum
+Processes.”</span> <em>Physical Review Letters</em> 106 (18): 180504. <a href="https://doi.org/10.1103/PhysRevLett.106.180504">https://doi.org/10.1103/PhysRevLett.106.180504</a>.
+</div>
+<div id="ref-mcewen2022" class="csl-entry" role="listitem">
+<span class="nocase">McEwen, Matt, Lara Faoro, Kunal Arya, et al.</span>
+2022. <span>“Resolving Catastrophic Error Bursts from Cosmic Rays in
+Large Arrays of Superconducting Qubits.”</span> <em>Nature Physics</em>
+18 (1): 107–11. <a href="https://doi.org/10.1038/s41567-021-01432-8">https://doi.org/10.1038/s41567-021-01432-8</a>.
+</div>
+<div id="ref-nielsen2002" class="csl-entry" role="listitem">
+Nielsen, Michael A. 2002. <span>“A Simple Formula for the Average Gate
+Fidelity of a Quantum Dynamical Operation.”</span> <em>Physics Letters
+A</em> 303 (4): 249–52. <a href="https://doi.org/10.1016/S0375-9601(02)01272-0">https://doi.org/10.1016/S0375-9601(02)01272-0</a>.
+</div>
 <div id="ref-nielsen2010" class="csl-entry" role="listitem">
 Nielsen, Michael A., and Isaac L. Chuang. 2010. <em>Quantum Computation
 and Quantum Information</em>. 10th anniversary. Cambridge University
@@ -1505,6 +1527,10 @@ Tunable Coupler.”</span> <em>Physical Review X</em> 11: 021058. <a href="https
 <span class="nocase">Van Damme, J. et al.</span> 2024. <span>“Advanced
 <span>CMOS</span> Manufacturing of Superconducting Qubits on 300 Mm
 Wafers.”</span> <em>Nature</em> 634: 74–79. <a href="https://doi.org/10.1038/s41586-024-07941-9">https://doi.org/10.1038/s41586-024-07941-9</a>.
+</div>
+<div id="ref-walter2025" class="csl-entry" role="listitem">
+Walter, Michael, and Maris Ozols. 2025. <em>Lecture Notes on Quantum
+Information Theory</em>. Course notes, University of Amsterdam.
 </div>
 </div>
 
@@ -1945,8 +1971,8 @@ Wafers.”</span> <em>Nature</em> 634: 74–79. <a href="https://doi.org/10.1038
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./exercises.html" class="pagination-link" aria-label="Exercises">
-        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Exercises</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./L2-noise.html" class="pagination-link" aria-label="Noise channels and error budgets">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

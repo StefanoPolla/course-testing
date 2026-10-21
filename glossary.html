@@ -293,8 +293,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./l01-platforms-and-measurement.html" class="sidebar-item-text sidebar-link">
+  <a href="./L1-platforms-and-measurement.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L2-noise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -352,9 +358,37 @@ ul.task-list li input[type="checkbox"] {
 
 
 <dl>
+<dt><span id="gloss-one-over-f">1/f noise</span></dt>
+<dd>
+Noise in which slow fluctuations are much stronger than fast ones, in inverse proportion to their frequency. It typically comes from many defects, each switching at its own rate.
+</dd>
+<dt><span id="gloss-amplitude-damping">amplitude damping</span></dt>
+<dd>
+The channel that describes relaxation: a qubit in the excited state decays to the ground state with probability gamma, which grows with time as one minus exp(-t/T1).
+</dd>
+<dt><span id="gloss-average-gate-fidelity">average gate fidelity</span></dt>
+<dd>
+The state fidelity between the output of a noisy gate and the ideal output, averaged over all pure input states. One minus it is the error per gate.
+</dd>
+<dt><span id="gloss-bias">bias</span></dt>
+<dd>
+The difference between the average of an estimator and the true value. Noise biases estimates of expectation values; more shots do not reduce the bias.
+</dd>
+<dt><span id="gloss-bit-flip">bit flip</span></dt>
+<dd>
+The Pauli channel that applies X with some probability p: it flips the bit of a qubit.
+</dd>
+<dt><span id="gloss-bloch-vector">Bloch vector</span></dt>
+<dd>
+The three expectation values of X, Y and Z of a qubit, which fix its density matrix. It has length one for pure states and less for mixed states.
+</dd>
 <dt><span id="gloss-calibration">calibration</span></dt>
 <dd>
 Measuring and adjusting the control pulses of a device so that its gates do what they should. Providers publish calibration data: the error rates of each qubit and gate at the last calibration.
+</dd>
+<dt><span id="gloss-coherence">coherence</span></dt>
+<dd>
+The off-diagonal entry of a qubit’s density matrix, which carries the relative phase of a superposition. Its size decays with the coherence time T2.
 </dd>
 <dt><span id="gloss-coherence-time">coherence time</span></dt>
 <dd>
@@ -363,6 +397,18 @@ How long a qubit keeps its quantum state, in particular a superposition, before 
 <dt><span id="gloss-coherent-error">coherent error</span></dt>
 <dd>
 A systematic error in which a gate applies the wrong unitary, for example a rotation by a slightly wrong angle, in the same way every time.
+</dd>
+<dt><span id="gloss-completely-positive">completely positive</span></dt>
+<dd>
+A map of density matrices is completely positive if it still gives valid density matrices when it acts on part of a larger system. Quantum channels are exactly the completely positive maps that preserve the trace.
+</dd>
+<dt><span id="gloss-confusion-matrix">confusion matrix</span></dt>
+<dd>
+The table of probabilities of reading each outcome given each true state of the qubits. It describes readout errors.
+</dd>
+<dt><span id="gloss-correlated-errors">correlated errors</span></dt>
+<dd>
+Errors that affect several qubits together, or that depend on what happens elsewhere in the circuit, such as crosstalk or bursts caused by cosmic rays.
 </dd>
 <dt><span id="gloss-coupler">coupler</span></dt>
 <dd>
@@ -380,9 +426,17 @@ A two-qubit gate mechanism for superconducting qubits with fixed couplings: one 
 <dd>
 An unwanted effect of an operation on one qubit on other qubits, for example through couplings that are never fully switched off.
 </dd>
+<dt><span id="gloss-density-matrix">density matrix</span></dt>
+<dd>
+The general description of a quantum state, including states that are uncertain mixtures of pure states: a positive semidefinite matrix with trace one. Expectation values are traces of the observable times the density matrix.
+</dd>
 <dt><span id="gloss-dephasing">dephasing</span></dt>
 <dd>
-Loss of the relative phase of a superposition, for example because the qubit frequency fluctuates. Its characteristic time is called T2.
+Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency fluctuates. The coherence time T2 includes both dephasing and relaxation; the time of pure dephasing alone is called Tφ.
+</dd>
+<dt><span id="gloss-depolarising">depolarising channel</span></dt>
+<dd>
+The channel that replaces the state by the maximally mixed state with probability p.&nbsp;On one qubit, it is the same as applying X, Y or Z, each with probability p/4. It shrinks all expectation values of Pauli strings by the same factor.
 </dd>
 <dt><span id="gloss-depth">depth</span></dt>
 <dd>
@@ -404,6 +458,14 @@ Readout of a superconducting qubit through a resonator whose frequency depends s
 <dd>
 A checklist for building a quantum computer: scalable, well-characterised qubits; preparation of a known state; long coherence; a universal set of gates; measurement of individual qubits.
 </dd>
+<dt><span id="gloss-dynamical-decoupling">dynamical decoupling</span></dt>
+<dd>
+Repeated echo pulses during a long wait, which remove noise that is slow compared with the spacing of the pulses. It suppresses noise on the device itself.
+</dd>
+<dt><span id="gloss-echo">echo</span></dt>
+<dd>
+An X pulse halfway through a wait, which reverses the phase accumulated before it, so that phase errors that stay constant during the wait cancel. An echo experiment measures T2.
+</dd>
 <dt><span id="gloss-error-mitigation">error mitigation</span></dt>
 <dd>
 Methods that reduce the effect of noise on estimated quantities without correcting the errors, typically by running extra or modified circuits and combining their results. They cost extra shots.
@@ -414,7 +476,15 @@ A rule that turns measured data into an estimate of a quantity, for example the 
 </dd>
 <dt><span id="gloss-fidelity">fidelity</span></dt>
 <dd>
-A number between 0 and 1 measuring how close an operation or state is to the intended one. Informally, one minus the probability of an error. Defined precisely in the chapter on noise.
+A number between 0 and 1 measuring how close a state or operation is to the intended one. The state fidelity is the probability that a state passes a test for the target state; the average gate fidelity averages it over all input states. Informally, one minus the probability of an error.
+</dd>
+<dt><span id="gloss-global-depolarising">global depolarising channel</span></dt>
+<dd>
+The depolarising channel acting on all qubits at once: with probability p, the state of all qubits is replaced by the maximally mixed state. It shrinks every Pauli expectation value by the same factor, whatever its weight.
+</dd>
+<dt><span id="gloss-incoherent-error">incoherent error</span></dt>
+<dd>
+A random error that differs from shot to shot and averages to a noisy channel. Random errors accumulate more slowly than coherent ones.
 </dd>
 <dt><span id="gloss-ion">ion</span></dt>
 <dd>
@@ -428,6 +498,10 @@ A device that holds ions in vacuum with electric fields, typically lined up in a
 <dd>
 A thin insulating barrier between two superconductors. In a circuit it makes the energy levels unevenly spaced, which is what turns the circuit into a usable qubit.
 </dd>
+<dt><span id="gloss-kraus-operators">Kraus operators</span></dt>
+<dd>
+A set of matrices that defines a quantum channel: the channel maps a density matrix to the sum of each Kraus operator times the density matrix times its adjoint. The same channel can have different sets of Kraus operators.
+</dd>
 <dt><span id="gloss-laser-cooling">laser cooling</span></dt>
 <dd>
 Slowing the motion of atoms or ions with laser light until they are almost at rest.
@@ -439,6 +513,18 @@ An error in which a qubit leaves its two qubit levels, for example when a transm
 <dt><span id="gloss-logical-qubit">logical qubit</span></dt>
 <dd>
 A qubit of information encoded in many physical qubits by an error-correcting code. Its error rate can be much lower than that of the physical qubits.
+</dd>
+<dt><span id="gloss-markovian">Markovian noise</span></dt>
+<dd>
+Noise without memory: the noise after each operation does not depend on what happened before. The model in which every gate is followed by a fixed channel assumes it.
+</dd>
+<dt><span id="gloss-mse">mean squared error</span></dt>
+<dd>
+The average of the squared difference between an estimate and the true value. It equals the bias squared plus the variance.
+</dd>
+<dt><span id="gloss-mixed-state">mixed state</span></dt>
+<dd>
+A quantum state that is not pure: a probabilistic mixture of pure states, described by a density matrix. On one qubit, its Bloch vector lies inside the Bloch sphere.
 </dd>
 <dt><span id="gloss-molmer-sorensen">Mølmer-Sørensen gate</span></dt>
 <dd>
@@ -452,17 +538,29 @@ A gate the hardware implements directly with a calibrated control pulse. Every o
 <dd>
 Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.
 </dd>
+<dt><span id="gloss-noise-model">noise model</span></dt>
+<dd>
+A description of the noise of a device, gate by gate and qubit by qubit, used to simulate noisy circuits, for example built from the calibration data of the device.
+</dd>
 <dt><span id="gloss-optical-tweezers">optical tweezers</span></dt>
 <dd>
 Tightly focused laser beams that hold single neutral atoms in place and can move them.
+</dd>
+<dt><span id="gloss-pauli-channel">Pauli channel</span></dt>
+<dd>
+A channel that applies a random Pauli error, chosen with fixed probabilities. It multiplies the expectation value of each Pauli string by its own factor.
 </dd>
 <dt><span id="gloss-pauli-string">Pauli string</span></dt>
 <dd>
 A tensor product of single-qubit Pauli matrices (I, X, Y or Z), one for each qubit, such as ZZ or XIY. Hermitian, and squares to the identity.
 </dd>
+<dt><span id="gloss-phase-flip">phase flip</span></dt>
+<dd>
+The Pauli channel that applies Z with some probability p: it flips the sign of the relative phase between 0 and 1. Random phases and pure dephasing act as phase flips.
+</dd>
 <dt><span id="gloss-phonon">phonon</span></dt>
 <dd>
-A quantum of vibration. In an ion trap, phonons are the quanta of the vibrations that the whole chain of ions shares.
+A quantum of vibration. In an ion trap, phonons are the quanta of the vibrations that the whole chain of ions shares; in a solid, such as a qubit chip, they are the quanta of the vibrations of the crystal.
 </dd>
 <dt><span id="gloss-phonon-bus">phonon bus</span></dt>
 <dd>
@@ -476,9 +574,21 @@ A qubit as implemented in hardware, for example one transmon or one ion, with al
 <dd>
 A short burst of microwave or laser radiation at a chosen frequency, switched on and off smoothly, used to drive a qubit. Its frequency selects which qubit responds; its area and phase set the rotation.
 </dd>
+<dt><span id="gloss-pure-dephasing">pure dephasing</span></dt>
+<dd>
+Dephasing without relaxation, caused by fast fluctuations of the qubit frequency. It acts as a phase flip whose strength grows with time, with characteristic time Tφ.
+</dd>
+<dt><span id="gloss-purity">purity</span></dt>
+<dd>
+The trace of the square of a density matrix: 1 for pure states, smaller for mixed states, and 1/2 for a uniformly random qubit.
+</dd>
 <dt><span id="gloss-qccd">QCCD</span></dt>
 <dd>
 Quantum charge-coupled device: a trapped-ion architecture in which ions are moved between zones of the trap, so that any two ions can be brought together for a gate.
+</dd>
+<dt><span id="gloss-quantum-channel">quantum channel</span></dt>
+<dd>
+The general description of how a quantum state changes, including noise: a linear map of density matrices that can be written with Kraus operators. Unitary gates are the channels with a single Kraus operator.
 </dd>
 <dt><span id="gloss-quantum-dot">quantum dot</span></dt>
 <dd>
@@ -488,9 +598,21 @@ A tiny region in a semiconductor that can trap single electrons.
 <dd>
 Encoding quantum information redundantly in many physical qubits, so that errors can be detected and corrected without disturbing the encoded information.
 </dd>
+<dt><span id="gloss-ramsey">Ramsey experiment</span></dt>
+<dd>
+A measurement of dephasing: a pulse puts the qubit in a superposition, the qubit waits, and a second pulse turns the remaining coherence into a measurable population. It measures T2*.
+</dd>
+<dt><span id="gloss-telegraph-noise">random telegraph noise</span></dt>
+<dd>
+Noise from a defect that switches at random between two states, making the qubit frequency jump back and forth.
+</dd>
+<dt><span id="gloss-randomised-benchmarking">randomised benchmarking</span></dt>
+<dd>
+A method to measure the average error per gate: random gate sequences of growing length, which ideally return to the initial state, are run, and the decay of the success probability with the length gives the error per gate.
+</dd>
 <dt><span id="gloss-relaxation">relaxation</span></dt>
 <dd>
-Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1.
+Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1, and the amplitude-damping channel describes it.
 </dd>
 <dt><span id="gloss-resonance">resonance</span></dt>
 <dd>
@@ -504,13 +626,25 @@ A state of an atom in which one electron is excited very far from the nucleus. A
 <dd>
 One run of a circuit: prepare the qubits, apply the gates, measure. Returns one bit string.
 </dd>
+<dt><span id="gloss-spam">SPAM errors</span></dt>
+<dd>
+State preparation and measurement errors, characterised together because a measurement right after a preparation cannot tell them apart.
+</dd>
 <dt><span id="gloss-spin">spin</span></dt>
 <dd>
 An intrinsic two-level property of an electron (up or down), which can serve as a qubit.
 </dd>
+<dt><span id="gloss-state-fidelity">state fidelity</span></dt>
+<dd>
+For a pure target state, the probability that a state passes a test for the target, that is, the expectation value of the projector onto the target.
+</dd>
 <dt><span id="gloss-swap">SWAP</span></dt>
 <dd>
 A two-qubit gate that exchanges the states of two qubits. It costs three CNOTs.
+</dd>
+<dt><span id="gloss-t2-star">T2*</span></dt>
+<dd>
+The time over which the coherence decays in a Ramsey experiment. It is shorter than T2, because it includes slow noise that an echo removes.
 </dd>
 <dt><span id="gloss-threshold">threshold</span></dt>
 <dd>
@@ -524,9 +658,17 @@ The most common superconducting qubit: a small circuit with a Josephson junction
 <dd>
 Compilation of a circuit into the native gates and coupling graph of a device, including inserting SWAPs and simplifying.
 </dd>
+<dt><span id="gloss-twirling">twirling</span></dt>
+<dd>
+Inserting random Pauli gates around a gate, chosen so that they cancel in the ideal circuit. Averaged over the random choices, any error becomes a Pauli channel.
+</dd>
 <dt><span id="gloss-virtual-z">virtual Z gate</span></dt>
 <dd>
 A Z rotation implemented by shifting the phase of all later drive pulses instead of applying a pulse. It takes no time and adds no error.
+</dd>
+<dt><span id="gloss-weight">weight</span></dt>
+<dd>
+The number of qubits on which a Pauli string acts with a Pauli matrix other than the identity. Under local noise, strings of higher weight lose their expectation value faster.
 </dd>
 </dl>
 

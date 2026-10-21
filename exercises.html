@@ -37,7 +37,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./glossary.html" rel="next">
-<link href="./l01-platforms-and-measurement.html" rel="prev">
+<link href="./L2-noise.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -323,8 +323,14 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./l01-platforms-and-measurement.html" class="sidebar-item-text sidebar-link">
+  <a href="./L1-platforms-and-measurement.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L2-noise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -361,6 +367,7 @@ window.Quarto = {
    
   <ul>
   <li>Chapter 1: Platforms, gates and measurement</li>
+  <li>Chapter 2: Noise channels and error budgets</li>
   </ul>
 </nav>
     </div>
@@ -392,13 +399,14 @@ window.Quarto = {
 \newcommand{\ket}[1]{\left|#1\right\rangle}
 \newcommand{\bra}[1]{\left\langle#1\right|}
 \newcommand{\gate}[1]{\mathrm{#1}}
+\newcommand{\tr}{\mathrm{tr}}
 \]</span></p>
 </div>
 <p>This page collects the exercises of all published chapters. The label of each exercise links back to it in its chapter, where the surrounding text explains the notation and the references. The exercises of each new chapter are added here when it is published.</p>
 <section class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="">Chapter 1: Platforms, gates and measurement</h2>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-thermal" class="quarto-xref">Exercise&nbsp;<span>1.1</span></a></strong> (Thermal excitation)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-thermal" class="quarto-xref">Exercise&nbsp;<span>1.1</span></a></strong> (Thermal excitation)</p>
 <p>In thermal equilibrium at temperature <span class="math inline">\(T\)</span>, the excited and ground states of a qubit with frequency <span class="math inline">\(f\)</span> are populated in the ratio <span class="math inline">\(p_1/p_0 = e^{-hf/k_B T}\)</span> (the Boltzmann factor), where <span class="math inline">\(k_B\)</span> is Boltzmann’s constant. Use <span class="math inline">\(h/k_B \approx 0.048\)</span> K/GHz.</p>
 <ol type="a">
 <li><p>Compute <span class="math inline">\(p_1/p_0\)</span> for a 5 GHz qubit at room temperature (300 K), at 1 K and at 10 mK.</p></li>
@@ -409,7 +417,7 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-prx" class="quarto-xref">Exercise&nbsp;<span>1.2</span></a></strong> (The PRX gate)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-prx" class="quarto-xref">Exercise&nbsp;<span>1.2</span></a></strong> (The PRX gate)</p>
 <ol type="a">
 <li><p>Show that <span class="math inline">\((\cos\varphi\, X + \sin\varphi\, Y)^2 = I\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
@@ -417,50 +425,50 @@ window.Quarto = {
 </details></li>
 <li><p>Write <span class="math inline">\(\gate{PRX}(\theta,\varphi)\)</span> as a <span class="math inline">\(2\times 2\)</span> matrix.</p>
 <details class="hint"><summary>Hint</summary>
-<p>Use <a href="l01-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, which applies because of (a).</p>
+<p>Use <a href="L1-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, which applies because of (a).</p>
 </details></li>
 <li><p>Check that <span class="math inline">\(\gate{PRX}(\theta,0) = R_X(\theta)\)</span> and <span class="math inline">\(\gate{PRX}(\theta,\pi/2) = R_Y(\theta)\)</span>. Which rotation is <span class="math inline">\(\gate{PRX}(\theta,\pi)\)</span>?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a></strong> (Turning one Pauli into another)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a></strong> (Turning one Pauli into another)</p>
 <p>Let <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> be Pauli strings that anticommute, <span class="math inline">\(PQ = -QP\)</span>.</p>
 <ol type="a">
 <li><p>Show that <span class="math inline">\(e^{-i\alpha P/2}\, Q\, e^{i\alpha P/2} = \cos\alpha\, Q - i\sin\alpha\, PQ\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
-<p>Write both exponentials with <a href="l01-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, and use <span class="math inline">\(PQP = -Q\)</span>.</p>
+<p>Write both exponentials with <a href="L1-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, and use <span class="math inline">\(PQP = -Q\)</span>.</p>
 </details></li>
 <li><p>Show that <span class="math inline">\(R_Y(\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(X\)</span>, and that <span class="math inline">\(R_X(-\pi/2)\)</span> turns <span class="math inline">\(Z\)</span> into <span class="math inline">\(Y\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
 <p>Use (a), and the products of Pauli matrices.</p>
 </details></li>
-<li><p>Check that the circuit of <a href="l01-platforms-and-measurement.html#fig-pauli-rotation" class="quarto-xref">Figure&nbsp;<span>1.8</span></a> implements <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2}\)</span>.</p>
+<li><p>Check that the circuit of <a href="L1-platforms-and-measurement.html#fig-pauli-rotation" class="quarto-xref">Figure&nbsp;<span>1.8</span></a> implements <span class="math inline">\(e^{-i\theta\, Z\otimes Y\otimes X/2}\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
-<p>Use <a href="l01-platforms-and-measurement.html#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>, the identity for CZ in the text, and (b).</p>
+<p>Use <a href="L1-platforms-and-measurement.html#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>, the identity for CZ in the text, and (b).</p>
 </details></li>
-<li><p>Draw a circuit of CZ gates and <span class="math inline">\(R_X\)</span> or <span class="math inline">\(R_Y\)</span> rotations for <span class="math inline">\(R_{ZZ}(\theta)\)</span>, and compare it with <a href="l01-platforms-and-measurement.html#fig-rzz" class="quarto-xref">Figure&nbsp;<span>1.6</span></a>.</p>
+<li><p>Draw a circuit of CZ gates and <span class="math inline">\(R_X\)</span> or <span class="math inline">\(R_Y\)</span> rotations for <span class="math inline">\(R_{ZZ}(\theta)\)</span>, and compare it with <a href="L1-platforms-and-measurement.html#fig-rzz" class="quarto-xref">Figure&nbsp;<span>1.6</span></a>.</p>
 <details class="hint"><summary>Hint</summary>
 <p>Start from <span class="math inline">\(R_X(\theta)\)</span> on the second qubit, conjugate it by CZ, then turn the remaining <span class="math inline">\(X\)</span> into <span class="math inline">\(Z\)</span>.</p>
 </details></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-virtual-z" class="quarto-xref">Exercise&nbsp;<span>1.4</span></a></strong> (Virtual Z gates)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-virtual-z" class="quarto-xref">Exercise&nbsp;<span>1.4</span></a></strong> (Virtual Z gates)</p>
 <ol type="a">
 <li><p>Show that <span class="math inline">\(R_Z(\alpha)\, X\, R_Z(\alpha)^\dagger = \cos\alpha\, X + \sin\alpha\, Y\)</span> and <span class="math inline">\(R_Z(\alpha)\, Y\, R_Z(\alpha)^\dagger = \cos\alpha\, Y - \sin\alpha\, X\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
-<p>Use <a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (a) with <span class="math inline">\(P = Z\)</span>.</p>
+<p>Use <a href="L1-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (a) with <span class="math inline">\(P = Z\)</span>.</p>
 </details></li>
 <li><p>Write the Hadamard gate, up to a global phase, as a single <span class="math inline">\(\gate{PRX}\)</span> pulse followed by a <span class="math inline">\(Z\)</span> rotation.</p>
 <details class="hint"><summary>Hint</summary>
-<p>Write the Hadamard gate as <span class="math inline">\(R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)\)</span> first, then use <a href="l01-platforms-and-measurement.html#eq-virtual-z-push" class="quarto-xref">Equation&nbsp;<span>1.7</span></a>.</p>
+<p>Write the Hadamard gate as <span class="math inline">\(R_Z(\alpha)\,R_Y(\beta)\,R_Z(\gamma)\)</span> first, then use <a href="L1-platforms-and-measurement.html#eq-virtual-z-push" class="quarto-xref">Equation&nbsp;<span>1.7</span></a>.</p>
 </details></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-swap" class="quarto-xref">Exercise&nbsp;<span>1.5</span></a></strong> (The cost of distance)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-swap" class="quarto-xref">Exercise&nbsp;<span>1.5</span></a></strong> (The cost of distance)</p>
 <ol type="a">
-<li><p>Check <a href="l01-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a> on the four computational basis states.</p></li>
+<li><p>Check <a href="L1-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a> on the four computational basis states.</p></li>
 <li><p>We want to implement a CNOT between the qubits at opposite ends of a line of <span class="math inline">\(n\)</span> qubits. If the qubits may stay in their new positions after the operation, how many CNOTs are needed? And if they must be returned to their original positions?</p>
 <details class="hint"><summary>Hint</summary>
 <p>Each SWAP moves a state one step along the line.</p>
@@ -468,7 +476,7 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-swap-native" class="quarto-xref">Exercise&nbsp;<span>1.6</span></a></strong> (SWAP from native gates)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-swap-native" class="quarto-xref">Exercise&nbsp;<span>1.6</span></a></strong> (SWAP from native gates)</p>
 <p>On a device whose native gates are <span class="math inline">\(\gate{PRX}\)</span> and CZ, a SWAP must be built from these.</p>
 <ol type="a">
 <li><p>Let <span class="math inline">\(A\)</span> be a single-qubit unitary. Show that <span class="math inline">\((I\otimes A)\,\gate{CZ}\,(I\otimes A^\dagger)\)</span> applies <span class="math inline">\(AZA^\dagger\)</span> to the second qubit if the first is in <span class="math inline">\(\ket{1}\)</span>, and does nothing if it is in <span class="math inline">\(\ket{0}\)</span>.</p>
@@ -477,27 +485,27 @@ window.Quarto = {
 </details></li>
 <li><p>Find a <span class="math inline">\(\gate{PRX}\)</span> rotation <span class="math inline">\(A\)</span> with <span class="math inline">\(AZA^\dagger = X\)</span>, and write a CNOT as one CZ and two <span class="math inline">\(\gate{PRX}\)</span> gates.</p>
 <details class="hint"><summary>Hint</summary>
-<p><a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (b) gives a suitable <span class="math inline">\(A\)</span>.</p>
+<p><a href="L1-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a> (b) gives a suitable <span class="math inline">\(A\)</span>.</p>
 </details></li>
-<li><p>Using <a href="l01-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a>, write a SWAP with three CZs and <span class="math inline">\(\gate{PRX}\)</span> gates only. How many <span class="math inline">\(\gate{PRX}\)</span> pulses does it need?</p></li>
+<li><p>Using <a href="L1-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a>, write a SWAP with three CZs and <span class="math inline">\(\gate{PRX}\)</span> gates only. How many <span class="math inline">\(\gate{PRX}\)</span> pulses does it need?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-shot-budget" class="quarto-xref">Exercise&nbsp;<span>1.7</span></a></strong> (A shot budget)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-shot-budget" class="quarto-xref">Exercise&nbsp;<span>1.7</span></a></strong> (A shot budget)</p>
 <ol type="a">
 <li><p>How many shots give a standard error of 0.01 when <span class="math inline">\(\langle P\rangle \approx 0.9\)</span>? Compare with <span class="math inline">\(\langle P\rangle \approx 0\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
-<p>Solve <a href="l01-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> for <span class="math inline">\(N\)</span>.</p>
+<p>Solve <a href="L1-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a> for <span class="math inline">\(N\)</span>.</p>
 </details></li>
 <li><p>You need ten expectation values, each from its own circuit, each with a standard error of at most 0.005. Assume the worst case, <span class="math inline">\(\langle P\rangle = 0\)</span>. Estimate the total time on a superconducting device and on an ion trap. Which part of the time dominates on each?</p>
 <details class="hint"><summary>Hint</summary>
-<p>Use the times per shot and per circuit of <a href="l01-platforms-and-measurement.html#tbl-timescales" class="quarto-xref">Table&nbsp;<span>1.5</span></a>.</p>
+<p>Use the times per shot and per circuit of <a href="L1-platforms-and-measurement.html#tbl-timescales" class="quarto-xref">Table&nbsp;<span>1.5</span></a>.</p>
 </details></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-error-budget" class="quarto-xref">Exercise&nbsp;<span>1.8</span></a></strong> (An error budget)</p>
-<p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, with virtual <span class="math inline">\(Z\)</span> rotations. Its operations fail independently, with probability <span class="math inline">\(10^{-4}\)</span> for a <span class="math inline">\(\gate{PRX}\)</span> pulse, <span class="math inline">\(5\times10^{-3}\)</span> for a CZ and <span class="math inline">\(10^{-2}\)</span> for a measurement. On a line of 10 qubits, we run a brick-wall circuit: each layer applies <span class="math inline">\(R_Z\)</span> and <span class="math inline">\(R_X\)</span> to every qubit, followed by CZs between neighbouring qubits, on the pairs (1,2), (3,4), … in odd layers and (2,3), (4,5), … in even layers. <a href="l01-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> shows two layers on four qubits. The circuit has 8 layers and ends by measuring all qubits.</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-error-budget" class="quarto-xref">Exercise&nbsp;<span>1.8</span></a></strong> (An error budget)</p>
+<p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, with virtual <span class="math inline">\(Z\)</span> rotations. Its operations fail independently, with probability <span class="math inline">\(10^{-4}\)</span> for a <span class="math inline">\(\gate{PRX}\)</span> pulse, <span class="math inline">\(5\times10^{-3}\)</span> for a CZ and <span class="math inline">\(10^{-2}\)</span> for a measurement. On a line of 10 qubits, we run a brick-wall circuit: each layer applies <span class="math inline">\(R_Z\)</span> and <span class="math inline">\(R_X\)</span> to every qubit, followed by CZs between neighbouring qubits, on the pairs (1,2), (3,4), … in odd layers and (2,3), (4,5), … in even layers. <a href="L1-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> shows two layers on four qubits. The circuit has 8 layers and ends by measuring all qubits.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="figures/brick-wall.svg" class="img-fluid figure-img" style="width:70.0%"></p>
@@ -507,7 +515,7 @@ window.Quarto = {
 <ol type="a">
 <li><p>Count the native operations of each kind, and estimate the probability that a run of the circuit has no error at all. Which kind of operation contributes most to the failures?</p>
 <details class="hint"><summary>Hint</summary>
-<p>Which gates in <a href="l01-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> need a pulse?</p>
+<p>Which gates in <a href="L1-platforms-and-measurement.html#fig-brick-wall" class="quarto-xref">Figure&nbsp;<span>1.12</span></a> need a pulse?</p>
 </details></li>
 <li><p>How does the answer to (a) change on a device without virtual <span class="math inline">\(Z\)</span> rotations, where each <span class="math inline">\(R_Z\)</span> needs a pulse with the same error as <span class="math inline">\(\gate{PRX}\)</span>?</p></li>
 <li><p>Roughly how many layers can the circuit have before the probability of a run without error drops below one half?</p>
@@ -517,7 +525,7 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-readout-bias" class="quarto-xref">Exercise&nbsp;<span>1.9</span></a></strong> (Readout errors bias the estimate)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-readout-bias" class="quarto-xref">Exercise&nbsp;<span>1.9</span></a></strong> (Readout errors bias the estimate)</p>
 <p>Suppose that the readout of each qubit reports the wrong bit with probability <span class="math inline">\(p\)</span>, independently in every shot and for both outcomes.</p>
 <ol type="a">
 <li><p>Show that the recorded sign <span class="math inline">\(s\)</span> of a single-qubit <span class="math inline">\(Z\)</span> measurement has expectation value <span class="math inline">\((1-2p)\langle Z\rangle\)</span>.</p></li>
@@ -527,20 +535,133 @@ window.Quarto = {
 </details></li>
 <li><p>Take <span class="math inline">\(p = 0.02\)</span>, <span class="math inline">\(k = 4\)</span> and <span class="math inline">\(\langle P\rangle = 0.5\)</span>. Compare the bias of <span class="math inline">\(\bar s\)</span> with its standard error for <span class="math inline">\(N = 10^3\)</span> and for <span class="math inline">\(N = 10^5\)</span> shots. When do more shots stop helping?</p>
 <details class="hint"><summary>Hint</summary>
-<p>The standard error is given by <a href="l01-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a>.</p>
+<p>The standard error is given by <a href="L1-platforms-and-measurement.html#eq-standard-error" class="quarto-xref">Equation&nbsp;<span>1.9</span></a>.</p>
 </details></li>
 <li><p>If <span class="math inline">\(p\)</span> is known, how can the estimate be corrected? What does the correction do to the standard error?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="l01-platforms-and-measurement.html#exr-measure-basis" class="quarto-xref">Exercise&nbsp;<span>1.10</span></a></strong> (Measuring in other bases)</p>
+<p><strong><a href="L1-platforms-and-measurement.html#exr-measure-basis" class="quarto-xref">Exercise&nbsp;<span>1.10</span></a></strong> (Measuring in other bases)</p>
 <p>A device has the native gates <span class="math inline">\(\gate{PRX}\)</span> and CZ, and measures in the computational basis.</p>
 <ol type="a">
 <li><p>Which <span class="math inline">\(\gate{PRX}\)</span> pulses must be applied before the measurement to estimate <span class="math inline">\(\langle X\otimes Y\otimes Z\rangle\)</span>?</p>
 <details class="hint"><summary>Hint</summary>
-<p>On each qubit, you need a rotation <span class="math inline">\(U\)</span> with <span class="math inline">\(U P_j U^\dagger = Z\)</span>; see <a href="l01-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a>.</p>
+<p>On each qubit, you need a rotation <span class="math inline">\(U\)</span> with <span class="math inline">\(U P_j U^\dagger = Z\)</span>; see <a href="L1-platforms-and-measurement.html#exr-pauli-conjugation" class="quarto-xref">Exercise&nbsp;<span>1.3</span></a>.</p>
 </details></li>
 <li><p>Can <span class="math inline">\(\langle X\otimes I\rangle\)</span> and <span class="math inline">\(\langle X\otimes X\rangle\)</span> be estimated from the same shots? And <span class="math inline">\(\langle X\otimes X\rangle\)</span> and <span class="math inline">\(\langle Z\otimes Z\rangle\)</span>, if only single-qubit rotations are allowed before the measurement?</p></li>
+</ol>
+</div>
+</section>
+<section class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="">Chapter 2: Noise channels and error budgets</h2>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-composition" class="quarto-xref">Exercise&nbsp;<span>2.1</span></a></strong> (Composing depolarising channels)</p>
+<ol type="a">
+<li><p>Apply the depolarising channel with parameter <span class="math inline">\(p_1\)</span> and then the one with <span class="math inline">\(p_2\)</span>, using the formula of <a href="L2-noise.html#def-depolarising" class="quarto-xref">Definition&nbsp;<span>2.4</span></a>. Show that the result is again a depolarising channel, and check that its factor is <span class="math inline">\((1-p_1)(1-p_2)\)</span>.</p></li>
+<li><p>A qubit is prepared in <span class="math inline">\(\ket{+}\)</span>, and <span class="math inline">\(n\)</span> noisy <span class="math inline">\(X\)</span> gates are applied, each followed by depolarising noise with parameter <span class="math inline">\(p\)</span>. What is <span class="math inline">\(\langle X\rangle\)</span> at the end? For <span class="math inline">\(p = 10^{-3}\)</span>, after how many gates has it halved?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Where in the circuit can the channels be moved?</p>
+</details></li>
+<li><p>Two qubits each undergo depolarising noise with parameter <span class="math inline">\(p\)</span>, independently, so that the channel on both is <span class="math inline">\(\Lambda\otimes\Lambda\)</span>. By which factors do <span class="math inline">\(\langle Z\otimes I\rangle\)</span> and <span class="math inline">\(\langle Z\otimes Z\rangle\)</span> shrink?</p>
+<details class="hint"><summary>Hint</summary>
+<p>A product of channels acts factor by factor: <span class="math inline">\((\Lambda\otimes\Lambda)(A\otimes B) = \Lambda(A)\otimes\Lambda(B)\)</span>.</p>
+</details></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-random-phase" class="quarto-xref">Exercise&nbsp;<span>2.2</span></a></strong> (Random phases)</p>
+<p>A qubit undergoes the rotation <span class="math inline">\(R_Z(\theta)\)</span>, where <span class="math inline">\(\theta\)</span> is a Gaussian random angle with mean zero and variance <span class="math inline">\(\sigma^2\)</span>.</p>
+<ol type="a">
+<li><p>Show that <span class="math inline">\(\mathbb{E}[\cos\theta] = e^{-\sigma^2/2}\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p><span class="math inline">\(\cos\theta\)</span> is the real part of <span class="math inline">\(e^{i\theta}\)</span>.</p>
+</details></li>
+<li><p>Which phase-flip probability <span class="math inline">\(p\)</span> does this channel have? What is it for <span class="math inline">\(\sigma \ll 1\)</span>?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-t1-t2" class="quarto-xref">Exercise&nbsp;<span>2.3</span></a></strong> (Relaxation and dephasing together)</p>
+<ol type="a">
+<li><p>Show that amplitude damping and a phase flip commute. Write the Bloch vector of <span class="math inline">\(\ket{+}\)</span> after it has been idle for a time <span class="math inline">\(t\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Compare what the two channels do to <span class="math inline">\(\rho_{00}\)</span>, <span class="math inline">\(\rho_{11}\)</span> and <span class="math inline">\(\rho_{01}\)</span>.</p>
+</details></li>
+<li><p>Suppose the calibration data of a superconducting device give, for three of its qubits, <span class="math inline">\(T_1 = 150\)</span>, <span class="math inline">\(80\)</span> and <span class="math inline">\(200\)</span> µs and <span class="math inline">\(T_2 = 120\)</span>, <span class="math inline">\(150\)</span> and <span class="math inline">\(60\)</span> µs. Compute <span class="math inline">\(T_\varphi\)</span> for each qubit. Which process limits the coherence of each, relaxation or dephasing?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-echo" class="quarto-xref">Exercise&nbsp;<span>2.4</span></a></strong> (The echo)</p>
+<ol type="a">
+<li><p>Show that <span class="math inline">\(X R_Z(\theta) X = R_Z(-\theta)\)</span>, and that <span class="math inline">\(R_Z(\theta/2)\, X\, R_Z(\theta/2) = X\)</span> for every angle <span class="math inline">\(\theta\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Use <span class="math inline">\(XZX = -Z\)</span> and <a href="L1-platforms-and-measurement.html#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>.</p>
+</details></li>
+<li><p>In a Ramsey experiment, the frequency offset <span class="math inline">\(\delta\)</span> is fixed within each shot, and Gaussian with standard deviation <span class="math inline">\(\sigma_\delta\)</span> across shots. Ignoring relaxation and fast noise, show that the coherence after a wait <span class="math inline">\(t\)</span> is <span class="math inline">\(e^{-\sigma_\delta^2 t^2/2}\)</span>. What is it with an echo?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Use <a href="L2-noise.html#exr-random-phase" class="quarto-xref">Exercise&nbsp;<span>2.2</span></a> with <span class="math inline">\(\theta = \delta t\)</span>.</p>
+</details></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-over-rotation" class="quarto-xref">Exercise&nbsp;<span>2.5</span></a></strong> (Coherent and incoherent errors)</p>
+<ol type="a">
+<li><p>A gate has a coherent over-rotation of <span class="math inline">\(\eta = 0.01\)</span>. After how many repetitions is the error probability 1%? Answer the same question for random over-rotations with standard deviation <span class="math inline">\(\sigma = 0.01\)</span>.</p></li>
+<li><p>A gate has a small coherent error: it applies <span class="math inline">\(R_Z(\eta)\)</span> after the intended gate. For each repetition of the gate, independently and with probability <span class="math inline">\(1/2\)</span>, the error is conjugated by <span class="math inline">\(X\)</span>, so that it becomes <span class="math inline">\(X R_Z(\eta) X\)</span>. Show that, averaged over these random choices, the error of each gate becomes a phase flip with <span class="math inline">\(p = \sin^2(\eta/2)\)</span>. How does it now add up over <span class="math inline">\(n\)</span> repetitions?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Use <a href="L2-noise.html#exr-echo" class="quarto-xref">Exercise&nbsp;<span>2.4</span></a> (a), and compute the factors.</p>
+</details></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-readout" class="quarto-xref">Exercise&nbsp;<span>2.6</span></a></strong> (Unequal readout errors)</p>
+<p>A qubit has the readout error rates <span class="math inline">\(e_0 = 1\%\)</span> and <span class="math inline">\(e_1 = 4\%\)</span>.</p>
+<ol type="a">
+<li><p>Which value of <span class="math inline">\(\langle Z\rangle\)</span> is recorded on average for the states <span class="math inline">\(\ket{0}\)</span>, <span class="math inline">\(\ket{1}\)</span> and <span class="math inline">\(\ket{+}\)</span>?</p></li>
+<li><p>Suppose instead that the readout is perfect, but that preparing <span class="math inline">\(\ket{0}\)</span> gives <span class="math inline">\(\ket{1}\)</span> with probability <span class="math inline">\(e_p\)</span>, and that <span class="math inline">\(\ket{1}\)</span> is prepared by a perfect <span class="math inline">\(X\)</span> gate after that. Which confusion matrix does an experiment that prepares <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span> and measures them report? Can it tell this situation apart from a readout error?</p></li>
+<li><p>Why does the difference between the two situations matter for a circuit with gates between the preparation and the measurement?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Where in the circuit does each error act, and what do the gates do to it?</p>
+</details></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-visible-signal" class="quarto-xref">Exercise&nbsp;<span>2.7</span></a></strong> (The largest visible circuit)</p>
+<p>Take the brick-wall circuit of <a href="L2-noise.html#tbl-budget" class="quarto-xref">Table&nbsp;<span>2.2</span></a> with <span class="math inline">\(L\)</span> layers instead of 8, and suppose that the ideal value of <span class="math inline">\(\langle Z\otimes Z\rangle\)</span> is <span class="math inline">\(0.5\)</span>. We take <span class="math inline">\(10^4\)</span> shots and call the signal visible if the measured value is at least three standard errors away from zero.</p>
+<ol type="a">
+<li><p>Write the signal left, <span class="math inline">\(f\)</span>, as a function of <span class="math inline">\(L\)</span> for each platform.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Split the contributions of <a href="L2-noise.html#tbl-budget" class="quarto-xref">Table&nbsp;<span>2.2</span></a> into a part per layer and a fixed part.</p>
+</details></li>
+<li><p>What is the largest <span class="math inline">\(L\)</span> with a visible signal on each platform? How long do the gates of the <span class="math inline">\(10^4\)</span> shots take in total on the ion trap?</p></li>
+<li><p>Which contribution limits <span class="math inline">\(L\)</span> on each platform? Which improvement would help the ion trap most?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-shots-stop-helping" class="quarto-xref">Exercise&nbsp;<span>2.8</span></a></strong> (When more shots stop helping)</p>
+<ol type="a">
+<li><p>Show that <span class="math inline">\(N^* \approx (1 - \langle P\rangle^2)/\big(\langle P\rangle^2 (\sum_i\varepsilon_i)^2\big)\)</span> when the total error <span class="math inline">\(\sum_i\varepsilon_i\)</span> of the circuit is small.</p></li>
+<li><p>For the superconducting brick-wall circuit of <a href="L2-noise.html#tbl-budget" class="quarto-xref">Table&nbsp;<span>2.2</span></a> with <span class="math inline">\(L\)</span> layers and <span class="math inline">\(\langle P\rangle = 0.5\)</span>, compute the exact <span class="math inline">\(N^*\)</span> for <span class="math inline">\(L = 1\)</span>, 8 and 30. Why are more shots worth taking on a better device?</p></li>
+<li><p><a href="L1-platforms-and-measurement.html#exr-readout-bias" class="quarto-xref">Exercise&nbsp;<span>1.9</span></a> (c) compared <span class="math inline">\(10^3\)</span> and <span class="math inline">\(10^5\)</span> shots. Compute <span class="math inline">\(N^*\)</span> there, and explain the result of that comparison.</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-ghz" class="quarto-xref">Exercise&nbsp;<span>2.9</span></a></strong> (GHZ parity under local and global noise)</p>
+<p>The GHZ state <span class="math inline">\((\ket{0\cdots 0} + \ket{1\cdots 1})/\sqrt{2}\)</span> on <span class="math inline">\(n\)</span> qubits has <span class="math inline">\(\langle X\otimes\cdots\otimes X\rangle = 1\)</span> and <span class="math inline">\(\langle Z\otimes Z\otimes I\otimes\cdots\otimes I\rangle = 1\)</span>.</p>
+<ol type="a">
+<li><p>Each qubit undergoes depolarising noise with parameter <span class="math inline">\(p\)</span>. By which factors do the two expectation values shrink?</p></li>
+<li><p>Which parameter of the global depolarising channel shrinks <span class="math inline">\(\langle X\otimes\cdots\otimes X\rangle\)</span> by the same factor? What does it then do to <span class="math inline">\(\langle Z\otimes Z\otimes I\otimes\cdots\otimes I\rangle\)</span>?</p></li>
+<li><p>How could measurements of these two expectation values show whether the noise on a GHZ state is closer to local or to global depolarising?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-environment" class="quarto-xref">Exercise&nbsp;<span>2.10</span></a></strong> (Dephasing from an environment)</p>
+<p>A qubit in the state <span class="math inline">\(\alpha\ket{0} + \beta\ket{1}\)</span> interacts with an environment qubit in the state <span class="math inline">\(\cos(\phi/2)\ket{0} + \sin(\phi/2)\ket{1}\)</span> through a CZ gate, after which the environment is discarded.</p>
+<ol type="a">
+<li><p>Show that the qubit undergoes a phase flip with <span class="math inline">\(p = \sin^2(\phi/2)\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>With the environment second, <span class="math inline">\(\gate{CZ} = I\otimes\ket{0}\bra{0} + Z\otimes\ket{1}\bra{1}\)</span>. Take the partial trace over the environment.</p>
+</details></li>
+<li><p>The Kraus operators of this channel are <span class="math inline">\(K_e = (I\otimes\bra{e})\,\gate{CZ}\,(I\otimes\ket{E})\)</span> for <span class="math inline">\(e = 0, 1\)</span>, where <span class="math inline">\(\ket{E}\)</span> is the initial state of the environment. Compute them, and compare them with those of <a href="L2-noise.html#def-pauli-channel" class="quarto-xref">Definition&nbsp;<span>2.3</span></a>.</p></li>
 </ol>
 </div>
 
@@ -976,8 +1097,8 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./l01-platforms-and-measurement.html" class="pagination-link" aria-label="Platforms, gates and measurement">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span>
+      <a href="./L2-noise.html" class="pagination-link" aria-label="Noise channels and error budgets">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
