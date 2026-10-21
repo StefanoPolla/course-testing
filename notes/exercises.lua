@@ -1,6 +1,6 @@
 -- Exercises page: write ::: {#exercise-list} ::: in the text (exercises.qmd).
 -- At render time it is replaced by the exercises (::: {#exr-...} divs) of every lecture
--- chapter (lNN-*.qmd) listed in _quarto.yml, each with a link back to the original, so
+-- chapter (LN-*.qmd, or the older lNN-*.qmd) listed in _quarto.yml, each with a link back to the original, so
 -- the page updates itself when a chapter is published. Exercises must not contain
 -- labelled elements (equations, figures): the copies drop the labels.
 -- Web only: in the PDF, the whole Exercises appendix is removed (see drop_in_pdf).
@@ -16,7 +16,7 @@ end
 local function chapters(project)
   local list = {}
   for line in (read_file(project .. "/_quarto.yml") or ""):gmatch("[^\n]+") do
-    local file = line:match("^%s*%-%s+(l%d%d%-[%w_-]+%.qmd)%s*$")
+    local file = line:match("^%s*%-%s+([lL]%d+%-[%w_-]+%.qmd)%s*$")
     if file then table.insert(list, file) end
   end
   return list
@@ -75,13 +75,20 @@ local function exercise_list(el)
 end
 
 -- PDF: drop every chapter whose heading has the class .web-only (the About page and
--- the Exercises appendix), from its heading up to the next chapter.
+-- the Exercises appendix), from its heading up to the next chapter. Quarto's file
+-- markers (raw blocks "<!-- quarto-file-metadata: ... -->") are kept: without the
+-- marker of the next file, Quarto counts that chapter as part of the unnumbered index
+-- page, and its sections lose their numbers and cross-references.
+local function is_file_marker(b)
+  return b.t == "RawBlock" and b.text:match("^<!%-%- quarto%-file%-metadata:") ~= nil
+end
+
 local function drop_in_pdf(doc)
   if quarto.doc.is_format("html") then return nil end
   local out, skipping = pandoc.Blocks {}, false
   for _, b in ipairs(doc.blocks) do
     if b.t == "Header" and b.level == 1 then skipping = b.classes:includes("web-only") end
-    if not skipping then out:insert(b) end
+    if not skipping or is_file_marker(b) then out:insert(b) end
   end
   doc.blocks = out
   return doc
