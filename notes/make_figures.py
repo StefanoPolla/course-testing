@@ -421,13 +421,11 @@ def bloch_channel(ax, f, c=(0.0, 0.0, 0.0), title="", note=""):
     ax.text(0, -1.42, note, ha="center", va="top", fontsize=9)
 
 
-fig, axes = plt.subplots(1, 3, figsize=(7.6, 2.95))
-bloch_channel(axes[0], (1, 0.5, 0.5), title="(a) bit flip, $p = 0.25$",
-              note="$f_x = 1,\\ f_y = f_z = 0.5$")
-bloch_channel(axes[1], (0.5, 0.5, 1), title="(b) phase flip, $p = 0.25$",
-              note="$f_x = f_y = 0.5,\\ f_z = 1$")
-bloch_channel(axes[2], (0.6, 0.6, 0.6), title="(c) depolarising, $p = 0.4$",
+fig, axes = plt.subplots(1, 2, figsize=(5.4, 3.1))
+bloch_channel(axes[0], (0.6, 0.6, 0.6), title="(a) depolarising, $p = 0.4$",
               note="$f_x = f_y = f_z = 0.6$")
+bloch_channel(axes[1], (0.5, 0.5, 1), title="(b) dephasing, $p = 0.25$",
+              note="$f_x = f_y = 0.5,\\ f_z = 1$")
 fig.subplots_adjust(wspace=0.05, bottom=0.12)
 save_fig(fig, "bloch-pauli-channels")
 
@@ -436,8 +434,10 @@ fig, axes = plt.subplots(1, 2, figsize=(5.4, 3.1))
 bloch_channel(axes[0], (np.sqrt(1 - g), np.sqrt(1 - g), 1 - g), c=(0, 0, g),
               title=r"(a) amplitude damping, $\gamma = 0.5$",
               note="$f_x = f_y = 0.71,\\ f_z = 0.5$,\ncentre moved up by $0.5$")
-bloch_channel(axes[1], (0.3, 0.3, 1), title="(b) pure dephasing",
-              note="$f_x = f_y = 0.3,\\ f_z = 1$\n ")
+# idle qubit: t = T1/2 and T2* = T1/2, so f_xy = exp(-t/T2*), f_z = exp(-t/T1)
+fxy, fz = np.exp(-1.0), np.exp(-0.5)
+bloch_channel(axes[1], (fxy, fxy, fz), c=(0, 0, 1 - fz), title=r"(b) idle qubit, $t = T_2^* = T_1/2$",
+              note=f"$f_x = f_y = {fxy:.2f},\\ f_z = {fz:.2f}$,\ncentre moved up by ${1 - fz:.2f}$")
 fig.subplots_adjust(wspace=0.05, bottom=0.12)
 save_fig(fig, "bloch-relaxation-dephasing")
 

@@ -108,7 +108,7 @@ glossary:
     def: "Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1, and the amplitude-damping channel describes it."
   dephasing:
     term: dephasing
-    def: "Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency fluctuates. The coherence time T2 includes both dephasing and relaxation; the time of pure dephasing alone is called Tφ."
+    def: "Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency is shifted by an unknown amount. The measured times T2* and T2 include both dephasing and relaxation; the time of pure dephasing alone is called Tφ."
   coherent-error:
     term: coherent error
     def: "A systematic error in which a gate applies the wrong unitary, for example a rotation by a slightly wrong angle, in the same way every time."
@@ -144,7 +144,7 @@ glossary:
     def: "The three expectation values of X, Y and Z of a qubit, which fix its density matrix. It has length one for pure states and less for mixed states."
   purity:
     term: purity
-    def: "The trace of the square of a density matrix: 1 for pure states, smaller for mixed states, and 1/2 for a uniformly random qubit."
+    def: "The trace of the square of a density matrix: 1 for pure states, smaller for mixed states, and smallest, one over 2 to the n, for the maximally mixed state of n qubits (1/2 for a uniformly random qubit)."
   quantum-channel:
     term: quantum channel
     def: "The general description of how a quantum state changes, including noise: a linear map of density matrices that can be written with Kraus operators. Unitary gates are the channels with a single Kraus operator."
@@ -159,25 +159,28 @@ glossary:
     def: "A channel that applies a random Pauli error, chosen with fixed probabilities. It multiplies the expectation value of each Pauli string by its own factor."
   bit-flip:
     term: bit flip
-    def: "The Pauli channel that applies X with some probability p: it flips the bit of a qubit."
+    def: "The Pauli channel that applies X with some probability p: it flips the bit of a qubit. Readout errors with equal error rates act as a bit flip just before the measurement."
   phase-flip:
-    term: phase flip
-    def: "The Pauli channel that applies Z with some probability p: it flips the sign of the relative phase between 0 and 1. Random phases and pure dephasing act as phase flips."
+    term: phase-flip channel
+    def: "Another name for the dephasing channel, the Pauli channel that applies Z with some probability p. The name describes its Kraus form; physically, dephasing is usually a gradual loss of information about the phase."
+  dephasing-channel:
+    term: dephasing channel
+    def: "The Pauli channel that applies Z with some probability p, also called the phase-flip channel. It keeps the probabilities of 0 and 1 and shrinks the coherence. An unknown phase, for example from an unknown shift of the qubit frequency, acts as a dephasing channel."
   depolarising:
     term: depolarising channel
-    def: "The channel that replaces the state by the maximally mixed state with probability p. On one qubit, it is the same as applying X, Y or Z, each with probability p/4. It shrinks all expectation values of Pauli strings by the same factor."
+    def: "On one qubit, the Pauli channel that applies X, Y or Z, each with probability p/4. It is the same as replacing the state by the maximally mixed state with probability p, and it shrinks the Bloch ball uniformly. On many qubits, it can be local or global."
   markovian:
     term: Markovian noise
     def: "Noise without memory: the noise after each operation does not depend on what happened before. The model in which every gate is followed by a fixed channel assumes it."
   coherence:
     term: coherence
-    def: "The off-diagonal entry of a qubit's density matrix, which carries the relative phase of a superposition. Its size decays with the coherence time T2."
+    def: "The off-diagonal entry of a qubit's density matrix, which carries the relative phase of a superposition. Its size decays over the dephasing time T2*, or over the longer time T2 with an echo."
   amplitude-damping:
     term: amplitude damping
     def: "The channel that describes relaxation: a qubit in the excited state decays to the ground state with probability gamma, which grows with time as one minus exp(-t/T1)."
   pure-dephasing:
     term: pure dephasing
-    def: "Dephasing without relaxation, caused by fast fluctuations of the qubit frequency. It acts as a phase flip whose strength grows with time, with characteristic time Tφ."
+    def: "The part of dephasing that does not come from relaxation, described by a dephasing channel whose strength grows with time, with characteristic time Tφ. It cannot be measured on its own, since relaxation also reduces the coherence."
   ramsey:
     term: Ramsey experiment
     def: "A measurement of dephasing: a pulse puts the qubit in a superposition, the qubit waits, and a second pulse turns the remaining coherence into a measurable population. It measures T2*."
@@ -186,7 +189,7 @@ glossary:
     def: "An X pulse halfway through a wait, which reverses the phase accumulated before it, so that phase errors that stay constant during the wait cancel. An echo experiment measures T2."
   t2-star:
     term: T2*
-    def: "The time over which the coherence decays in a Ramsey experiment. It is shorter than T2, because it includes slow noise that an echo removes."
+    def: "The dephasing time: the time over which the coherence of a qubit decays in a Ramsey experiment. It is shorter than T2, measured with an echo, because it also includes slow noise that the echo removes."
   dynamical-decoupling:
     term: dynamical decoupling
     def: "Repeated echo pulses during a long wait, which remove noise that is slow compared with the spacing of the pulses. It suppresses noise on the device itself."
@@ -199,6 +202,12 @@ glossary:
   weight:
     term: weight
     def: "The number of qubits on which a Pauli string acts with a Pauli matrix other than the identity. Under local noise, strings of higher weight lose their expectation value faster."
+  unital:
+    term: unital
+    def: "A channel is unital if it maps the maximally mixed state to itself; on one qubit, it keeps the centre of the Bloch ball fixed. Pauli channels are unital; relaxation, described by amplitude damping, is not."
+  local-depolarising:
+    term: local depolarising noise
+    def: "Depolarising noise that acts on each qubit separately and independently. It shrinks the expectation value of a Pauli string by one factor for each qubit on which the string acts, so strings of higher weight shrink faster."
   global-depolarising:
     term: global depolarising channel
     def: "The depolarising channel acting on all qubits at once: with probability p, the state of all qubits is replaced by the maximally mixed state. It shrinks every Pauli expectation value by the same factor, whatever its weight."
