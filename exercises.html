@@ -80,6 +80,11 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <meta name="robots" content="noindex, nofollow">
+<style>
+  .chg { color: #a3236b; }
+  body.quarto-dark .chg { color: #ff8cc6; }
+  div.chg { border-left: 3px solid currentColor; padding-left: 0.6em; }
+</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -399,7 +404,7 @@ window.Quarto = {
 \newcommand{\ket}[1]{\left|#1\right\rangle}
 \newcommand{\bra}[1]{\left\langle#1\right|}
 \newcommand{\gate}[1]{\mathrm{#1}}
-\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\Tr}{\mathrm{Tr}}
 \]</span></p>
 </div>
 <p>This page collects the exercises of all published chapters. The label of each exercise links back to it in its chapter, where the surrounding text explains the notation and the references. The exercises of each new chapter are added here when it is published.</p>
@@ -555,58 +560,58 @@ window.Quarto = {
 <section class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="">Chapter 2: Noise channels and error budgets</h2>
 <div class="exercise-copy">
-<p><strong><a href="L2-noise.html#exr-composition" class="quarto-xref">Exercise&nbsp;<span>2.1</span></a></strong> (Composing depolarising channels)</p>
-<ol type="a">
-<li><p>Apply the depolarising channel with parameter <span class="math inline">\(p_1\)</span> and then the one with <span class="math inline">\(p_2\)</span>, using the formula of <a href="L2-noise.html#def-depolarising" class="quarto-xref">Definition&nbsp;<span>2.4</span></a>. Show that the result is again a depolarising channel, and check that its factor is <span class="math inline">\((1-p_1)(1-p_2)\)</span>.</p></li>
-<li><p>A qubit is prepared in <span class="math inline">\(\ket{+}\)</span>, and <span class="math inline">\(n\)</span> noisy <span class="math inline">\(X\)</span> gates are applied, each followed by depolarising noise with parameter <span class="math inline">\(p\)</span>. What is <span class="math inline">\(\langle X\rangle\)</span> at the end? For <span class="math inline">\(p = 10^{-3}\)</span>, after how many gates has it halved?</p>
-<details class="hint"><summary>Hint</summary>
-<p>Where in the circuit can the channels be moved?</p>
-</details></li>
-<li><p>Two qubits each undergo depolarising noise with parameter <span class="math inline">\(p\)</span>, independently, so that the channel on both is <span class="math inline">\(\Lambda\otimes\Lambda\)</span>. By which factors do <span class="math inline">\(\langle Z\otimes I\rangle\)</span> and <span class="math inline">\(\langle Z\otimes Z\rangle\)</span> shrink?</p>
-<details class="hint"><summary>Hint</summary>
-<p>A product of channels acts factor by factor: <span class="math inline">\((\Lambda\otimes\Lambda)(A\otimes B) = \Lambda(A)\otimes\Lambda(B)\)</span>.</p>
-</details></li>
-</ol>
-</div>
-<div class="exercise-copy">
-<p><strong><a href="L2-noise.html#exr-random-phase" class="quarto-xref">Exercise&nbsp;<span>2.2</span></a></strong> (Random phases)</p>
+<p><strong><a href="L2-noise.html#exr-random-phase" class="quarto-xref">Exercise&nbsp;<span>2.1</span></a></strong> (Random phases)</p>
 <p>A qubit undergoes the rotation <span class="math inline">\(R_Z(\theta)\)</span>, where <span class="math inline">\(\theta\)</span> is a Gaussian random angle with mean zero and variance <span class="math inline">\(\sigma^2\)</span>.</p>
 <ol type="a">
 <li><p>Show that <span class="math inline">\(\mathbb{E}[\cos\theta] = e^{-\sigma^2/2}\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
 <p><span class="math inline">\(\cos\theta\)</span> is the real part of <span class="math inline">\(e^{i\theta}\)</span>.</p>
 </details></li>
-<li><p>Which phase-flip probability <span class="math inline">\(p\)</span> does this channel have? What is it for <span class="math inline">\(\sigma \ll 1\)</span>?</p></li>
+<li><p>Which <span class="chg">dephasing</span> probability <span class="math inline">\(p\)</span> does this channel have? What is it for <span class="math inline">\(\sigma \ll 1\)</span>?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L2-noise.html#exr-composition" class="quarto-xref">Exercise&nbsp;<span>2.2</span></a></strong> (Composing depolarising channels)</p>
+<ol type="a">
+<li><p>Apply the depolarising channel with parameter <span class="math inline">\(p_1\)</span> and then the one with <span class="math inline">\(p_2\)</span>, using <span class="chg"><a href="L2-noise.html#eq-depolarising" class="quarto-xref">Equation&nbsp;<span>2.5</span></a></span>. Show that the result is again a depolarising channel, and check that its factor is <span class="math inline">\((1-p_1)(1-p_2)\)</span>.</p></li>
+<li><p>A qubit is prepared in <span class="math inline">\(\ket{+}\)</span>, and <span class="math inline">\(n\)</span> noisy <span class="math inline">\(X\)</span> gates are applied, each followed by depolarising noise with parameter <span class="math inline">\(p\)</span>. What is <span class="math inline">\(\langle X\rangle\)</span> at the end? For <span class="math inline">\(p = 10^{-3}\)</span>, after how many gates has <span class="chg"><span class="math inline">\(\langle X\rangle\)</span> fallen to half of its initial value</span>?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Where in the circuit can the channels be moved?</p>
+</details></li>
+<li><p>Two qubits each undergo depolarising noise with parameter <span class="math inline">\(p\)</span>, independently, so that the channel on both is <span class="math inline">\(\Lambda\otimes\Lambda\)</span>. By which factors do <span class="math inline">\(\langle Z\otimes I\rangle\)</span> and <span class="math inline">\(\langle Z\otimes Z\rangle\)</span> shrink? <span class="chg">Do these factors depend on the state of the two qubits?</span></p>
+<details class="hint"><summary>Hint</summary>
+<p>A product of channels acts factor by factor: <span class="math inline">\((\Lambda\otimes\Lambda)(A\otimes B) = \Lambda(A)\otimes\Lambda(B)\)</span>.</p>
+</details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="L2-noise.html#exr-t1-t2" class="quarto-xref">Exercise&nbsp;<span>2.3</span></a></strong> (Relaxation and dephasing together)</p>
 <ol type="a">
-<li><p>Show that amplitude damping and a phase flip commute. Write the Bloch vector of <span class="math inline">\(\ket{+}\)</span> after it has been idle for a time <span class="math inline">\(t\)</span>.</p>
+<li><p>Show that amplitude damping and <span class="chg">dephasing</span> commute. Write the Bloch vector of <span class="math inline">\(\ket{+}\)</span> after it has been idle for a time <span class="math inline">\(t\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
 <p>Compare what the two channels do to <span class="math inline">\(\rho_{00}\)</span>, <span class="math inline">\(\rho_{11}\)</span> and <span class="math inline">\(\rho_{01}\)</span>.</p>
 </details></li>
-<li><p>Suppose the calibration data of a superconducting device give, for three of its qubits, <span class="math inline">\(T_1 = 150\)</span>, <span class="math inline">\(80\)</span> and <span class="math inline">\(200\)</span> µs and <span class="math inline">\(T_2 = 120\)</span>, <span class="math inline">\(150\)</span> and <span class="math inline">\(60\)</span> µs. Compute <span class="math inline">\(T_\varphi\)</span> for each qubit. Which process limits the coherence of each, relaxation or dephasing?</p></li>
+<li><p>Suppose the calibration data of a superconducting device give, for three of its qubits, <span class="math inline">\(T_1 = 150\)</span>, <span class="math inline">\(80\)</span> and <span class="math inline">\(200\)</span> µs and <span class="chg"><span class="math inline">\(T_2^* = 120\)</span></span>, <span class="math inline">\(150\)</span> and <span class="math inline">\(60\)</span> µs. Compute <span class="math inline">\(T_\varphi\)</span> for each qubit. Which process limits the coherence of each, relaxation or dephasing?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="L2-noise.html#exr-echo" class="quarto-xref">Exercise&nbsp;<span>2.4</span></a></strong> (The echo)</p>
 <ol type="a">
-<li><p>Show that <span class="math inline">\(X R_Z(\theta) X = R_Z(-\theta)\)</span>, and that <span class="math inline">\(R_Z(\theta/2)\, X\, R_Z(\theta/2) = X\)</span> for every angle <span class="math inline">\(\theta\)</span>.</p>
+<li><p>Show that <span class="math inline">\(X R_Z(\theta) X = R_Z(-\theta)\)</span>, and that <span class="math inline">\(R_Z(\theta/2)\, X\, R_Z(\theta/2) = X\)</span> for every angle <span class="math inline">\(\theta\)</span>. <span class="chg">An echo on an idle qubit ends with a second <span class="math inline">\(X\)</span>. Why does this second <span class="math inline">\(X\)</span> cost nothing extra when the next gate on the qubit is a single-qubit gate?</span></p>
 <details class="hint"><summary>Hint</summary>
-<p>Use <span class="math inline">\(XZX = -Z\)</span> and <a href="L1-platforms-and-measurement.html#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>.</p>
+<p>Use <span class="math inline">\(XZX = -Z\)</span> and <a href="L1-platforms-and-measurement.html#eq-conjugation" class="quarto-xref">Equation&nbsp;<span>1.5</span></a>. <span class="chg">For the second <span class="math inline">\(X\)</span>, see <a href="L1-platforms-and-measurement.html#sec-virtual-z" class="quarto-xref"><span>Section 1.3.5</span></a>.</span></p>
 </details></li>
-<li><p>In a Ramsey experiment, the frequency offset <span class="math inline">\(\delta\)</span> is fixed within each shot, and Gaussian with standard deviation <span class="math inline">\(\sigma_\delta\)</span> across shots. Ignoring relaxation and fast noise, show that the coherence after a wait <span class="math inline">\(t\)</span> is <span class="math inline">\(e^{-\sigma_\delta^2 t^2/2}\)</span>. What is it with an echo?</p>
+<li><p>In a Ramsey experiment, the <span class="chg">qubit frequency is shifted by an amount <span class="math inline">\(\delta\)</span> that is constant</span> within each shot, and Gaussian with standard deviation <span class="math inline">\(\sigma_\delta\)</span> across shots. Ignoring relaxation and fast noise, show that the coherence after a wait <span class="math inline">\(t\)</span> is <span class="math inline">\(e^{-\sigma_\delta^2 t^2/2}\)</span>. What is it with an echo?</p>
 <details class="hint"><summary>Hint</summary>
-<p>Use <a href="L2-noise.html#exr-random-phase" class="quarto-xref">Exercise&nbsp;<span>2.2</span></a> with <span class="math inline">\(\theta = \delta t\)</span>.</p>
+<p>Use <a href="L2-noise.html#exr-random-phase" class="quarto-xref">Exercise&nbsp;<span>2.1</span></a> with <span class="math inline">\(\theta = \delta t\)</span>.</p>
 </details></li>
 </ol>
 </div>
 <div class="exercise-copy">
 <p><strong><a href="L2-noise.html#exr-over-rotation" class="quarto-xref">Exercise&nbsp;<span>2.5</span></a></strong> (Coherent and incoherent errors)</p>
 <ol type="a">
-<li><p>A gate has a coherent over-rotation of <span class="math inline">\(\eta = 0.01\)</span>. After how many repetitions is the error probability 1%? Answer the same question for random over-rotations with standard deviation <span class="math inline">\(\sigma = 0.01\)</span>.</p></li>
-<li><p>A gate has a small coherent error: it applies <span class="math inline">\(R_Z(\eta)\)</span> after the intended gate. For each repetition of the gate, independently and with probability <span class="math inline">\(1/2\)</span>, the error is conjugated by <span class="math inline">\(X\)</span>, so that it becomes <span class="math inline">\(X R_Z(\eta) X\)</span>. Show that, averaged over these random choices, the error of each gate becomes a phase flip with <span class="math inline">\(p = \sin^2(\eta/2)\)</span>. How does it now add up over <span class="math inline">\(n\)</span> repetitions?</p>
+<li><p>A gate has a coherent over-rotation of <span class="math inline">\(\eta = 0.01\)</span>. After how many repetitions is the error probability 1%? Answer the same question for random <span class="chg">over- and under-rotations, with mean zero and</span> standard deviation <span class="math inline">\(\sigma = 0.01\)</span>.</p></li>
+<li><p>A <span class="chg">single-qubit</span> gate has a small coherent error: it applies <span class="math inline">\(R_Z(\eta)\)</span> after the intended gate. For each repetition of the gate, independently and with probability <span class="math inline">\(1/2\)</span>, the error is conjugated by <span class="math inline">\(X\)</span>, so that it becomes <span class="math inline">\(X R_Z(\eta) X\)</span>. Show that, averaged over these random choices, the error of each gate becomes a <span class="chg">dephasing channel</span> with <span class="math inline">\(p = \sin^2(\eta/2)\)</span>. How does it now add up over <span class="math inline">\(n\)</span> repetitions?</p>
 <details class="hint"><summary>Hint</summary>
 <p>Use <a href="L2-noise.html#exr-echo" class="quarto-xref">Exercise&nbsp;<span>2.4</span></a> (a), and compute the factors.</p>
 </details></li>
@@ -657,7 +662,7 @@ window.Quarto = {
 <p><strong><a href="L2-noise.html#exr-environment" class="quarto-xref">Exercise&nbsp;<span>2.10</span></a></strong> (Dephasing from an environment)</p>
 <p>A qubit in the state <span class="math inline">\(\alpha\ket{0} + \beta\ket{1}\)</span> interacts with an environment qubit in the state <span class="math inline">\(\cos(\phi/2)\ket{0} + \sin(\phi/2)\ket{1}\)</span> through a CZ gate, after which the environment is discarded.</p>
 <ol type="a">
-<li><p>Show that the qubit undergoes a phase flip with <span class="math inline">\(p = \sin^2(\phi/2)\)</span>.</p>
+<li><p>Show that the qubit undergoes a <span class="chg">dephasing channel</span> with <span class="math inline">\(p = \sin^2(\phi/2)\)</span>.</p>
 <details class="hint"><summary>Hint</summary>
 <p>With the environment second, <span class="math inline">\(\gate{CZ} = I\otimes\ket{0}\bra{0} + Z\otimes\ket{1}\bra{1}\)</span>. Take the partial trace over the environment.</p>
 </details></li>

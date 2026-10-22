@@ -445,7 +445,7 @@ window.Quarto = {
 \newcommand{\ket}[1]{\left|#1\right\rangle}
 \newcommand{\bra}[1]{\left\langle#1\right|}
 \newcommand{\gate}[1]{\mathrm{#1}}
-\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\Tr}{\mathrm{Tr}}
 \]</span></p>
 </div>
 <p>On paper, a quantum algorithm is a circuit: gates on ideal qubits, followed by measurements. A real quantum computer is a physical device, whose physics decides which operations it can perform, between which qubits, how fast and how reliably. In this chapter, we look at this physical side and at what it means for the circuits we can run.</p>
@@ -1201,7 +1201,7 @@ Figure&nbsp;1.11: SWAP as three CNOTs with alternating control.
 <h2 data-number="1.4" class="anchored" data-anchor-id="sec-noise-sources"><span class="header-section-number">1.4</span> Sources of noise</h2>
 <p>Every wire or laser beam used to control a qubit is also a way in for disturbances. This section describes in words what can go wrong; the next chapter (<a href="L2-noise.html" class="quarto-xref"><span>Chapter 2</span></a>) goes deeper into the mathematical description of noise and its effects.</p>
 <p>The most important effect is that an excited qubit loses its energy. Left alone, <span class="math inline">\(\ket{1}\)</span> decays to <span class="math inline">\(\ket{0}\)</span>, a process called <a href="glossary.html#gloss-relaxation" class="gloss" data-gloss="Loss of energy by a qubit: the excited state decays to the ground state. Its characteristic time is called T1, and the amplitude-damping channel describes it.">relaxation</a>. In superconducting qubits, the energy is absorbed by tiny defects in the materials of the chip. The qubit levels of trapped ions hardly decay on their own, but the lasers used for gates occasionally knock an ion out of its qubit state.</p>
-<p>A qubit can also lose its phase without losing energy. A superposition of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span> carries a relative phase between its two parts, and the qubit’s frequency sets how fast this phase turns. If the frequency fluctuates, for example because of fluctuating magnetic fields or electric charges near the qubit, the phase wanders, and the superposition gradually becomes a random mixture of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span>. This is called <a href="glossary.html#gloss-dephasing" class="gloss" data-gloss="Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency fluctuates. The coherence time T2 includes both dephasing and relaxation; the time of pure dephasing alone is called Tφ.">dephasing</a>. The time over which a qubit relaxes is called <span class="math inline">\(T_1\)</span>, and the time over which it dephases is called <span class="math inline">\(T_2\)</span>. These are the coherence times quoted for every device, and <a href="L2-noise.html#def-t1-t2" class="quarto-xref">Definition&nbsp;<span>2.5</span></a> defines them precisely.</p>
+<p>A qubit can also lose its phase without losing energy. A superposition of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span> carries a relative phase between its two parts, and the qubit’s frequency sets how fast this phase turns. If the frequency fluctuates, for example because of fluctuating magnetic fields or electric charges near the qubit, the phase wanders, and the superposition gradually becomes a random mixture of <span class="math inline">\(\ket{0}\)</span> and <span class="math inline">\(\ket{1}\)</span>. This is called <a href="glossary.html#gloss-dephasing" class="gloss" data-gloss="Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency is shifted by an unknown amount. The measured times T2* and T2 include both dephasing and relaxation; the time of pure dephasing alone is called Tφ.">dephasing</a>. The time over which a qubit relaxes is called <span class="math inline">\(T_1\)</span>, and the time over which it dephases is called <span class="math inline">\(T_2\)</span>. These are the coherence times quoted for every device, and <a href="L2-noise.html#def-t1-t2" class="quarto-xref">Definition&nbsp;<span>2.5</span></a> defines them precisely.</p>
 <p>A third kind of error is a gate that rotates by the wrong amount, because a pulse is slightly too long, too short or off axis, or because a laser’s intensity fluctuates. Unlike relaxation and dephasing, such <a href="glossary.html#gloss-coherent-error" class="gloss" data-gloss="A systematic error in which a gate applies the wrong unitary, for example a rotation by a slightly wrong angle, in the same way every time.">coherent errors</a> are systematic: the same gate makes the same mistake every time. <a href="#tbl-noise" class="quarto-xref">Table&nbsp;<span>1.4</span></a> lists these effects together with the remaining ones.</p>
 <div id="tbl-noise" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1221,12 +1221,12 @@ Table&nbsp;1.4: What can go wrong in a quantum device.
 <tr class="odd">
 <td><span class="math inline">\(\ket{1}\)</span> decays to <span class="math inline">\(\ket{0}\)</span></td>
 <td>energy absorbed by defects in the chip</td>
-<td>relaxation (<span class="math inline">\(T_1\)</span>, <a href="L2-noise.html#sec-t1-t2" class="quarto-xref"><span>Section 2.2.3</span></a>)</td>
+<td>relaxation (<span class="math inline">\(T_1\)</span>, <a href="L2-noise.html#sec-t1-t2" class="quarto-xref"><span>Section 2.2.4</span></a>)</td>
 </tr>
 <tr class="even">
 <td>the relative phase of a superposition wanders</td>
 <td>fluctuating magnetic fields</td>
-<td>dephasing (<span class="math inline">\(T_2\)</span>, <a href="L2-noise.html#sec-t1-t2" class="quarto-xref"><span>Section 2.2.3</span></a>)</td>
+<td>dephasing (<span class="math inline">\(T_2\)</span>, <a href="L2-noise.html#sec-t1-t2" class="quarto-xref"><span>Section 2.2.4</span></a>)</td>
 </tr>
 <tr class="odd">
 <td>a gate rotates by the wrong amount</td>
@@ -1264,7 +1264,7 @@ Table&nbsp;1.4: What can go wrong in a quantum device.
 </figure>
 </div>
 <p>The last row explains why providers recalibrate their devices regularly and publish calibration data, the error rates of each qubit and gate at the last calibration. These data are a snapshot, and a few hours later the device may behave differently.</p>
-<p>Providers summarise the quality of each operation by a <a href="glossary.html#gloss-fidelity" class="gloss" data-gloss="A number between 0 and 1 measuring how close a state or operation is to the intended one. The state fidelity is the probability that a state passes a test for the target state; the average gate fidelity averages it over all input states. Informally, one minus the probability of an error.">fidelity</a>. For now, read it as one minus the probability that the operation goes wrong; <a href="L2-noise.html#def-fidelity" class="quarto-xref">Definition&nbsp;<span>2.6</span></a> gives the precise definition. Typical values on current devices are 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for readout, so two-qubit gates and readout are the weakest links.</p>
+<p>Providers summarise the quality of each operation by a <a href="glossary.html#gloss-fidelity" class="gloss" data-gloss="A number between 0 and 1 measuring how close a state or operation is to the intended one. The state fidelity is the probability that a state passes a test for the target state; the average gate fidelity averages it over all input states. Informally, one minus the probability of an error.">fidelity</a>. For now, read it as one minus the probability that the operation goes wrong; <a href="L2-noise.html#def-fidelity" class="quarto-xref">Definition&nbsp;<span>2.7</span></a> gives the precise definition. Typical values on current devices are 99.9-99.99% for single-qubit gates, 99-99.9% for two-qubit gates and 96-99.9% for readout, so two-qubit gates and readout are the weakest links.</p>
 </section>
 <section id="sec-measurement" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="sec-measurement"><span class="header-section-number">1.5</span> Measurement</h2>
@@ -1530,7 +1530,9 @@ Wafers.”</span> <em>Nature</em> 634: 74–79. <a href="https://doi.org/10.1038
 </div>
 <div id="ref-walter2025" class="csl-entry" role="listitem">
 Walter, Michael, and Maris Ozols. 2025. <em>Lecture Notes on Quantum
-Information Theory</em>. Course notes, University of Amsterdam.
+Information Theory</em>. Course notes, University of Amsterdam; not
+publicly available. Students who do not take the Quantum Information
+Theory course can ask the lecturer of this course for a copy.
 </div>
 </div>
 

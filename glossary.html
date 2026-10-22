@@ -376,7 +376,7 @@ The difference between the average of an estimator and the true value. Noise bia
 </dd>
 <dt><span id="gloss-bit-flip">bit flip</span></dt>
 <dd>
-The Pauli channel that applies X with some probability p: it flips the bit of a qubit.
+The Pauli channel that applies X with some probability p: it flips the bit of a qubit. Readout errors with equal error rates act as a bit flip just before the measurement.
 </dd>
 <dt><span id="gloss-bloch-vector">Bloch vector</span></dt>
 <dd>
@@ -388,7 +388,7 @@ Measuring and adjusting the control pulses of a device so that its gates do what
 </dd>
 <dt><span id="gloss-coherence">coherence</span></dt>
 <dd>
-The off-diagonal entry of a qubit’s density matrix, which carries the relative phase of a superposition. Its size decays with the coherence time T2.
+The off-diagonal entry of a qubit’s density matrix, which carries the relative phase of a superposition. Its size decays over the dephasing time T2*, or over the longer time T2 with an echo.
 </dd>
 <dt><span id="gloss-coherence-time">coherence time</span></dt>
 <dd>
@@ -432,11 +432,15 @@ The general description of a quantum state, including states that are uncertain 
 </dd>
 <dt><span id="gloss-dephasing">dephasing</span></dt>
 <dd>
-Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency fluctuates. The coherence time T2 includes both dephasing and relaxation; the time of pure dephasing alone is called Tφ.
+Loss of the relative phase of a superposition without loss of energy, for example because the qubit frequency is shifted by an unknown amount. The measured times T2* and T2 include both dephasing and relaxation; the time of pure dephasing alone is called Tφ.
+</dd>
+<dt><span id="gloss-dephasing-channel">dephasing channel</span></dt>
+<dd>
+The Pauli channel that applies Z with some probability p, also called the phase-flip channel. It keeps the probabilities of 0 and 1 and shrinks the coherence. An unknown phase, for example from an unknown shift of the qubit frequency, acts as a dephasing channel.
 </dd>
 <dt><span id="gloss-depolarising">depolarising channel</span></dt>
 <dd>
-The channel that replaces the state by the maximally mixed state with probability p.&nbsp;On one qubit, it is the same as applying X, Y or Z, each with probability p/4. It shrinks all expectation values of Pauli strings by the same factor.
+On one qubit, the Pauli channel that applies X, Y or Z, each with probability p/4. It is the same as replacing the state by the maximally mixed state with probability p, and it shrinks the Bloch ball uniformly. On many qubits, it can be local or global.
 </dd>
 <dt><span id="gloss-depth">depth</span></dt>
 <dd>
@@ -510,6 +514,10 @@ Slowing the motion of atoms or ions with laser light until they are almost at re
 <dd>
 An error in which a qubit leaves its two qubit levels, for example when a transmon is pushed into its third level.
 </dd>
+<dt><span id="gloss-local-depolarising">local depolarising noise</span></dt>
+<dd>
+Depolarising noise that acts on each qubit separately and independently. It shrinks the expectation value of a Pauli string by one factor for each qubit on which the string acts, so strings of higher weight shrink faster.
+</dd>
 <dt><span id="gloss-logical-qubit">logical qubit</span></dt>
 <dd>
 A qubit of information encoded in many physical qubits by an error-correcting code. Its error rate can be much lower than that of the physical qubits.
@@ -554,9 +562,9 @@ A channel that applies a random Pauli error, chosen with fixed probabilities. It
 <dd>
 A tensor product of single-qubit Pauli matrices (I, X, Y or Z), one for each qubit, such as ZZ or XIY. Hermitian, and squares to the identity.
 </dd>
-<dt><span id="gloss-phase-flip">phase flip</span></dt>
+<dt><span id="gloss-phase-flip">phase-flip channel</span></dt>
 <dd>
-The Pauli channel that applies Z with some probability p: it flips the sign of the relative phase between 0 and 1. Random phases and pure dephasing act as phase flips.
+Another name for the dephasing channel, the Pauli channel that applies Z with some probability p.&nbsp;The name describes its Kraus form; physically, dephasing is usually a gradual loss of information about the phase.
 </dd>
 <dt><span id="gloss-phonon">phonon</span></dt>
 <dd>
@@ -576,11 +584,11 @@ A short burst of microwave or laser radiation at a chosen frequency, switched on
 </dd>
 <dt><span id="gloss-pure-dephasing">pure dephasing</span></dt>
 <dd>
-Dephasing without relaxation, caused by fast fluctuations of the qubit frequency. It acts as a phase flip whose strength grows with time, with characteristic time Tφ.
+The part of dephasing that does not come from relaxation, described by a dephasing channel whose strength grows with time, with characteristic time Tφ. It cannot be measured on its own, since relaxation also reduces the coherence.
 </dd>
 <dt><span id="gloss-purity">purity</span></dt>
 <dd>
-The trace of the square of a density matrix: 1 for pure states, smaller for mixed states, and 1/2 for a uniformly random qubit.
+The trace of the square of a density matrix: 1 for pure states, smaller for mixed states, and smallest, one over 2 to the n, for the maximally mixed state of n qubits (1/2 for a uniformly random qubit).
 </dd>
 <dt><span id="gloss-qccd">QCCD</span></dt>
 <dd>
@@ -644,7 +652,7 @@ A two-qubit gate that exchanges the states of two qubits. It costs three CNOTs.
 </dd>
 <dt><span id="gloss-t2-star">T2*</span></dt>
 <dd>
-The time over which the coherence decays in a Ramsey experiment. It is shorter than T2, because it includes slow noise that an echo removes.
+The dephasing time: the time over which the coherence of a qubit decays in a Ramsey experiment. It is shorter than T2, measured with an echo, because it also includes slow noise that the echo removes.
 </dd>
 <dt><span id="gloss-threshold">threshold</span></dt>
 <dd>
@@ -661,6 +669,10 @@ Compilation of a circuit into the native gates and coupling graph of a device, i
 <dt><span id="gloss-twirling">twirling</span></dt>
 <dd>
 Inserting random Pauli gates around a gate, chosen so that they cancel in the ideal circuit. Averaged over the random choices, any error becomes a Pauli channel.
+</dd>
+<dt><span id="gloss-unital">unital</span></dt>
+<dd>
+A channel is unital if it maps the maximally mixed state to itself; on one qubit, it keeps the centre of the Bloch ball fixed. Pauli channels are unital; relaxation, described by amplitude damping, is not.
 </dd>
 <dt><span id="gloss-virtual-z">virtual Z gate</span></dt>
 <dd>
