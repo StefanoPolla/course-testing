@@ -458,7 +458,9 @@ An echo experiment, a Ramsey experiment with an $X$ pulse halfway (@fig-ramsey-e
 therefore measures a longer time than $T_2^*$, called $T_2$: the decay due to relaxation
 and fast noise only. It obeys @eq-t2 with $T_2$ in place of $T_2^*$ and a longer
 $T_\varphi$, so $T_2^* \le T_2 \le 2T_1$. The star of $T_2^*$ marks the time that
-includes slow noise. In a Ramsey experiment, slow noise makes the coherence decay
+includes slow noise. [Dynamical decoupling is usually assumed to be available for idle
+qubits, so calibration data often quote $T_2$ rather than $T_2^*$, and the error budgets
+of @sec-budgets use $T_2$ too.]{.chg} In a Ramsey experiment, slow noise makes the coherence decay
 faster, and the decay need not be exponential: for a frequency shift that is constant
 within each shot and Gaussian across shots, it is a Gaussian in $t$ (@exr-echo).
 ::::
@@ -814,9 +816,8 @@ $T_2 = 1$ s and a much longer $T_1$. These values are typical of current devices
 
 An idle qubit does not undergo a Pauli channel, but @eq-average-fidelity and
 @eq-pauli-error still give it an error rate: with the factors of @sec-t1-t2,
-$\varepsilon \approx t/(2T_2) + t/(4T_1)$ for a short wait $t$[, where we use $T_2$
-rather than $T_2^*$, assuming that dynamical decoupling protects the idle qubits
-(@sec-slow-noise)]{.chg}. On the superconducting
+$\varepsilon \approx t/(2T_2) + t/(4T_1)$ for a short wait $t$[, with $T_2$ in place of
+$T_2^*$, since dynamical decoupling protects the idle qubits (@sec-slow-noise)]{.chg}. On the superconducting
 device, only the two qubits at the ends of the line wait, during the CZs of every other
 layer. On the ion trap, each qubit waits for about 10 ms of the 12 ms that the gates
 take. @tbl-budget collects the contributions.
