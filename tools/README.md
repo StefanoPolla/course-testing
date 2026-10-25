@@ -42,7 +42,11 @@ What `check` covers:
 
 ## Releasing a lecture
 
-1. In course-testing: finish the chapter, then `check` (no errors).
+1. In course-testing: finish the chapter, then `check` (no errors). Accept any pending
+   review highlights (`.chg`) first. **References to chapters that are not released**
+   become plain text ("the next chapter"), with the original kept in a comment
+   (`<!-- L2-LINK: @sec-... -->`), here in staging too (Stefano, 2026-10-25: always).
+   Restore them when that chapter is released.
 2. `copy` the chapter and its figures into a local clone of ntqc (add new glossary
    entries, bibliography entries or macros too: copy those files).
 3. In ntqc: add the chapter to `notes/_quarto.yml` by hand. That file is copied only
@@ -52,3 +56,19 @@ What `check` covers:
    `ntqc/notes`).
 5. Commit in ntqc with a release message (e.g. "Release lecture 2 notes") and publish
    (`quarto publish gh-pages`).
+
+Also at each release, in ntqc:
+
+- **Glossary**: `notes/glossary.yml` holds only the terms used in the released pages
+  (Stefano, 2026-10-25: no terms of later lectures). Copy the staging file, then trim it
+  to the `.gloss key="..."` values found in `notes/*.qmd`.
+- **PDF date**: `book: date` in `notes/_quarto.yml` is the release date.
+- **Build after committing**: the page dates (`page-dates.lua`) come from git.
+
+First release (L1, 2026-10-25), for reference: `_quarto.yml` was copied once and trimmed
+to the released chapters, without `changes.lua` and the staging profile; ntqc has its
+own `noindex` tag in `_quarto.yml` until Stefano decides otherwise (probably after the
+course). Quarto needs a `gh-pages` branch on the remote before the first publish
+(an empty commit pushed as `refs/heads/gh-pages`), and GitHub Pages must be switched on
+once (Settings, Pages, deploy from the `gh-pages` branch, root). The repository name is
+lowercase: Pages paths are case-sensitive.
