@@ -1,10 +1,10 @@
 ```{=html}
 <!-- Interactive Bloch sphere for PRX(theta, phi), with the pulse that implements it (schematic:
-     fixed amplitude, duration proportional to theta); web only (the PDF shows figures/prx-bloch). -->
+     fixed duration, amplitude proportional to theta, as on most hardware); web only (the PDF shows figures/prx-bloch). -->
 <div class="bloch-prx" id="bloch-prx">
   <svg viewBox="-1.5 -1.42 3 2.84" role="img"
        aria-label="Bloch sphere rotated by PRX(theta, phi). Drag to turn the view."></svg>
-  <svg class="pulse" viewBox="0 -0.62 3 1.1" role="img"
+  <svg class="pulse" viewBox="0 -0.74 3 1.3" role="img"
        aria-label="The drive pulse: its area sets theta, its phase sets phi."></svg>
   <div class="bloch-controls">
     <label><span>θ = <output data-out="theta"></output></span>
@@ -103,18 +103,18 @@
     { v: [0, 1, 0], name: "|+i⟩" },
   ];
 
-  // The pulse, schematic: fixed amplitude, duration proportional to theta, envelope sin^2.
+  // The pulse, schematic: fixed duration, amplitude proportional to theta, envelope sin^2.
   // Fraction of the area under the envelope reached at a fraction s of the pulse:
   const areaDone = (s) => s - Math.sin(2 * Math.PI * s) / (2 * Math.PI);
   function drawPulse(theta, phi, progress) {
-    const x0 = 0.08, W = 2.84, A = 0.36, cycles = 18;  // time axis: 0 to the duration of theta = 2pi
-    const T = theta / (2 * Math.PI);
+    const x0 = 0.08, W = 2.84, cycles = 12, T = 0.9;  // time axis: 0 to 1, the pulse lasts T
+    const A = 0.55 * theta / (2 * Math.PI);           // the amplitude at theta = 2pi is 0.55
     const env = (t) => (t < T ? A * Math.sin((Math.PI * t) / T) ** 2 : 0);
     const X = (t) => (x0 + W * t).toFixed(4);
     const pts = (f, t0, t1, n = 400) =>
       Array.from({ length: n + 1 }, (_, k) => t0 + ((t1 - t0) * k) / n).map((t) => X(t) + "," + f(t).toFixed(4)).join(" ");
     let s = `<line class="axes" x1="${x0}" y1="0" x2="${x0 + W}" y2="0"/>`;
-    s += `<text x="${x0 + W}" y="0.36" text-anchor="end">time</text>`;
+    s += `<text x="${x0 + W}" y="0.48" text-anchor="end">time</text>`;
     if (T > 0) {
       const band = (t1) => `${pts((t) => -env(t), 0, t1, 200)} ${pts((t) => env(t), t1, 0, 200)}`;
       s += `<polygon class="area" points="${band(T)}"/>`;
@@ -125,11 +125,11 @@
       s += `<polyline class="envelope" points="${pts((t) => -env(t), 0, T, 200)}"/>`;
       if (progress !== null) {
         const xc = X(progress * T);
-        s += `<line class="cursor" x1="${xc}" y1="-0.45" x2="${xc}" y2="0.42"/>`;
+        s += `<line class="cursor" x1="${xc}" y1="-0.56" x2="${xc}" y2="0.5"/>`;
       }
     }
-    s += `<text class="theta-label" x="${x0}" y="-0.5" text-anchor="start">area → θ</text>`;
-    s += `<text class="axis-label" x="${x0 + W}" y="-0.5" text-anchor="end">phase → φ</text>`;
+    s += `<text class="theta-label" x="${x0}" y="-0.63" text-anchor="start">area → θ</text>`;
+    s += `<text class="axis-label" x="${x0 + W}" y="-0.63" text-anchor="end">phase → φ</text>`;
     pulseSvg.innerHTML = s;
   }
 

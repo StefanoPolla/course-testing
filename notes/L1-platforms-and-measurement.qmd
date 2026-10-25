@@ -195,14 +195,12 @@ alone would excite the qubit at random. Superconducting chips therefore sit in a
 of a degree above absolute zero (@exr-thermal), and cables bring the microwave pulses
 down to them from electronics at room temperature.
 
-::: {.chg}
 The cold also prepares the qubits. At 10 mK, a qubit left alone loses its energy and falls
 into $\ket{0}$ within a few hundred microseconds. This
 [relaxation]{.gloss key="relaxation"} is a source of noise during a computation
 (@sec-noise-sources), but between runs it initialises the qubits: we simply wait. A
-faster way is *active reset*: measure the qubit (@sec-readout) and apply an $X$ gate if
-the result is 1.
-:::
+faster approach to initialisation is *active reset*: measure the qubit (@sec-readout)
+and apply an $X$ gate if the result is 1.
 
 Superconducting qubits are fast. A transmon is large for a quantum system, a fraction of
 a millimetre across, and it behaves like a small antenna that couples strongly to
@@ -274,8 +272,8 @@ frequency and most of their properties.
 
 The ions are held in vacuum by electric fields in an [ion trap]{.gloss key="ion-trap"},
 lined up in a chain a few micrometres apart, and laser beams slow them down until they
-are almost at rest ([laser cooling]{.gloss key="laser-cooling"}). [Another laser pulse
-then prepares each ion in $\ket{0}$ within microseconds (*optical pumping*).]{.chg} Laser beams, or in some
+are almost at rest ([laser cooling]{.gloss key="laser-cooling"}). Another laser pulse
+then prepares each ion in $\ket{0}$ within microseconds (*optical pumping*). Laser beams, or in some
 designs microwaves, also drive the gates. The qubit levels can be chosen so that stray
 magnetic fields and other disturbances hardly affect them, and trapped-ion qubits keep
 their quantum state for a second or more, thousands of times longer than superconducting
@@ -453,7 +451,7 @@ from this family, and @sec-virtual-z shows that they need no pulse at all.
 ![](figures/prx-bloch){width=45%}
 :::
 
-The Bloch sphere rotated by $\gate{PRX}(\theta,\varphi)$, a rotation by $\theta$ about the axis in the $xy$-plane at an angle $\varphi$ from the $x$-axis. The blue path shows where $\ket{0}$ goes as the rotation angle grows from $0$ to $\theta$. In the web version, the figure is interactive: the sliders set $\theta$ and $\varphi$, the blue grid turns with the sphere, and dragging changes the view. [Below the sphere, a schematic of the pulse: its area (here set by its duration) gives $\theta$, and its phase, a delay against the reference clock (dashed), gives $\varphi$. The button plays the pulse, and the sphere turns as the area builds up.]{.chg}
+The Bloch sphere rotated by $\gate{PRX}(\theta,\varphi)$, a rotation by $\theta$ about the axis in the $xy$-plane at an angle $\varphi$ from the $x$-axis. The blue path shows where $\ket{0}$ goes as the rotation angle grows from $0$ to $\theta$. In the web version, the figure is interactive: the sliders set $\theta$ and $\varphi$, the blue grid turns with the sphere, and dragging changes the view. Below the sphere, a schematic of the pulse: its area, set by its amplitude at a fixed duration, gives $\theta$, and its phase, a delay against the reference clock (dashed), gives $\varphi$. The button plays the pulse, and the sphere turns as the area builds up.
 :::
 
 ::: {#exr-prx}
