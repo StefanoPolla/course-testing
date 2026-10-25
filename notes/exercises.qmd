@@ -1,3 +1,7 @@
+---
+page-sources: ["L*.qmd"]  # last updated: see page-dates.lua
+---
+
 # Exercises {#sec-exercises .web-only}
 
 {{< include _macros.qmd >}}

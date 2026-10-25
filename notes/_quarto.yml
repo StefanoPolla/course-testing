@@ -27,6 +27,7 @@ book:
   downloads: [pdf]
   output-file: ntqc-lecture-notes
 
+author: "Stefano Polla"  # every web page shows it, with the dates of page-dates.lua
 bibliography: references.bib
 metadata-files:
   - glossary.yml
@@ -36,8 +37,11 @@ filters:
   - hints.lua
   - glossary.lua
   - changes.lua  # temporary: review highlighting
+  - page-dates.lua  # author, published, last updated on every web page
 crossref:
   chapters: true
+language:
+  title-block-modified: "Last updated"
 
 format:
   html:
