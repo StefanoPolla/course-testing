@@ -28,18 +28,6 @@ thousands of qubits, enough that many of their circuits are hard to simulate on 
 classical computer, but far from the millions of qubits that the best-known quantum
 algorithms need. *Noisy* means that their errors are not corrected.
 
-::: {.chg}
-The devices in this course are also [digital]{.gloss key="digital-qc"}: they run
-circuits, sequences of gates from a small, fixed set, and any algorithm is written as
-such a circuit. *Analog* quantum devices work differently. They imitate one particular
-physical system, for example a model of a material, by letting their own qubits evolve
-under similar interactions, and then measure the result. The difference is that between
-a model aircraft in a wind tunnel and a computer simulation of the airflow: the model
-behaves like the problem, while the simulation computes it step by step. Analog devices
-can be large, but each one addresses a single family of problems. This course is about
-digital quantum computing.
-:::
-
 Getting useful results from a NISQ device means working within the limit set by noise.
 Circuits are kept short, so that errors have little chance to build up. The quantities
 to keep small are the circuit's [depth]{.gloss key="depth"}, the number of layers of
@@ -120,7 +108,7 @@ certain values of energy, their *energy levels*, and they usually have many more
 two. Most qubits are therefore the two lowest energy levels of a larger system.
 The other levels are still there, and a qubit can end up in them by accident.
 
-A universal, digital quantum computer is built by assembling
+A universal, [digital]{.gloss key="digital-qc"} quantum computer is built by assembling
 many physical qubits and controlling them individually. DiVincenzo listed what this
 requires [@divincenzo2000]:
 
@@ -208,12 +196,12 @@ of a degree above absolute zero (@exr-thermal), and cables bring the microwave p
 down to them from electronics at room temperature.
 
 ::: {.chg}
-The cold also prepares the qubits in a known state. At 10 mK, a qubit left alone loses
-its energy to its surroundings and falls into $\ket{0}$, typically within a few hundred
-microseconds (@sec-noise-sources). The simplest way to initialise the qubits is
-therefore to wait between runs. A faster way is *active reset*: measure the qubit
-(@sec-readout) and apply an $X$ gate if the result is 1. Either way, a small fraction of
-the qubits, typically below 1%, still starts in $\ket{1}$, an error in the preparation.
+The cold also prepares the qubits. At 10 mK, a qubit left alone loses its energy and falls
+into $\ket{0}$ within a few hundred microseconds. This
+[relaxation]{.gloss key="relaxation"} is a source of noise during a computation
+(@sec-noise-sources), but between runs it initialises the qubits: we simply wait. A
+faster way is *active reset*: measure the qubit (@sec-readout) and apply an $X$ gate if
+the result is 1.
 :::
 
 Superconducting qubits are fast. A transmon is large for a quantum system, a fraction of
@@ -465,7 +453,7 @@ from this family, and @sec-virtual-z shows that they need no pulse at all.
 ![](figures/prx-bloch){width=45%}
 :::
 
-The Bloch sphere rotated by $\gate{PRX}(\theta,\varphi)$, a rotation by $\theta$ about the axis in the $xy$-plane at an angle $\varphi$ from the $x$-axis. The blue path shows where $\ket{0}$ goes as the rotation angle grows from $0$ to $\theta$. In the web version, the figure is interactive: the sliders set $\theta$ and $\varphi$, the blue grid turns with the sphere, and dragging changes the view.
+The Bloch sphere rotated by $\gate{PRX}(\theta,\varphi)$, a rotation by $\theta$ about the axis in the $xy$-plane at an angle $\varphi$ from the $x$-axis. The blue path shows where $\ket{0}$ goes as the rotation angle grows from $0$ to $\theta$. In the web version, the figure is interactive: the sliders set $\theta$ and $\varphi$, the blue grid turns with the sphere, and dragging changes the view. [Below the sphere, a schematic of the pulse: its area (here set by its duration) gives $\theta$, and its phase, a delay against the reference clock (dashed), gives $\varphi$. The button plays the pulse, and the sphere turns as the area builds up.]{.chg}
 :::
 
 ::: {#exr-prx}
@@ -798,7 +786,7 @@ section describes in words what can go wrong; the next chapter (@sec-noise) goes
 into the mathematical description of noise and its effects.
 
 The most important effect is that an excited qubit loses its energy. Left alone,
-$\ket{1}$ decays to $\ket{0}$, a process called [relaxation]{.gloss key="relaxation"}.
+$\ket{1}$ decays to $\ket{0}$, a process called relaxation.
 In superconducting qubits, the energy is absorbed by tiny defects in the materials of the
 chip. The qubit levels of trapped ions hardly decay on their own, but the lasers used
 for gates occasionally knock an ion out of its qubit state.

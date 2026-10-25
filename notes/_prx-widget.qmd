@@ -1,8 +1,11 @@
 ```{=html}
-<!-- Interactive Bloch sphere for PRX(theta, phi); web only (the PDF shows figures/prx-bloch). -->
+<!-- Interactive Bloch sphere for PRX(theta, phi), with the pulse that implements it (schematic:
+     fixed amplitude, duration proportional to theta); web only (the PDF shows figures/prx-bloch). -->
 <div class="bloch-prx" id="bloch-prx">
   <svg viewBox="-1.5 -1.42 3 2.84" role="img"
        aria-label="Bloch sphere rotated by PRX(theta, phi). Drag to turn the view."></svg>
+  <svg class="pulse" viewBox="0 -0.62 3 1.1" role="img"
+       aria-label="The drive pulse: its area sets theta, its phase sets phi."></svg>
   <div class="bloch-controls">
     <label><span>θ = <output data-out="theta"></output></span>
       <input type="range" data-in="theta" min="0" max="2" step="0.01" value="0.5"></label>
@@ -14,6 +17,14 @@
 <style>
   .bloch-prx { max-width: 400px; margin: 0 auto; }
   .bloch-prx svg { width: 100%; height: auto; touch-action: none; cursor: grab; display: block; }
+  .bloch-prx svg.pulse { cursor: default; touch-action: auto; margin: -0.6rem 0 0.4rem; }
+  .bloch-prx .area { fill: #1f5fa8; opacity: 0.15; stroke: none; }
+  .bloch-prx .area.done { opacity: 0.4; }
+  .bloch-prx .envelope { stroke: #1f5fa8; fill: none; stroke-width: 2px; }
+  .bloch-prx .carrier { stroke: #c2560c; fill: none; stroke-width: 1.5px; }
+  .bloch-prx .clock { stroke: currentColor; opacity: 0.35; fill: none; stroke-dasharray: 3 3; }
+  .bloch-prx .cursor { stroke: currentColor; stroke-width: 2px; }
+  .bloch-prx text.theta-label { fill: #1f5fa8; }
   .bloch-prx .bloch-controls { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; }
   .bloch-prx label { display: flex; align-items: center; gap: 0.6rem; margin: 0; }
   .bloch-prx label span { min-width: 6.5em; }
@@ -31,9 +42,11 @@
   .bloch-prx text { fill: currentColor; font-size: 0.13px; font-family: inherit; }
   .bloch-prx text.axis-label { fill: #c2560c; }
   .bloch-prx * { vector-effect: non-scaling-stroke; }
-  body.quarto-dark .bloch-prx .grid, body.quarto-dark .bloch-prx .path { stroke: #7fb2f0; }
-  body.quarto-dark .bloch-prx .dot { fill: #7fb2f0; }
-  body.quarto-dark .bloch-prx .axis { stroke: #f0904a; }
+  body.quarto-dark .bloch-prx .grid, body.quarto-dark .bloch-prx .path,
+  body.quarto-dark .bloch-prx .envelope { stroke: #7fb2f0; }
+  body.quarto-dark .bloch-prx .dot, body.quarto-dark .bloch-prx .area,
+  body.quarto-dark .bloch-prx text.theta-label { fill: #7fb2f0; }
+  body.quarto-dark .bloch-prx .axis, body.quarto-dark .bloch-prx .carrier { stroke: #f0904a; }
   body.quarto-dark .bloch-prx text.axis-label { fill: #f0904a; }
 </style>
 <script>
@@ -41,6 +54,7 @@
   const root = document.getElementById("bloch-prx");
   if (!root) return;
   const svg = root.querySelector("svg");
+  const pulseSvg = root.querySelector("svg.pulse");
   const input = (k) => root.querySelector(`[data-in=${k}]`);
   const output = (k) => root.querySelector(`[data-out=${k}]`);
   let az = (30 * Math.PI) / 180, el = (20 * Math.PI) / 180;
@@ -89,11 +103,45 @@
     { v: [0, 1, 0], name: "|+i⟩" },
   ];
 
+  // The pulse, schematic: fixed amplitude, duration proportional to theta, envelope sin^2.
+  // Fraction of the area under the envelope reached at a fraction s of the pulse:
+  const areaDone = (s) => s - Math.sin(2 * Math.PI * s) / (2 * Math.PI);
+  function drawPulse(theta, phi, progress) {
+    const x0 = 0.08, W = 2.84, A = 0.36, cycles = 18;  // time axis: 0 to the duration of theta = 2pi
+    const T = theta / (2 * Math.PI);
+    const env = (t) => (t < T ? A * Math.sin((Math.PI * t) / T) ** 2 : 0);
+    const X = (t) => (x0 + W * t).toFixed(4);
+    const pts = (f, t0, t1, n = 400) =>
+      Array.from({ length: n + 1 }, (_, k) => t0 + ((t1 - t0) * k) / n).map((t) => X(t) + "," + f(t).toFixed(4)).join(" ");
+    let s = `<line class="axes" x1="${x0}" y1="0" x2="${x0 + W}" y2="0"/>`;
+    s += `<text x="${x0 + W}" y="0.36" text-anchor="end">time</text>`;
+    if (T > 0) {
+      const band = (t1) => `${pts((t) => -env(t), 0, t1, 200)} ${pts((t) => env(t), t1, 0, 200)}`;
+      s += `<polygon class="area" points="${band(T)}"/>`;
+      if (progress !== null) s += `<polygon class="area done" points="${band(progress * T)}"/>`;
+      // the reference clock (phase 0, dashed) and the pulse, delayed by phi
+      s += `<polyline class="clock" points="${pts((t) => -env(t) * Math.cos(2 * Math.PI * cycles * t), 0, T)}"/>`;
+      s += `<polyline class="carrier" points="${pts((t) => -env(t) * Math.cos(2 * Math.PI * cycles * t - phi), 0, T)}"/>`;
+      s += `<polyline class="envelope" points="${pts((t) => -env(t), 0, T, 200)}"/>`;
+      if (progress !== null) {
+        const xc = X(progress * T);
+        s += `<line class="cursor" x1="${xc}" y1="-0.45" x2="${xc}" y2="0.42"/>`;
+      }
+    }
+    s += `<text class="theta-label" x="${x0}" y="-0.5" text-anchor="start">area → θ</text>`;
+    s += `<text class="axis-label" x="${x0 + W}" y="-0.5" text-anchor="end">phase → φ</text>`;
+    pulseSvg.innerHTML = s;
+  }
+
+  // progress: null for the full gate, or the fraction of the pulse played so far (animation)
+  let progress = null;
   function draw() {
-    const theta = Math.PI * parseFloat(input("theta").value);
+    const thetaFull = Math.PI * parseFloat(input("theta").value);
     const phi = Math.PI * parseFloat(input("phi").value);
-    output("theta").textContent = (theta / Math.PI).toFixed(2) + "π";
+    output("theta").textContent = (thetaFull / Math.PI).toFixed(2) + "π";
     output("phi").textContent = (phi / Math.PI).toFixed(2) + "π";
+    drawPulse(thetaFull, phi, progress);
+    const theta = progress === null ? thetaFull : thetaFull * areaDone(progress);
     const proj = camera();
     const n = [Math.cos(phi), Math.sin(phi), 0];
     const R = (v) => rotate(v, n, theta);
@@ -126,7 +174,9 @@
     svg.innerHTML = s;
   }
 
-  for (const k of ["theta", "phi"]) input(k).addEventListener("input", draw);
+  let anim = null;
+  const stop = () => { if (anim) cancelAnimationFrame(anim); anim = null; progress = null; };
+  for (const k of ["theta", "phi"]) input(k).addEventListener("input", () => { stop(); draw(); });
   let drag = null;
   svg.addEventListener("pointerdown", (e) => { drag = [e.clientX, e.clientY]; svg.setPointerCapture(e.pointerId); });
   svg.addEventListener("pointerup", () => { drag = null; });
@@ -137,15 +187,17 @@
     drag = [e.clientX, e.clientY];
     draw();
   });
+  // Play the pulse: a cursor runs through it, and the sphere turns by the area played so far.
   root.querySelector("[data-play]").addEventListener("click", () => {
-    const target = parseFloat(input("theta").value), start = performance.now();
+    stop();
+    const start = performance.now();
     const step = (now) => {
-      const f = Math.min(1, (now - start) / 1500);
-      input("theta").value = (target * f).toFixed(3);
+      progress = Math.min(1, (now - start) / 2500);
       draw();
-      if (f < 1) requestAnimationFrame(step);
+      if (progress < 1) anim = requestAnimationFrame(step);
+      else anim = null;
     };
-    requestAnimationFrame(step);
+    anim = requestAnimationFrame(step);
   });
   draw();
 })();
