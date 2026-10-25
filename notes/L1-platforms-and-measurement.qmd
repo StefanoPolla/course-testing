@@ -28,6 +28,18 @@ thousands of qubits, enough that many of their circuits are hard to simulate on 
 classical computer, but far from the millions of qubits that the best-known quantum
 algorithms need. *Noisy* means that their errors are not corrected.
 
+::: {.chg}
+The devices in this course are also [digital]{.gloss key="digital-qc"}: they run
+circuits, sequences of gates from a small, fixed set, and any algorithm is written as
+such a circuit. *Analog* quantum devices work differently. They imitate one particular
+physical system, for example a model of a material, by letting their own qubits evolve
+under similar interactions, and then measure the result. The difference is that between
+a model aircraft in a wind tunnel and a computer simulation of the airflow: the model
+behaves like the problem, while the simulation computes it step by step. Analog devices
+can be large, but each one addresses a single family of problems. This course is about
+digital quantum computing.
+:::
+
 Getting useful results from a NISQ device means working within the limit set by noise.
 Circuits are kept short, so that errors have little chance to build up. The quantities
 to keep small are the circuit's [depth]{.gloss key="depth"}, the number of layers of
@@ -108,7 +120,7 @@ certain values of energy, their *energy levels*, and they usually have many more
 two. Most qubits are therefore the two lowest energy levels of a larger system.
 The other levels are still there, and a qubit can end up in them by accident.
 
-A universal, [digital]{.gloss key="digital-qc"} quantum computer is built by assembling
+A universal, digital quantum computer is built by assembling
 many physical qubits and controlling them individually. DiVincenzo listed what this
 requires [@divincenzo2000]:
 
@@ -195,6 +207,15 @@ alone would excite the qubit at random. Superconducting chips therefore sit in a
 of a degree above absolute zero (@exr-thermal), and cables bring the microwave pulses
 down to them from electronics at room temperature.
 
+::: {.chg}
+The cold also prepares the qubits in a known state. At 10 mK, a qubit left alone loses
+its energy to its surroundings and falls into $\ket{0}$, typically within a few hundred
+microseconds (@sec-noise-sources). The simplest way to initialise the qubits is
+therefore to wait between runs. A faster way is *active reset*: measure the qubit
+(@sec-readout) and apply an $X$ gate if the result is 1. Either way, a small fraction of
+the qubits, typically below 1%, still starts in $\ket{1}$, an error in the preparation.
+:::
+
 Superconducting qubits are fast. A transmon is large for a quantum system, a fraction of
 a millimetre across, and it behaves like a small antenna that couples strongly to
 microwaves, so a pulse of a few tens of nanoseconds is enough for a single-qubit gate.
@@ -265,7 +286,8 @@ frequency and most of their properties.
 
 The ions are held in vacuum by electric fields in an [ion trap]{.gloss key="ion-trap"},
 lined up in a chain a few micrometres apart, and laser beams slow them down until they
-are almost at rest ([laser cooling]{.gloss key="laser-cooling"}). Laser beams, or in some
+are almost at rest ([laser cooling]{.gloss key="laser-cooling"}). [Another laser pulse
+then prepares each ion in $\ket{0}$ within microseconds (*optical pumping*).]{.chg} Laser beams, or in some
 designs microwaves, also drive the gates. The qubit levels can be chosen so that stray
 magnetic fields and other disturbances hardly affect them, and trapped-ion qubits keep
 their quantum state for a second or more, thousands of times longer than superconducting
