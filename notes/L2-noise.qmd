@@ -104,8 +104,10 @@ $$ {#eq-kraus}
 The matrices $K_k$ are its [Kraus operators]{.gloss key="kraus-operators"}.
 :::
 
-The condition on the Kraus operators keeps the trace, since
-$\Tr[\Lambda(\rho)] = \Tr\big[\sum_k K_k^\dagger K_k\,\rho\big] = \Tr[\rho]$, and each term
+[Each Kraus operator describes one thing that can happen to the qubit, with probability
+$\Tr[K_k\rho K_k^\dagger]$.]{.chg} The condition on the Kraus operators keeps the trace, since
+$\Tr[\Lambda(\rho)] = \Tr\big[\sum_k K_k^\dagger K_k\,\rho\big] = \Tr[\rho]$[, so these
+probabilities sum to one]{.chg}, and each term
 $K_k\rho K_k^\dagger$ is positive semidefinite, so $\Lambda(\rho)$ is again a density
 matrix. This still holds if the channel acts on some of the qubits of a larger system,
 a property called [complete positivity]{.gloss key="completely-positive"}, which is
@@ -118,7 +120,9 @@ Where do channels come from? A qubit is never perfectly isolated (@sec-qubit-nee
 interacts with its environment, for example with defects in the chip
 (@sec-noise-sources). Qubit and environment together evolve unitarily, but we do not keep
 track of the environment, so we discard it with the partial trace. The result is always a
-channel on the qubit, and every channel can arise in this way [@walter2025, sec. 5.2];
+channel on the qubit, and every channel can arise in this way[; the unitary and the
+environment that produce it are called a *Stinespring dilation* of the channel]{.chg}
+[@walter2025, sec. 5.2];
 @exr-environment works out an example.
 
 A unitary gate $U$ is a channel with the single Kraus operator $U$. Applying $\Lambda_1$
@@ -455,7 +459,8 @@ as $\sigma^2 = 2t/T_\varphi$, so that the coherence decays as
 $e^{-\sigma^2/2} = e^{-t/T_\varphi}$. Fast noise gives the exponential decay of pure
 dephasing that @sec-t1-t2 assumed.
 
-An echo experiment, a Ramsey experiment with an $X$ pulse halfway (@fig-ramsey-echo),
+An echo experiment, a Ramsey experiment with an $X$ pulse halfway [and another at the end
+of the wait]{.chg} (@fig-ramsey-echo),
 therefore measures a longer time than $T_2^*$, called $T_2$: the decay due to relaxation
 and fast noise only. It obeys @eq-t2 with $T_2$ in place of $T_2^*$ and a longer
 $T_\varphi$, so $T_2^* \le T_2 \le 2T_1$. The star of $T_2^*$ marks the time that
@@ -561,11 +566,15 @@ $$
 $$ {#eq-global-factor}
 Local noise does not commute with entangling gates. Conjugation by CZ turns an $X$ on the
 second qubit into $Z\otimes X$ (@sec-compiling), so an $X$ error before a CZ is a
-two-qubit error after it, and errors spread through a circuit. For local noise,
+two-qubit error after it, and errors spread through a circuit[: each later two-qubit gate
+can carry an error to one more qubit, so the qubits that it can reach form a cone, called
+its *light cone* (@fig-error-spreading)]{.chg}. For local noise,
 @eq-global-factor is therefore an approximation, which is good for deep circuits of
 random gates: these spread every error over all the qubits, so that any error leaves the
 output close to random. This makes global depolarising a very useful model for estimates
 (@sec-fidelity and @sec-bias-variance), although real noise is mostly local.
+
+![[One error (star) in the brick-wall circuit of @exr-error-budget, on qubit $q_4$ after the pulse of the second layer. The shaded wires are its light cone: the qubits that the later CZ gates can carry it to. By the last layers, it can reach every qubit.]{.chg}](figures/error-spreading){#fig-error-spreading width=60%}
 
 [Correlated errors]{.gloss key="correlated-errors"} affect several qubits together. An
 example is [crosstalk]{.gloss key="crosstalk"} (@sec-superconducting), including the

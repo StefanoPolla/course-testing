@@ -448,22 +448,24 @@ fig, (ax_seq, ax_dec) = plt.subplots(1, 2, figsize=(7.4, 2.5), gridspec_kw={"wid
 
 
 def sequence(ax, y, pulses, label):
-    ax.plot([0, 10.3], [y, y], color="0.4", lw=1.0, zorder=1)
+    m = pulses[-1][0] + 1.0  # the measurement just after the last pulse
+    ax.plot([0, m], [y, y], color="0.4", lw=1.0, zorder=1)
     ax.text(-0.3, y, label, ha="right", va="center", fontsize=9.5)
     for x, text in pulses:
         ax.add_patch(Rectangle((x - 0.6, y - 0.3), 1.2, 0.6, facecolor="white", edgecolor="black", lw=1.0, zorder=2))
         ax.text(x, y, text, ha="center", va="center", fontsize=8.5, zorder=3)
-    ax.add_patch(Rectangle((10.3, y - 0.3), 0.9, 0.6, facecolor="0.85", edgecolor="black", lw=1.0, zorder=2))
-    ax.text(10.75, y, "M", ha="center", va="center", fontsize=8.5, zorder=3)
+    ax.add_patch(Rectangle((m, y - 0.3), 0.9, 0.6, facecolor="0.85", edgecolor="black", lw=1.0, zorder=2))
+    ax.text(m + 0.45, y, "M", ha="center", va="center", fontsize=8.5, zorder=3)
 
 
+# the echo ends its wait with a second X, which undoes the flip of the first
 sequence(ax_seq, 1.6, [(0.6, r"$\pi/2$"), (9.3, r"$\pi/2$")], "Ramsey")
-sequence(ax_seq, 0.0, [(0.6, r"$\pi/2$"), (4.95, "$X$"), (9.3, r"$\pi/2$")], "echo")
+sequence(ax_seq, 0.0, [(0.6, r"$\pi/2$"), (4.95, "$X$"), (9.3, "$X$"), (10.65, r"$\pi/2$")], "echo")
 for y, (a, b, text) in ((1.6, (1.2, 8.7, "wait $t$")), (0.0, (1.2, 4.35, "$t/2$")), (0.0, (5.55, 8.7, "$t/2$"))):
     ax_seq.annotate("", xy=(b, y + 0.5), xytext=(a, y + 0.5),
                     arrowprops=dict(arrowstyle="<->", lw=0.8, color="0.3"))
     ax_seq.text((a + b) / 2, y + 0.62, text, ha="center", va="bottom", fontsize=8.5)
-ax_seq.set_xlim(-2.2, 11.4)
+ax_seq.set_xlim(-2.2, 12.7)
 ax_seq.set_ylim(-0.6, 2.6)
 ax_seq.axis("off")
 ax_seq.set_title("(a) pulse sequences", fontsize=9.5, loc="left")
@@ -502,3 +504,42 @@ ax.legend(frameon=False, fontsize=8.5, loc="upper left")
 for side in ("top", "right"):
     ax.spines[side].set_visible(False)
 save_fig(fig, "coherent-incoherent")
+
+
+# ------------------------------------------- L2: one error spreads through the brick-wall circuit
+
+# The brick-wall circuit of exr-error-budget (10 qubits, 8 layers; in each layer a pulse on every qubit,
+# then CZs on alternating pairs), with one error and the qubits that the later CZs carry it to.
+n_q, layers, err_q, err_k = 10, 8, 4, 1
+dx, dy = 1.0, 0.62
+L = dx * layers + 0.55
+px = [0.45 + dx * k for k in range(layers)]  # pulses; the CZs of layer k at px[k] + 0.45
+fig, ax = plt.subplots(figsize=(4.6, 3.4))
+hit = {err_q}
+ax.add_patch(Rectangle((px[err_k] + 0.22, -err_q * dy - 0.2), 0.23, 0.4, facecolor=ORANGE, alpha=0.2, lw=0))
+for k in range(err_k, layers):
+    for a in range(k % 2, n_q - 1, 2):
+        if a in hit or a + 1 in hit:
+            hit |= {a, a + 1}
+    x0, x1 = px[k] + 0.45, (px[k + 1] + 0.45 if k + 1 < layers else L)
+    for q in hit:
+        ax.add_patch(Rectangle((x0, -q * dy - 0.2), x1 - x0, 0.4, facecolor=ORANGE, alpha=0.2, lw=0))
+for q in range(n_q):
+    ax.plot([0, L], [-q * dy, -q * dy], color="0.4", lw=0.8, zorder=1)
+    ax.text(-0.2, -q * dy, f"$q_{{{q}}}$", ha="right", va="center", fontsize=8.5)
+for k in range(layers):
+    for q in range(n_q):
+        ax.add_patch(Rectangle((px[k] - 0.15, -q * dy - 0.15), 0.3, 0.3, facecolor="white", edgecolor="black",
+                               lw=0.8, zorder=3))
+    cx = px[k] + 0.45
+    for a in range(k % 2, n_q - 1, 2):
+        ax.plot([cx, cx], [-a * dy, -(a + 1) * dy], color="black", lw=0.8, zorder=2)
+        for q in (a, a + 1):
+            ax.add_patch(plt.Circle((cx, -q * dy), 0.07, color="black", zorder=3))
+ax.plot(px[err_k] + 0.27, -err_q * dy, marker="*", ms=11, color=ORANGE, markeredgecolor="black",
+        markeredgewidth=0.6, zorder=6)
+ax.set_xlim(-0.75, L + 0.05)
+ax.set_ylim(-(n_q - 1) * dy - 0.35, 0.35)
+ax.set_aspect("equal")
+ax.axis("off")
+save_fig(fig, "error-spreading")
