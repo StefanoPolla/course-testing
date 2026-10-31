@@ -438,7 +438,8 @@ shot. But then the qubit picks up its unknown phase at a steady rate, and there 
 easy way to undo it. An $X$ pulse halfway through the wait exchanges $\ket{0}$ and
 $\ket{1}$, which reverses the sign of the phase picked up so far, so that the second half
 of the wait undoes the first, whatever the value of $\delta$ (@exr-echo). This is called
-an [echo]{.gloss key="echo"}. It leaves the qubit flipped, so a second $X$ is added at
+an [echo]{.gloss key="echo"}[, or Hahn echo, after Erwin Hahn, who found it with nuclear
+spins in 1950]{.chg}. It leaves the qubit flipped, so a second $X$ is added at
 the end of the wait. Repeated echoes during a long wait, called
 [dynamical decoupling]{.gloss key="dynamical-decoupling"}, protect idle qubits from slow
 noise on the device itself, while the error mitigation of later chapters corrects the
