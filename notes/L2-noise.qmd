@@ -969,7 +969,7 @@ and compare them with those of @def-pauli-channel.
 
 @nielsen2010 [sec. 8.3] treats the channels of this chapter in the same Kraus form, and
 the Quantum Information Theory notes [@walter2025, secs. 4.4 and 5.1-5.2] give the
-general theory[. Their]{.chg} Exercises 5.1 and 5.10 are good extra practice. @krantz2019
+general theory. @krantz2019
 describes $T_1$, $T_2$, Ramsey and echo experiments on superconducting qubits.
 
 ::: {.content-visible when-format="html"}
