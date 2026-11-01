@@ -494,11 +494,8 @@ $t$ is $e^{-\sigma_\delta^2 t^2/2}$. What is it with an echo?
 ## Noise on many qubits {#sec-multi-qubit-noise}
 
 On many qubits, the tools of @sec-pauli-channels carry over with one more fact of Pauli
-algebra. [Two Pauli strings $P$ and $Q$ either commute, $[P,Q] = PQ - QP = 0$, or
-anticommute, $\{P,Q\} = PQ + QP = 0$, because their single-qubit factors do. Since
-$Q^2 = I$, this fixes the sign of $QPQ$. If they commute, $QPQ = PQQ = P$. If they
-anticommute, $QPQ = -PQQ = -P$. We write $QPQ = s_{PQ}\,P$, with $s_{PQ} = +1$ if $P$ and
-$Q$ commute and $s_{PQ} = -1$ if they anticommute.]{.chg} A Pauli channel on $n$ qubits, $\Lambda(\rho) = \sum_Q q_Q\, Q\rho Q$, therefore
+algebra. [Two Pauli strings $P$ and $Q$ either commute, $PQ = QP$, or anticommute, $PQ = -QP$; we
+can summarise this by defining the sign $s_{PQ} = \pm 1$ such that $PQ = s_{PQ}\,QP$.]{.chg} A Pauli channel on $n$ qubits, $\Lambda(\rho) = \sum_Q q_Q\, Q\rho Q$, therefore
 multiplies the expectation value of every Pauli string $P$ by its own factor,
 $$
 \langle P\rangle \mapsto f_P\langle P\rangle, \qquad f_P = \sum_Q s_{PQ}\, q_Q .
