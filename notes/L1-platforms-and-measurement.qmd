@@ -881,7 +881,7 @@ fluctuating magnetic fields or electric charges near the qubit, the phase wander
 the superposition gradually becomes a random mixture of $\ket{0}$ and $\ket{1}$. This is
 called [dephasing]{.gloss key="dephasing"}. The time over which a qubit relaxes is called
 $T_1$, and the time over which it dephases is called $T_2$. These are the coherence times
-quoted for every device, and the next chapter defines them precisely.<!-- L2-LINK: @def-t1-t2 -->
+quoted for every device, and the next chapter defines them precisely.<!-- L2-LINK: @def-t1 and @def-t2-star -->
 
 A third kind of error is a gate that rotates by the wrong amount, because a pulse is
 slightly too long, too short or off axis, or because a laser's intensity fluctuates.

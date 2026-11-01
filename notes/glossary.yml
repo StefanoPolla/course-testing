@@ -211,6 +211,9 @@ glossary:
   global-depolarising:
     term: global depolarising channel
     def: "The depolarising channel acting on all qubits at once: with probability p, the state of all qubits is replaced by the maximally mixed state. It shrinks every Pauli expectation value by the same factor, whatever its weight."
+  scrambling:
+    term: scrambling
+    def: "A property of circuits, such as deep circuits of random gates, that spread every error over all the qubits, so that any error leaves the output close to random. For such circuits, global depolarising noise is a good model of local noise."
   correlated-errors:
     term: correlated errors
     def: "Errors that affect several qubits together, or that depend on what happens elsewhere in the circuit, such as crosstalk or bursts caused by cosmic rays."
