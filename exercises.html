@@ -82,11 +82,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <meta name="robots" content="noindex, nofollow">
-<style>
-  .chg { color: #a3236b; }
-  body.quarto-dark .chg { color: #ff8cc6; }
-  div.chg { border-left: 3px solid currentColor; padding-left: 0.6em; }
-</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -635,7 +630,7 @@ window.Quarto = {
 <p><strong><a href="L2-noise.html#exr-over-rotation" class="quarto-xref">Exercise&nbsp;<span>2.5</span></a></strong> (Coherent and incoherent errors)</p>
 <ol type="a">
 <li><p>A gate has a coherent over-rotation of <span class="math inline">\(\eta = 0.01\)</span>. After how many repetitions is the error probability 1%? Answer the same question for random over- and under-rotations, with mean zero and standard deviation <span class="math inline">\(\sigma = 0.01\)</span>.</p></li>
-<li><p><span class="chg">An <span class="math inline">\(R_X(\theta)\)</span> gate</span> has a small coherent error: it applies <span class="math inline">\(R_Z(\eta)\)</span> after the intended <span class="chg">rotation</span>. For each repetition of the gate, independently and with probability <span class="math inline">\(1/2\)</span>, <span class="chg">we add a perfect <span class="math inline">\(X\)</span> gate just before it and another just after it. Since <span class="math inline">\(X\)</span> commutes with <span class="math inline">\(R_X(\theta)\)</span>, the ideal gate is unchanged, but the error becomes</span> <span class="math inline">\(X R_Z(\eta) X\)</span>. Show that, averaged over these random choices, the error of each gate becomes a dephasing channel with <span class="math inline">\(p = \sin^2(\eta/2)\)</span>. How does it now add up over <span class="math inline">\(n\)</span> repetitions?</p>
+<li><p>An <span class="math inline">\(R_X(\theta)\)</span> gate has a small coherent error: it applies <span class="math inline">\(R_Z(\eta)\)</span> after the intended rotation. For each repetition of the gate, independently and with probability <span class="math inline">\(1/2\)</span>, we add a perfect <span class="math inline">\(X\)</span> gate just before it and another just after it. Since <span class="math inline">\(X\)</span> commutes with <span class="math inline">\(R_X(\theta)\)</span>, the ideal gate is unchanged, but the error becomes <span class="math inline">\(X R_Z(\eta) X\)</span>. Show that, averaged over these random choices, the error of each gate becomes a dephasing channel with <span class="math inline">\(p = \sin^2(\eta/2)\)</span>. How does it now add up over <span class="math inline">\(n\)</span> repetitions?</p>
 <details class="hint"><summary>Hint</summary>
 <p>Use <a href="L2-noise.html#exr-echo" class="quarto-xref">Exercise&nbsp;<span>2.4</span></a> (a), and compute the factors.</p>
 </details></li>
@@ -674,8 +669,8 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="L2-noise.html#exr-ghz" class="quarto-xref">Exercise&nbsp;<span>2.9</span></a></strong> (<span class="chg">GHZ states</span> under local and global noise)</p>
-<p>The GHZ state <span class="math inline">\((\ket{0\cdots 0} + \ket{1\cdots 1})/\sqrt{2}\)</span> on <span class="math inline">\(n\)</span> qubits has <span class="math inline">\(\langle X\otimes\cdots\otimes X\rangle = 1\)</span><span class="chg">, with <span class="math inline">\(X\)</span> on all qubits,</span> and <span class="math inline">\(\langle Z\otimes Z\otimes I\otimes\cdots\otimes I\rangle = 1\)</span><span class="chg">, with <span class="math inline">\(Z\)</span> on the first two qubits only</span>.</p>
+<p><strong><a href="L2-noise.html#exr-ghz" class="quarto-xref">Exercise&nbsp;<span>2.9</span></a></strong> (GHZ states under local and global noise)</p>
+<p>The GHZ state <span class="math inline">\((\ket{0\cdots 0} + \ket{1\cdots 1})/\sqrt{2}\)</span> on <span class="math inline">\(n\)</span> qubits has <span class="math inline">\(\langle X\otimes\cdots\otimes X\rangle = 1\)</span>, with <span class="math inline">\(X\)</span> on all qubits, and <span class="math inline">\(\langle Z\otimes Z\otimes I\otimes\cdots\otimes I\rangle = 1\)</span>, with <span class="math inline">\(Z\)</span> on the first two qubits only.</p>
 <ol type="a">
 <li><p>Each qubit undergoes depolarising noise with parameter <span class="math inline">\(p\)</span>. By which factors do the two expectation values shrink?</p></li>
 <li><p>Which parameter of the global depolarising channel shrinks <span class="math inline">\(\langle X\otimes\cdots\otimes X\rangle\)</span> by the same factor? What does it then do to <span class="math inline">\(\langle Z\otimes Z\otimes I\otimes\cdots\otimes I\rangle\)</span>?</p></li>
