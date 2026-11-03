@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./glossary.html" rel="next">
-<link href="./L2-noise.html" rel="prev">
+<link href="./L3-hamiltonians.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -335,6 +335,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L3-hamiltonians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Measuring and simulating Hamiltonians</span></span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
@@ -370,6 +376,7 @@ window.Quarto = {
   <ul>
   <li>Chapter 1: Platforms, gates and measurement</li>
   <li>Chapter 2: Noise channels and error budgets</li>
+  <li>Chapter 3: Measuring and simulating Hamiltonians</li>
   </ul>
 </nav>
     </div>
@@ -403,7 +410,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">1 November 2026</p>
+      <p class="date-modified">3 November 2026</p>
     </div>
   </div>
     
@@ -686,6 +693,112 @@ window.Quarto = {
 <p>With the environment second, <span class="math inline">\(\gate{CZ} = I\otimes\ket{0}\bra{0} + Z\otimes\ket{1}\bra{1}\)</span>. Take the partial trace over the environment.</p>
 </details></li>
 <li><p>The Kraus operators of this channel are <span class="math inline">\(K_e = (I\otimes\bra{e})\,\gate{CZ}\,(I\otimes\ket{E})\)</span> for <span class="math inline">\(e = 0, 1\)</span>, where <span class="math inline">\(\ket{E}\)</span> is the initial state of the environment. Compute them, and compare them with those of <a href="L2-noise.html#def-pauli-channel" class="quarto-xref">Definition&nbsp;<span>2.3</span></a>.</p></li>
+</ol>
+</div>
+</section>
+<section class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="">Chapter 3: Measuring and simulating Hamiltonians</h2>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-pauli-decomposition" class="quarto-xref">Exercise&nbsp;<span>3.1</span></a></strong> (Pauli decompositions)</p>
+<ol type="a">
+<li><p>Write <span class="math inline">\(M = \begin{pmatrix} 0 &amp; 1-i \\ 1+i &amp; 2 \end{pmatrix}\)</span> as a sum of Pauli matrices.</p></li>
+<li><p>Write the SWAP gate as a sum of two-qubit Pauli strings, and conclude that <span class="math inline">\(X\otimes X + Y\otimes Y + Z\otimes Z = 2\,\gate{SWAP} - I\)</span>. Which eigenvalues does a bond term of the Heisenberg model have, and for which states?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Use <a href="L3-hamiltonians.html#eq-pauli-sum" class="quarto-xref">Equation&nbsp;<span>3.2</span></a>, and compute each trace as a sum over the basis states <span class="math inline">\(\ket{ab}\)</span>.</p>
+</details></li>
+<li><p>Show that <span class="math inline">\(e^{-i\theta\,\gate{SWAP}} = \cos\theta\, I - i\sin\theta\,\gate{SWAP}\)</span>. What does this gate do to <span class="math inline">\(\ket{10}\)</span>?</p>
+<details class="hint"><summary>Hint</summary>
+<p>Check which property of <span class="math inline">\(P\)</span> the derivation of <a href="L1-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a> used.</p>
+</details></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-two-site-tfim" class="quarto-xref">Exercise&nbsp;<span>3.2</span></a></strong> (The TFIM on two qubits)</p>
+<p>The TFIM on two qubits is <span class="math inline">\(H = -JZ_1Z_2 - h(X_1 + X_2)\)</span>.</p>
+<ol type="a">
+<li><p>Write <span class="math inline">\(H\)</span> as a <span class="math inline">\(4\times 4\)</span> matrix in the basis <span class="math inline">\(\ket{00}, \ket{01}, \ket{10}, \ket{11}\)</span>.</p></li>
+<li><p>Show that <span class="math inline">\(H\)</span> maps the states <span class="math inline">\(\ket{00}+\ket{11}\)</span> and <span class="math inline">\(\ket{01}+\ket{10}\)</span> into combinations of each other, and the states <span class="math inline">\(\ket{00}-\ket{11}\)</span> and <span class="math inline">\(\ket{01}-\ket{10}\)</span> to multiples of themselves. Find the four eigenvalues, and show that the ground-state energy is <span class="math inline">\(-\sqrt{J^2 + 4h^2}\)</span>.</p></li>
+<li><p>What are the ground states for <span class="math inline">\(h = 0\)</span> and for <span class="math inline">\(J = 0\)</span>? Is the ground state entangled for <span class="math inline">\(J = h\)</span>?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-settings" class="quarto-xref">Exercise&nbsp;<span>3.3</span></a></strong> (Measurement settings)</p>
+<ol type="a">
+<li><p>How many measurement settings does <span class="math inline">\(H = Z_1Z_2 + Z_2Z_3 + X_1 + X_2 + X_3 + Z_1X_2\)</span> need, with single-qubit rotations only? Give the settings and the terms that each measures.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Look for terms that cannot pairwise share a setting.</p>
+</details></li>
+<li><p>Take the Heisenberg model on an <span class="math inline">\(L\times L\)</span> square lattice with <span class="math inline">\(J = 1\)</span>. How many Pauli strings does it have, and how many settings does it need? How many shots give a standard error of 0.1 for <span class="math inline">\(L = 4\)</span> in the worst case?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-group-shots" class="quarto-xref">Exercise&nbsp;<span>3.4</span></a></strong> (Shots for groups)</p>
+<p>A Hamiltonian is measured in several settings, with single-shot variances <span class="math inline">\(\sigma_g^2\)</span>.</p>
+<ol type="a">
+<li><p>Show that the best split of <span class="math inline">\(N\)</span> shots gives setting <span class="math inline">\(g\)</span> a number of shots proportional to <span class="math inline">\(\sigma_g\)</span>, and that <span class="math inline">\(N = (\sum_g \sigma_g)^2/\varepsilon^2\)</span> shots give the standard error <span class="math inline">\(\varepsilon\)</span>.</p></li>
+<li><p>For the TFIM chain with <span class="math inline">\(n = 10\)</span>, <span class="math inline">\(J = 1\)</span> and <span class="math inline">\(h = 0.2\)</span>, assume that the terms of each group are uncorrelated and <span class="math inline">\(\sigma_i = 1\)</span>. How many shots go to each setting for a standard error of 0.1? How many would an equal split need?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-plausibility" class="quarto-xref">Exercise&nbsp;<span>3.5</span></a></strong> (Is it plausible?)</p>
+<p>A study reports the energy of a state of a 50-qubit Hamiltonian with 200 Pauli strings, all with coefficients <span class="math inline">\(\pm 1\)</span>, estimated from <span class="math inline">\(10^4\)</span> shots in total with a standard error of 0.01.</p>
+<ol type="a">
+<li><p>How many shots would the worst case of <a href="L3-hamiltonians.html#eq-shot-budget" class="quarto-xref">Equation&nbsp;<span>3.5</span></a> require?</p></li>
+<li><p>Suppose the strings fall into four settings of 50 strings each, and the terms of each group are uncorrelated. How many shots are needed now?</p></li>
+<li><p>Is the claim plausible? What would have to be true of the state?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-commutator" class="quarto-xref">Exercise&nbsp;<span>3.6</span></a></strong> (The commutator of the TFIM)</p>
+<p>Take the TFIM chain of <a href="L3-hamiltonians.html#def-tfim" class="quarto-xref">Definition&nbsp;<span>3.2</span></a>, with <span class="math inline">\(A\)</span> the bond terms and <span class="math inline">\(B\)</span> the field terms.</p>
+<ol type="a">
+<li><p>Show that <span class="math inline">\([Z_1Z_2, X_1] = 2i\,Y_1Z_2\)</span>, and that <span class="math inline">\(Z_iZ_{i+1}\)</span> commutes with <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \ne i, i+1\)</span>.</p></li>
+<li><p>Show that <span class="math inline">\(\|[A,B]\| \le 4Jh(n-1)\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>The operator norm obeys the triangle inequality, <span class="math inline">\(\|M + N\| \le \|M\| + \|N\|\)</span>, and a Pauli string has norm 1.</p>
+</details></li>
+<li><p>Show that <span class="math inline">\(\|A\| = J(n-1)\)</span> and <span class="math inline">\(\|B\| = hn\)</span>. For any <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, <span class="math inline">\(\|[A,B]\| \le 2\|A\|\|B\|\)</span>. How do this bound and the bound of (b) grow with <span class="math inline">\(n\)</span>?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-trotter-cost" class="quarto-xref">Exercise&nbsp;<span>3.7</span></a></strong> (The cost of a step on a device)</p>
+<ol type="a">
+<li><p>How many CZs does one Trotter step of the TFIM on an <span class="math inline">\(L\times L\)</span> square lattice cost on a device with a square coupling graph?</p></li>
+<li><p>Place a <span class="math inline">\(3\times 3\)</span> lattice on a line of 9 qubits, along a path like that of <a href="L3-hamiltonians.html#fig-lattices" class="quarto-xref">Figure&nbsp;<span>3.1</span></a> (c). Which bonds join qubits that are not neighbours on the line, and how far apart are they?</p></li>
+<li><p>Implement each such bond by moving one of its qubits next to the other with SWAPs, applying <span class="math inline">\(R_{ZZ}\)</span>, and moving it back. Without cancelling any gates, how many CZs does one step cost now?</p>
+<details class="hint"><summary>Hint</summary>
+<p>A SWAP is three CNOTs (<a href="L1-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a>), and each CNOT is one CZ with single-qubit gates (<a href="L1-platforms-and-measurement.html#exr-swap-native" class="quarto-xref">Exercise&nbsp;<span>1.6</span></a>).</p>
+</details></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-floquet" class="quarto-xref">Exercise&nbsp;<span>3.8</span></a></strong> (The Hamiltonian of one step)</p>
+<p>Write <span class="math inline">\(H_F = A + B + \delta C + O(\delta^2)\)</span> for an unknown matrix <span class="math inline">\(C\)</span>. Expand <span class="math inline">\(e^{-iH_F\delta}\)</span> to second order in <span class="math inline">\(\delta\)</span>, and compare with <span class="math inline">\(e^{-iB\delta}e^{-iA\delta}\)</span> to find <span class="math inline">\(C\)</span>. Check that <span class="math inline">\(C\)</span> is Hermitian. What is <span class="math inline">\(C\)</span> if the circuit applies <span class="math inline">\(B\)</span> first?</p>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-optimal-steps" class="quarto-xref">Exercise&nbsp;<span>3.9</span></a></strong> (How many steps?)</p>
+<p>A circuit evolves a system for a time <span class="math inline">\(t = 1\)</span>, with <span class="math inline">\(a = 1\)</span> in <a href="L3-hamiltonians.html#eq-tradeoff" class="quarto-xref">Equation&nbsp;<span>3.10</span></a>, on a device with <span class="math inline">\(\varepsilon_{\text{step}} = 0.01\)</span>.</p>
+<ol type="a">
+<li><p>Compute <span class="math inline">\(r^*\)</span> and the two terms of the infidelity at <span class="math inline">\(r^*\)</span>. How do they compare? Is this a coincidence?</p></li>
+<li><p>The device improves tenfold, to <span class="math inline">\(\varepsilon_{\text{step}} = 0.001\)</span>. By which factors do <span class="math inline">\(r^*\)</span> and the smallest infidelity change?</p></li>
+<li><p>Back at <span class="math inline">\(\varepsilon_{\text{step}} = 0.01\)</span>, suppose we use a bound that overestimates <span class="math inline">\(a\)</span> ninefold, as in the example of the text. How many steps do we choose, and what is the infidelity of the circuit, with the true <span class="math inline">\(a = 1\)</span>?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-cone-size" class="quarto-xref">Exercise&nbsp;<span>3.10</span></a></strong> (Light cones and classical simulation)</p>
+<ol type="a">
+<li><p>In the Trotter circuit of <a href="L3-hamiltonians.html#fig-trotter-step" class="quarto-xref">Figure&nbsp;<span>3.3</span></a> on a long chain, on which qubits of the initial state can <span class="math inline">\(\langle Z_i\rangle\)</span> depend after <span class="math inline">\(k\)</span> steps?</p></li>
+<li><p>On a square lattice, each step has four layers of bond gates, two along the rows and two along the columns. Which qubits can <span class="math inline">\(\langle Z_i\rangle\)</span> depend on after <span class="math inline">\(k\)</span> steps, and how many are they?</p></li>
+<li><p>A laptop can simulate about 30 qubits exactly. For how many steps can it compute <span class="math inline">\(\langle Z_i\rangle\)</span> exactly on a chain of 1000 qubits, and on a square lattice of 1000 qubits?</p></li>
+</ol>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L3-hamiltonians.html#exr-noisy-energy" class="quarto-xref">Exercise&nbsp;<span>3.11</span></a></strong> (The energy of a noisy state)</p>
+<p>A circuit prepares a state of the TFIM chain of <span class="math inline">\(n\)</span> qubits, but each qubit undergoes local depolarising noise with parameter <span class="math inline">\(p\)</span> (<a href="L2-noise.html#def-local-depolarising" class="quarto-xref">Definition&nbsp;<span>2.7</span></a>) just before the measurement. Write <span class="math inline">\(E_A\)</span> and <span class="math inline">\(E_B\)</span> for the ideal expectation values of the bond terms and of the field terms.</p>
+<ol type="a">
+<li><p>Which energy does the measurement give on average, in terms of <span class="math inline">\(E_A\)</span>, <span class="math inline">\(E_B\)</span> and <span class="math inline">\(p\)</span>?</p></li>
+<li><p>For <span class="math inline">\(n = 10\)</span>, <span class="math inline">\(p = 1\%\)</span>, <span class="math inline">\(E_A = -6\)</span> and <span class="math inline">\(E_B = -5\)</span>, compute the bias. Compare it with the standard error of 0.1 of <a href="L3-hamiltonians.html#sec-shot-budget" class="quarto-xref"><span>Section 3.4.1</span></a>. Do more shots help?</p></li>
+<li><p>If <span class="math inline">\(p\)</span> is known, can the bias be removed by dividing the estimate by a single factor, as in <a href="L2-noise.html#sec-rescaling" class="quarto-xref"><span>Section 2.7.2</span></a>? How else?</p></li>
 </ol>
 </div>
 
@@ -1121,8 +1234,8 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./L2-noise.html" class="pagination-link" aria-label="Noise channels and error budgets">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span>
+      <a href="./L3-hamiltonians.html" class="pagination-link" aria-label="Measuring and simulating Hamiltonians">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Measuring and simulating Hamiltonians</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
