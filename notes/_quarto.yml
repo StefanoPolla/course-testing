@@ -18,6 +18,7 @@ book:
     - index.qmd
     - L1-platforms-and-measurement.qmd
     - L2-noise.qmd
+    - L3-hamiltonians.qmd
   appendices:
     - exercises.qmd
     - glossary.qmd

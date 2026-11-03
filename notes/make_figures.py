@@ -543,3 +543,281 @@ ax.set_ylim(-(n_q - 1) * dy - 0.35, 0.35)
 ax.set_aspect("equal")
 ax.axis("off")
 save_fig(fig, "error-spreading")
+
+
+# ------------------------------------------- L3: spin models on a chain and a square lattice
+
+def lattice_qubit(ax, x, y, label=None):
+    ax.add_patch(plt.Circle((x, y), 0.17 if label else 0.15, color=ACCENT, zorder=3))
+    if label is not None:
+        ax.text(x, y, label, color="white", ha="center", va="center", fontsize=7, zorder=4)
+
+
+def lattice_bond(ax, a, b, **kw):
+    style = dict(color="0.45", lw=1.2, zorder=1)
+    style.update(kw)
+    ax.plot([a[0], b[0]], [a[1], b[1]], **style)
+
+
+fig, axes = plt.subplots(1, 3, figsize=(8.4, 2.5), gridspec_kw={"width_ratios": [1.5, 1, 1]})
+# (a) open chain of 6 qubits, one bond term and one field term labelled
+ax = axes[0]
+n = 6
+for i in range(n - 1):
+    lattice_bond(ax, (i, 0), (i + 1, 0))
+for i in range(n):
+    lattice_qubit(ax, i, 0)
+ax.annotate(r"$-J\,Z_2Z_3$", xy=(1.5, 0.0), xytext=(1.5, 0.75), ha="center", fontsize=9,
+            arrowprops=dict(arrowstyle="-", color="0.3", lw=0.7, shrinkB=2))
+ax.annotate(r"$-h\,X_5$", xy=(4, -0.17), xytext=(4, -0.85), ha="center", va="top", fontsize=9,
+            arrowprops=dict(arrowstyle="-", color="0.3", lw=0.7, shrinkB=0))
+for i in (0, n - 1):
+    ax.text(i, -0.3, f"{i + 1}", ha="center", va="top", fontsize=8, color="0.3")
+ax.set_xlim(-0.5, n - 0.5)
+ax.set_ylim(-1.6, 1.6)
+ax.set_title("(a) open chain", fontsize=9.5)
+# (b) 4 x 4 square lattice
+L = 4
+ax = axes[1]
+for r in range(L):
+    for c in range(L):
+        if c + 1 < L:
+            lattice_bond(ax, (c, -r), (c + 1, -r))
+        if r + 1 < L:
+            lattice_bond(ax, (c, -r), (c, -r - 1))
+for r in range(L):
+    for c in range(L):
+        lattice_qubit(ax, c, -r)
+ax.set_title("(b) square lattice", fontsize=9.5)
+# (c) the same lattice with a path through all qubits (row by row, alternating direction)
+ax = axes[2]
+order = []
+for r in range(L):
+    cols = range(L) if r % 2 == 0 else range(L - 1, -1, -1)
+    order += [(c, -r) for c in cols]
+path = set(zip(order, order[1:]))
+for r in range(L):
+    for c in range(L):
+        for nb in ((c + 1, -r), (c, -r - 1)):
+            if nb[0] < L and nb[1] > -L:
+                if ((c, -r), nb) in path or (nb, (c, -r)) in path:
+                    lattice_bond(ax, (c, -r), nb, color=ORANGE, lw=2.6)
+                else:
+                    lattice_bond(ax, (c, -r), nb, ls=(0, (2, 2)))
+for k, (x, y) in enumerate(order):
+    lattice_qubit(ax, x, y, label=str(k + 1))
+ax.set_title("(c) a path through it", fontsize=9.5)
+for ax in axes[1:]:
+    ax.set_xlim(-0.5, L - 0.5)
+    ax.set_ylim(-L + 0.5, 0.5)
+for ax in axes:
+    ax.set_aspect("equal")
+    ax.axis("off")
+fig.subplots_adjust(wspace=0.25)
+save_fig(fig, "spin-lattices")
+
+
+# ------------------------------------------- L3: the two measurement settings of the TFIM
+
+def circuit_box(ax, x, y, w, hgt, text, fs=9):
+    ax.add_patch(Rectangle((x - w / 2, y - hgt / 2), w, hgt, facecolor="white", edgecolor="black",
+                           lw=0.9, zorder=3))
+    ax.text(x, y, text, ha="center", va="center", fontsize=fs, zorder=4)
+
+
+fig, axes = plt.subplots(1, 2, figsize=(6.0, 2.0))
+dy, right = 0.55, 3.0
+for ax, setting in zip(axes, ["Z", "X"]):
+    for q in range(4):
+        ax.plot([0, right], [-q * dy, -q * dy], color="0.35", lw=0.9, zorder=1)
+        ax.text(-0.12, -q * dy, f"$q_{q + 1}$", ha="right", va="center", fontsize=9)
+    circuit_box(ax, 0.65, -1.5 * dy, 0.7, 3 * dy + 0.4, r"$|\psi\rangle$", fs=10)
+    for q in range(4):
+        if setting == "X":
+            circuit_box(ax, 1.6, -q * dy, 0.36, 0.36, "$H$")
+        circuit_box(ax, 2.45, -q * dy, 0.36, 0.36, "M")
+    ax.set_xlim(-0.55, right + 0.05)
+    ax.set_ylim(-3 * dy - 0.35, 0.35)
+    ax.set_aspect("equal")
+    ax.axis("off")
+axes[0].set_title(r"(a) $Z$ setting: every $Z_iZ_{i+1}$", fontsize=9.5)
+axes[1].set_title(r"(b) $X$ setting: every $X_i$", fontsize=9.5)
+save_fig(fig, "tfim-settings")
+
+
+# ------------------------------------------- L3: one Trotter step of the TFIM chain
+
+regs = [QuantumRegister(1, f"q{i + 1}") for i in range(6)]
+step = QuantumCircuit(*regs)
+zz_angle, x_angle = Parameter("-2Jδ"), Parameter("-2hδ")
+for first in [0, 1]:                 # bonds (1,2), (3,4), (5,6), then (2,3), (4,5)
+    for i in range(first, 5, 2):
+        step.rzz(zz_angle, i, i + 1)
+    step.barrier()                   # keeps the layers apart in the drawing (not drawn)
+for i in range(6):
+    step.rx(x_angle, i)
+save_fig(step.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False), "trotter-step")
+
+
+# ------------------------------------------- L3: simulations, with the functions of the T3 prototype
+# The code students write in Tutorial 3 (tutorials/tutorial-03/T3-prototype_qiskit.ipynb in the
+# planning repository); qubits are numbered from 0 here, from 1 in the text.
+
+from matplotlib.colors import LogNorm
+from qiskit import transpile
+from qiskit.quantum_info import SparsePauliOp, Statevector, state_fidelity
+from qiskit_aer import AerSimulator
+from qiskit_aer.noise import NoiseModel, depolarizing_error
+from scipy.linalg import expm
+
+J, h = 1.0, 1.0
+
+
+def tfim(n, J, h):
+    # Transverse-field Ising Hamiltonian on an open chain of n qubits.
+    terms = [("ZZ", [i, i + 1], -J) for i in range(n - 1)]
+    terms += [("X", [i], -h) for i in range(n)]
+    return SparsePauliOp.from_sparse_list(terms, num_qubits=n)
+
+
+def trotter_step(n, J, h, dt):
+    step = QuantumCircuit(n)
+    for i in range(0, n - 1, 2):       # even bonds
+        step.rzz(-2 * J * dt, i, i + 1)
+    for i in range(1, n - 1, 2):       # odd bonds
+        step.rzz(-2 * J * dt, i, i + 1)
+    for i in range(n):
+        step.rx(-2 * h * dt, i)
+    return step
+
+
+def trotter_circuit(n, J, h, t, steps):
+    # Start in |0...0>, then `steps` Trotter steps up to time t.
+    circuit = QuantumCircuit(n)
+    for _ in range(steps):
+        circuit.compose(trotter_step(n, J, h, t / steps), inplace=True)
+    return circuit
+
+
+def exact_state(n, J, h, t):
+    U = expm(-1j * tfim(n, J, h).to_matrix() * t)
+    return Statevector(QuantumCircuit(n)).evolve(U)
+
+
+def magnetisation(state, n):
+    M = SparsePauliOp.from_sparse_list([("Z", [i], 1 / n) for i in range(n)], num_qubits=n)
+    return state.expectation_value(M).real
+
+
+def clean_axes(ax):
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+
+
+# ------------------------------------------- L3: small and large Trotter steps over time
+
+n, t_max = 6, 4.0
+times = np.linspace(0, t_max, 81)
+fig, (ax_m, ax_f) = plt.subplots(1, 2, figsize=(8.2, 2.9))
+step_sizes = [0.25, 0.5, 1.0]
+blues = ["#7fa7d6", "#3f78bd", "#163f73"]  # one hue, light to dark: small to large step
+for dt, colour, marker in zip(step_sizes, blues, ["o", "s", "^"]):
+    steps = np.arange(int(round(t_max / dt)) + 1)
+    states = [Statevector(trotter_circuit(n, J, h, k * dt, k)) for k in steps]
+    m = [magnetisation(state, n) for state in states]
+    f = [state_fidelity(exact_state(n, J, h, k * dt), state) for k, state in zip(steps, states)]
+    ax_m.plot(steps * dt, m, marker + "--", color=colour, ms=5, lw=1.2, label=f"step {dt}")
+    ax_f.plot(steps * dt, f, marker + "--", color=colour, ms=5, lw=1.2)
+ax_m.plot(times, [magnetisation(exact_state(n, J, h, t), n) for t in times], "-", color=ORANGE,
+          lw=2, zorder=5, label="exact")
+ax_m.set_xlabel("time $t$")
+ax_m.set_ylabel("magnetisation $m$")
+ax_m.legend(frameon=False, fontsize=8.5)
+ax_f.set_xlabel("time $t$")
+ax_f.set_ylabel("fidelity with the exact state")
+ax_f.set_ylim(-0.03, 1.03)
+ax_m.set_title("(a)", loc="left", fontsize=9.5)
+ax_f.set_title("(b)", loc="left", fontsize=9.5)
+for ax in (ax_m, ax_f):
+    clean_axes(ax)
+fig.subplots_adjust(wspace=0.3)
+save_fig(fig, "trotter-time")
+
+
+# ------------------------------------------- L3: light cone in the Heisenberg chain (about 40 s)
+
+def heisenberg_step(n, J, dt):
+    step = QuantumCircuit(n)
+    for first in [0, 1]:                      # even bonds, then odd bonds
+        for i in range(first, n - 1, 2):
+            step.rxx(2 * J * dt, i, i + 1)
+            step.ryy(2 * J * dt, i, i + 1)
+            step.rzz(2 * J * dt, i, i + 1)
+    return step
+
+
+n, dt, n_steps = 21, 0.2, 20   # T3 uses 15 qubits and 30 steps, fast enough for Colab
+middle = n // 2
+Z = [SparsePauliOp.from_sparse_list([("Z", [i], 1)], num_qubits=n) for i in range(n)]
+start = QuantumCircuit(n)
+start.x(middle)
+state = Statevector(start)
+step = heisenberg_step(n, J, dt)
+flip_probability = []
+for k in range(n_steps + 1):
+    flip_probability.append([(1 - state.expectation_value(Z[i]).real) / 2 for i in range(n)])
+    state = state.evolve(step)
+flip_probability = np.array(flip_probability)
+
+times = dt * np.arange(n_steps + 1)
+fig, ax = plt.subplots(figsize=(8.2, 3.0))
+mesh = ax.pcolormesh(times, np.arange(1, n + 1), np.maximum(flip_probability, 1e-3).T, shading="nearest",
+                     cmap="Blues", norm=LogNorm(vmin=1e-3, vmax=1), rasterized=True)
+fig.colorbar(mesh, ax=ax, label="probability of the flip\non qubit $i$", pad=0.02)
+# circuit light cone: each step (two layers of bond gates) moves information at most 2 qubits per side
+k = np.arange(n_steps + 1)
+for side in [-1, 1]:
+    ax.plot(times, middle + 1 + side * 2 * k, "--", color=ORANGE, lw=1.6)
+ax.set_ylim(n + 0.5, 0.5)     # qubit 1 at the top and time to the right, as in a circuit drawing
+ax.set_xlim(-dt / 2, times[-1] + dt / 2)
+ax.set_yticks([1, 6, 11, 16, 21])
+ax.set_xlabel("time $t$")
+ax.set_ylabel("qubit $i$")
+save_fig(fig, "light-cone")
+
+
+# ------------------------------------------- L3: Trotter error against gate noise
+
+noise_model = NoiseModel()   # T2's depolarising model, with the values of current devices
+noise_model.add_all_qubit_quantum_error(depolarizing_error(0.001, 1), ["r"])
+noise_model.add_all_qubit_quantum_error(depolarizing_error(0.005, 2), ["cz"])
+
+
+def noisy_density_matrix(circuit, noise_model):
+    # From T2: the exact final density matrix of `circuit` under `noise_model`.
+    circuit = transpile(circuit, basis_gates=["r", "cz"], optimization_level=0)
+    circuit.save_density_matrix()
+    density_simulator = AerSimulator(method="density_matrix", noise_model=noise_model)
+    return density_simulator.run(circuit).result().data()["density_matrix"]
+
+
+n, t = 4, 1.0
+psi = exact_state(n, J, h, t)
+step_counts = np.arange(1, 16)
+fidelity_ideal, fidelity_noisy = [], []
+for r in step_counts:
+    circuit = trotter_circuit(n, J, h, t, r)
+    fidelity_ideal.append(state_fidelity(psi, Statevector(circuit)))
+    fidelity_noisy.append(state_fidelity(psi, noisy_density_matrix(circuit, noise_model)))
+best = step_counts[int(np.argmax(fidelity_noisy))]
+fig, ax = plt.subplots(figsize=(4.6, 2.9))
+ax.plot(step_counts, fidelity_ideal, "o-", color=ACCENT, ms=5, lw=1.4, label="without noise")
+ax.plot(step_counts, fidelity_noisy, "s-", color=ORANGE, ms=5, lw=1.4, label="with gate noise")
+ax.annotate(f"best: {best} steps", xy=(best, max(fidelity_noisy)), xytext=(best + 2.2, 0.9),
+            fontsize=8.5, arrowprops=dict(arrowstyle="-", color="0.3", lw=0.7))
+ax.set_xlabel("Trotter steps $r$")
+ax.set_ylabel("fidelity with the exact state")
+ax.set_xticks([1, 3, 5, 10, 15])
+ax.legend(frameon=False, fontsize=8.5, loc="lower right")
+clean_axes(ax)
+save_fig(fig, "trotter-noise")

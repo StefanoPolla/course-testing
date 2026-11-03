@@ -247,3 +247,51 @@ glossary:
   mse:
     term: mean squared error
     def: "The average of the squared difference between an estimate and the true value. It equals the bias squared plus the variance."
+  hamiltonian:
+    term: Hamiltonian
+    def: "The observable of the energy of a system, a Hermitian matrix. Its eigenvalues are the possible energies, and it also determines how the state of the system changes in time."
+  schrodinger-equation:
+    term: Schrödinger equation
+    def: "The equation that relates states to the Hamiltonian. In its time-independent form, it is the eigenvalue equation of the Hamiltonian; in its time-dependent form, it says how a state evolves, and its solution applies the unitary exp(-iHt)."
+  ground-state:
+    term: ground state
+    def: "The eigenvector of a Hamiltonian with the lowest eigenvalue, the state of lowest energy. A system that is cold enough settles in or near its ground state."
+  local-hamiltonian:
+    term: local Hamiltonian
+    def: "A Hamiltonian that is a sum of terms that each act on a few qubits (k-local: at most k). As a sum of Pauli strings, it has polynomially many terms instead of exponentially many."
+  tfim:
+    term: transverse-field Ising model
+    def: "A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM."
+  heisenberg-model:
+    term: Heisenberg model
+    def: "A spin model with the coupling XX + YY + ZZ on every pair of neighbouring qubits. Each bond treats the three axes alike, and the number of qubits in the state 1 is conserved."
+  qubit-wise-commuting:
+    term: qubit-wise commuting
+    def: "Two Pauli strings are qubit-wise commuting if, on every qubit, their factors are equal or one of them is the identity. Such strings can be measured from the same shots, in one measurement setting."
+  measurement-setting:
+    term: measurement setting
+    def: "A choice of basis (X, Y or Z) for every qubit, made with single-qubit rotations before the measurement. Each shot of a setting gives a value of every Pauli string whose factors agree with it."
+  tensor-network:
+    term: tensor network
+    def: "A classical description of a quantum state as a network of small arrays, one per qubit, whose size grows with the entanglement. Efficient for weakly entangled states, such as those of a chain evolved for a short time."
+  trotter-formula:
+    term: Trotter formula
+    def: "An approximation of the evolution under a sum of terms by a product of evolutions under each group of terms in turn, repeated in many short Trotter steps. Its error, the Trotter error, comes from terms that do not commute and decreases as the number of steps grows."
+  operator-norm:
+    term: operator norm
+    def: "The largest factor by which a matrix can stretch the length of a vector. For a Hermitian matrix, it is the largest absolute value of its eigenvalues."
+  brick-wall-circuit:
+    term: brick-wall circuit
+    def: "A circuit whose two-qubit gates act on alternating pairs of neighbouring qubits, first (1,2), (3,4), and so on, then (2,3), (4,5), and so on, like the bricks of a wall."
+  floquet-circuit:
+    term: Floquet circuit
+    def: "A circuit that repeats the same layer of gates many times, like a system driven periodically in time. With large Trotter steps, it follows the exact evolution under a Hamiltonian that differs from the intended one."
+  magnetisation:
+    term: magnetisation
+    def: "The average over the qubits of the expectation value of Z: the average alignment of the spins along z."
+  correlation-function:
+    term: correlation function
+    def: "An expectation value of a product of observables on two qubits, such as Z on qubit i times Z on qubit j, which shows how much the two qubits agree and how this changes with their distance."
+  light-cone:
+    term: light cone
+    def: "The qubits that an operation, an error or a change can influence after a given number of circuit layers or a given time. In a circuit of nearest-neighbour gates, it grows by a fixed number of qubits per layer; a local Hamiltonian also spreads changes at a finite speed."

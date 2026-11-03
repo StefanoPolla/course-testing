@@ -1,7 +1,7 @@
 # Lecture notes (test)
 
 The Quarto lecture notes, built as a website with a PDF download. One chapter per
-lecture (`LN-<topic>.qmd`); so far Lectures 1 and 2. Releasing to the ntqc repository: see
+lecture (`LN-<topic>.qmd`); so far Lectures 1 to 3 (L3 in its first version, for review). Releasing to the ntqc repository: see
 [../tools/README.md](../tools/README.md). It was moved here from the format trial in the planning
 repository (`agent-sandbox/lecture-notes-format-trial/`).
 
@@ -17,7 +17,9 @@ quarto render         # full build: website + PDF into _site/
 ```
 
 The figures are drawn by `make_figures.py` (Qiskit for circuits, Matplotlib for diagrams) and committed as SVG (web) and
-PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
+PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes; it takes about a minute, mostly for the L3
+light cone. A rerun rewrites every file with a new timestamp, so commit only the figures that changed
+(`git checkout` the others).
 
 ## Files
 
@@ -26,7 +28,7 @@ PDF (LaTeX) files in `figures/`. Rerun it only when a figure changes.
 | `_quarto.yml` | Book structure (the published chapters), web and PDF settings |
 | `_quarto-staging.yml` | Staging-only settings (`noindex`); not copied to the release |
 | `_variables.yml` | Repository name and Colab base URL, used as `{{< var colab >}}`; never write the repository name directly in the text |
-| `index.qmd`, `L1-platforms-and-measurement.qmd`, `L2-noise.qmd`, `exercises.qmd`, `glossary.qmd` | Content |
+| `index.qmd`, `L1-platforms-and-measurement.qmd`, `L2-noise.qmd`, `L3-hamiltonians.qmd`, `exercises.qmd`, `glossary.qmd` | Content |
 | `exercises.lua` | Fills the Exercises appendix with the exercises (`exr-` boxes) of every `LN-*.qmd` chapter listed in `_quarto.yml`, with links back; exercises must not contain labelled equations or figures. Also removes every chapter whose heading has the class `.web-only` (About page, Exercises) from the PDF, keeping Quarto's file markers so that the following chapter stays numbered |
 | `tutorials.lua` | Builds the tutorial table on the index page from `../tutorials/tutorial-NN/` (`*_qiskit.ipynb`, `*_qiskit_solutions.ipynb`) and the dates in `index.qmd`; it updates itself when a notebook is added |
 | `hints.lua` | Exercise hints: `::: {.hint}` becomes a "Hint" button on the web and an inline "Hint:" in the PDF |
