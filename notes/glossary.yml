@@ -259,6 +259,9 @@ glossary:
   local-hamiltonian:
     term: local Hamiltonian
     def: "A Hamiltonian that is a sum of terms that each act on a few qubits (k-local: at most k). As a sum of Pauli strings, it has polynomially many terms instead of exponentially many."
+  locality:
+    term: locality
+    def: "The principle that physical interactions involve only a few particles at a time, usually ones close to each other in space. It is why the Hamiltonians of physical systems are local, with polynomially many terms instead of exponentially many. Few-body (k-local) is the weaker form; geometric locality, with terms only between neighbours on a chain or lattice, is the stronger."
   tfim:
     term: transverse-field Ising model
     def: "A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM."
