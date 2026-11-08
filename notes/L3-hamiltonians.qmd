@@ -263,16 +263,12 @@ number of flipped qubits (@sec-spin-models), read from the Z setting. -->
 
 ::: {#exr-settings}
 ## Measurement settings
-(a) How many measurement settings does $H = Z_1Z_2 + Z_2Z_3 + X_1 + X_2 + X_3 + Z_1X_2$ need, with single-qubit rotations only?
+How many measurement settings does $H = Z_1Z_2 + Z_2Z_3 + X_1 + X_2 + X_3 + Z_1X_2$ need, with single-qubit rotations only?
 Give the settings and the terms that each measures.
 
     :::: {.hint}
     Look for terms that cannot pairwise share a setting.
     ::::
-
-(b) Take the Heisenberg model on an $L\times L$ square lattice with $J = 1$.
-How many Pauli strings does it have, and how many settings does it need?
-How many shots give a standard error of 0.1 for $L = 4$ in the worst case?
 :::
 
 ::: {#exr-group-shots}
@@ -284,18 +280,9 @@ A Hamiltonian is measured in several settings, with single-shot variances $\sigm
 (b) For the [TFIM]{.gloss key="tfim"} chain with $n = 10$, $J = 1$ and $h = 0.2$, assume that the terms of each group are uncorrelated and $\sigma_i = 1$.
 How many shots go to each setting for a standard error of 0.1?
 How many would an equal split need?
-:::
 
-::: {#exr-plausibility}
-## Is it plausible?
-A study reports the energy of a state of a 50-qubit Hamiltonian with 200 Pauli strings, all with coefficients $\pm 1$, estimated from $10^4$ shots in total with a standard error of 0.01.
-
-(a) How many shots would the worst case of @eq-shot-budget require?
-
-(b) Suppose the strings fall into four settings of 50 strings each, and the terms of each group are uncorrelated.
-How many shots are needed now?
-
-(c) Is the claim plausible?
+(c) A study reports the energy of a state of this chain with a standard error of 0.1 from 200 shots in total.
+Is the claim plausible?
 What would have to be true of the state?
 :::
 
@@ -408,10 +395,6 @@ Take the TFIM chain of @def-tfim, with $A$ the bond terms and $B$ the field term
     :::: {.hint}
     The operator norm obeys the triangle inequality, $\|M + N\| \le \|M\| + \|N\|$, and a Pauli string has norm 1.
     ::::
-
-(c) Show that $\|A\| = J(n-1)$ and $\|B\| = hn$.
-For any $A$ and $B$, $\|[A,B]\| \le 2\|A\|\|B\|$.
-How do this bound and the bound of (b) grow with $n$?
 :::
 
 ::: {#exr-trotter-cost}
@@ -433,7 +416,7 @@ Without cancelling any gates, how many CZs does one step cost now?
 
 What does the circuit do when $\delta$ is not small?
 Each step is still a unitary, and every unitary can be written as $e^{-iH_F\delta}$ for some Hermitian $H_F$, by taking the logarithms of its eigenvalues.
-The circuit therefore follows the exact evolution under the Hamiltonian $H_F$, seen at the times $t = \delta, 2\delta, \dots$ Comparing with @eq-trotter-step-error gives (@exr-floquet)
+The circuit therefore follows the exact evolution under the Hamiltonian $H_F$, seen at the times $t = \delta, 2\delta, \dots$ Expanding $e^{-iH_F\delta}$ to second order in $\delta$ and comparing with @eq-trotter-step-error gives
 $$
 H_F = A + B + \frac{i\delta}{2}[A,B] + O(\delta^2) ,
 $$ {#eq-floquet}
@@ -454,14 +437,6 @@ At steps of 0.5, the magnetisation stays within 0.1 of the exact curve, while th
 The fidelity compares the whole state, and small errors in many parts of it multiply, so local observables such as the magnetisation are often much more accurate than the state as a whole.
 
 ![A TFIM chain of 6 qubits ($J = h = 1$) evolved from $\ket{0\cdots0}$, exactly (orange) and with Trotter steps of 0.25, 0.5 and 1 (blue, light to dark; the same markers in both panels). (a) The magnetisation; (b) the fidelity of the circuit's state with the exact state.](figures/trotter-time){#fig-trotter-time width=100%}
-
-::: {#exr-floquet}
-## The Hamiltonian of one step
-Write $H_F = A + B + \delta C + O(\delta^2)$ for an unknown matrix $C$.
-Expand $e^{-iH_F\delta}$ to second order in $\delta$, and compare with $e^{-iB\delta}e^{-iA\delta}$ to find $C$.
-Check that $C$ is Hermitian.
-What is $C$ if the circuit applies $B$ first?
-:::
 
 ## Observables after time evolution {#sec-dynamics-observables}
 
