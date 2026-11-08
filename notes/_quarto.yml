@@ -13,7 +13,7 @@ project:
 book:
   title: "Near-term Quantum Computing — lecture notes"
   author: "Stefano Polla"
-  date: "2026-10-22"
+  date: "2026-11-08"
   chapters:
     - index.qmd
     - L1-platforms-and-measurement.qmd
@@ -40,7 +40,6 @@ filters:
   - path: glossary.lua
     at: pre-ast  # before Quarto turns definition boxes into its own nodes
   - glossary.lua  # again, for the terms that exercises.lua copies into exercises.qmd
-  - changes.lua  # temporary: review highlighting
   - page-dates.lua  # author, published, last updated on every web page
 crossref:
   chapters: true

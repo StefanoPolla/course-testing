@@ -91,7 +91,7 @@ Many particles, such as electrons, carry a [spin]{.gloss key="spin"}, which make
 The spin of an electron is a *spin-1/2*: measured along any axis, it gives one of two values, up or down: it is a qubit.
 The Pauli matrices $X$, $Y$ and $Z$ represent its components along the three axes (up to a factor $\hbar/2$, which is $1/2$ in our units).
 In a magnetic material, the spins of neighbouring atoms interact.
-A spin model describes this with one qubit on each site of a chain or lattice, and terms that couple neighbouring qubits (for spin-1/2; larger spins have more levels).
+A spin model describes this with one qubit on each site of a chain or lattice (for spin-1/2; larger spins have more levels), and terms that couple neighbouring qubits.
 Spin models are standard test problems for quantum computers: each spin is one qubit, all terms are local, and yet many of their properties, in particular their dynamics, are hard to compute classically on large lattices.
 The Hamiltonians of molecules can be written as sums of Pauli strings too, after an encoding of the electrons into qubits, but with many more terms; we stay with spin models.
 
