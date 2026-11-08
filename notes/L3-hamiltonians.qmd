@@ -366,13 +366,18 @@ As a result, $\|[A,B]\| \le 4Jh(n-1)$ (@exr-commutator): the bound grows in prop
 
 ### Circuits for one step {#sec-trotter-circuits}
 
-A Trotter step of the TFIM is a product of the Pauli rotations of @eq-pauli-rotation: $e^{iJ\delta Z_iZ_{i+1}} = R_{ZZ}(-2J\delta)$ on every bond, and $e^{ih\delta X_i} = R_X(-2h\delta)$ on every qubit.
+For any Hamiltonian, each group of commuting terms gives one Pauli rotation per term (@eq-pauli-rotation), so a Trotter step is a circuit of Pauli rotations.
+To run it, we arrange the rotations so that those on different qubits act at the same time, compile them into native gates, and fit them on the coupling graph of the device.
+
+::: {.example}
+For the TFIM, these rotations are $e^{iJ\delta Z_iZ_{i+1}} = R_{ZZ}(-2J\delta)$ on every bond, and $e^{ih\delta X_i} = R_X(-2h\delta)$ on every qubit.
 Two bond gates that share a qubit cannot act at the same time, so the bonds are applied in two layers, first $(1,2)$, $(3,4)$, …, then $(2,3)$, $(4,5)$, …, and the field rotations in a third (@fig-trotter-step).
 Two-qubit gates on alternating pairs of neighbours form a [brick-wall circuit]{.gloss key="brick-wall-circuit"}, as in @fig-brick-wall.
+On a device with CZ gates, each $R_{ZZ}$ is two CNOTs and an $R_Z$ (@fig-trotter-step b), so it costs two CZs, and a step on a chain of $n$ qubits costs $2(n-1)$ CZs; on some trapped-ion devices, $R_{ZZ}(\theta)$ is a single [native gate]{.gloss key="native-gate"} (@tbl-native).
+:::
 
-![One Trotter step of the TFIM on a chain of 6 qubits: $R_{ZZ}(-2J\delta)$ on the bonds $(1,2)$, $(3,4)$, $(5,6)$, then on $(2,3)$, $(4,5)$, then $R_X(-2h\delta)$ on every qubit.](figures/trotter-step){#fig-trotter-step width=40%}
+![One Trotter step of the TFIM on a chain of 6 qubits. (a) $R_{ZZ}(-2J\delta)$ on the bonds $(1,2)$, $(3,4)$, $(5,6)$, then on $(2,3)$, $(4,5)$, then $R_X(-2h\delta)$ on every qubit. (b) Each $R_{ZZ}(\theta)$, here on the bond $(1,2)$, compiled into two CNOTs and one $R_Z(\theta)$, as in @fig-rzz.](figures/trotter-step){#fig-trotter-step width=75%}
 
-On a device with CZ gates, each $R_{ZZ}$ costs two CZs (@fig-rzz), so a step on a chain of $n$ qubits costs $2(n-1)$ CZs; on some trapped-ion devices, $R_{ZZ}(\theta)$ is a single [native gate]{.gloss key="native-gate"} (@tbl-native).
 A Trotter circuit repeats the same step $r$ times, so a [coherent error]{.gloss key="coherent-error"} of a gate, such as an over-rotation, repeats $r$ times too and adds up: this is the worst case of @sec-gate-errors.
 
 The lattice of the model must also fit the [coupling graph]{.gloss key="coupling-graph"} of the device (@sec-connectivity).
@@ -427,12 +432,15 @@ At large $\delta$, the circuit therefore simulates a different Hamiltonian: it c
 A circuit that repeats one layer of gates is called a [Floquet circuit]{.gloss key="floquet-circuit"}, after the mathematician Gaston Floquet, whose theory describes systems that are driven periodically in time, such as atoms under a pulsed laser.
 The circuit applies $A$ and $B$ in turn, over and over, and so acts like such a periodic drive.
 
+::: {.example}
 @fig-trotter-time shows both regimes for a TFIM chain of 6 qubits that starts in $\ket{0\cdots0}$.
 Panel (a) shows the magnetisation.
 With steps of 0.25, it follows the exact curve.
 With steps of 1, it follows a different one, for example $-0.42$ instead of $0.20$ at $t = 1$.
 Panel (b) shows the [fidelity]{.gloss key="fidelity"} of the circuit's state with the exact state (@def-fidelity).
 At steps of 0.5, the magnetisation stays within 0.1 of the exact curve, while the fidelity drops to values between 0.37 and 0.71 after the first step.
+:::
+
 The fidelity compares the whole state, and small errors in many parts of it multiply, so local observables such as the magnetisation are often much more accurate than the state as a whole.
 
 ![A TFIM chain of 6 qubits ($J = h = 1$) evolved from $\ket{0\cdots0}$, exactly (orange) and with Trotter steps of 0.25, 0.5 and 1 (blue, light to dark; the same markers in both panels). (a) The magnetisation; (b) the fidelity of the circuit's state with the exact state.](figures/trotter-time){#fig-trotter-time width=100%}

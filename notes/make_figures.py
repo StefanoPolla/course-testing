@@ -704,16 +704,47 @@ save_fig(fig, "tfim-settings")
 
 # ------------------------------------------- L3: one Trotter step of the TFIM chain
 
+# R_ZZ drawn as a box on both qubits: Qiskit's own rzz symbol (two dots and a line)
+# looks like a CZ, which the notes reserve for that gate (Stefano, 2026-11-08).
+def rzz_box(angle):
+    return Gate("rzz_box", 2, [angle], label="$R_{ZZ}$")
+
+
 regs = [QuantumRegister(1, f"q{i + 1}") for i in range(6)]
 step = QuantumCircuit(*regs)
 zz_angle, x_angle = Parameter("-2Jδ"), Parameter("-2hδ")
 for first in [0, 1]:                 # bonds (1,2), (3,4), (5,6), then (2,3), (4,5)
     for i in range(first, 5, 2):
-        step.rzz(zz_angle, i, i + 1)
+        step.append(rzz_box(zz_angle), [i, i + 1])
     step.barrier()                   # keeps the layers apart in the drawing (not drawn)
 for i in range(6):
     step.rx(x_angle, i)
-save_fig(step.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False), "trotter-step")
+
+# (b) the same gate compiled into CNOTs and R_Z, as in the L1 figure rzz-decomposition,
+# on the bond (1,2)
+compiled = QuantumCircuit(QuantumRegister(1, "q1"), QuantumRegister(1, "q2"))
+compiled.cx(0, 1)
+compiled.rz(theta, 1)
+compiled.cx(0, 1)
+
+# Qiskit sizes its fonts for its own figure, so draw each circuit alone first to get its
+# natural size, then draw both into axes of exactly those sizes.
+sizes = []
+for qc in (step, compiled):
+    f = qc.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False)
+    sizes.append(f.get_size_inches())
+    plt.close(f)
+gap = 0.6
+fig = plt.figure(figsize=(sizes[0][0] + gap + sizes[1][0], sizes[0][1] + 0.4))
+W, H = fig.get_size_inches()
+ax_a = fig.add_axes([0, 0, sizes[0][0] / W, sizes[0][1] / H])
+ax_b = fig.add_axes([(sizes[0][0] + gap) / W, (sizes[0][1] - sizes[1][1]) / 2 / H,
+                     sizes[1][0] / W, sizes[1][1] / H])
+step.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False, ax=ax_a)
+compiled.draw("mpl", style=STYLE, scale=0.85, ax=ax_b)
+ax_a.set_title("(a) One Trotter step", fontsize=13)
+ax_b.set_title(r"(b) $R_{ZZ}(\theta)$ in CNOTs and $R_Z$", fontsize=13)
+save_fig(fig, "trotter-step")
 
 
 # ------------------------------------------- L3: simulations, with the functions of the T3 prototype
