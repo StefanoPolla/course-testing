@@ -617,6 +617,63 @@ fig.subplots_adjust(wspace=0.25)
 save_fig(fig, "spin-lattices")
 
 
+# ------------------------------------------- L3: geometric locality and k-locality
+
+def term_patch(ax, pts, pad=0.32):
+    """A shaded region around the qubits of one term h_i (a rounded hull of the points)."""
+    from matplotlib.patches import FancyBboxPatch
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    ax.add_patch(FancyBboxPatch((min(xs) - pad, min(ys) - pad), max(xs) - min(xs) + 2 * pad,
+                                max(ys) - min(ys) + 2 * pad, boxstyle=f"round,pad=0,rounding_size={pad}",
+                                facecolor=ORANGE, alpha=0.22, edgecolor=ORANGE, lw=1.0, zorder=0))
+
+
+fig, axes = plt.subplots(1, 2, figsize=(6.4, 2.7))
+# (a) geometrically local: a 5 x 4 lattice; terms on a bond, on one qubit and on a plaquette
+ax = axes[0]
+Lx, Ly = 5, 4
+for r in range(Ly):
+    for c in range(Lx):
+        if c + 1 < Lx:
+            lattice_bond(ax, (c, -r), (c + 1, -r))
+        if r + 1 < Ly:
+            lattice_bond(ax, (c, -r), (c, -r - 1))
+for r in range(Ly):
+    for c in range(Lx):
+        lattice_qubit(ax, c, -r)
+for pts, label, xy in [([(0, -1), (1, -1)], r"$h_1$", (0.5, -0.45)),
+                       ([(3, 0)], r"$h_2$", (3.45, 0.42)),
+                       ([(2, -2), (3, -2), (2, -3), (3, -3)], r"$h_3$", (3.62, -3.55))]:
+    term_patch(ax, pts)
+    ax.text(*xy, label, ha="center", va="center", fontsize=10, color=ORANGE)
+ax.set_xlim(-0.6, Lx - 0.4)
+ax.set_ylim(-Ly + 0.25, 0.75)
+ax.set_title("(a) geometrically local", fontsize=9.5)
+# (b) 2-local: qubits on a circle, any pair can interact; two terms highlighted
+ax = axes[1]
+n = 8
+ang = np.pi / 2 - 2 * np.pi * np.arange(n) / n
+pos = [(1.5 * np.cos(a), 1.5 * np.sin(a)) for a in ang]
+for i in range(n):
+    for j in range(i + 1, n):
+        lattice_bond(ax, pos[i], pos[j], color="0.75", lw=0.7)
+for (i, j), label, f, off in [((0, 4), r"$h_1$", 0.25, (0.25, 0.0)), ((2, 5), r"$h_2$", 0.3, (0.1, -0.28))]:
+    lattice_bond(ax, pos[i], pos[j], color=ORANGE, lw=2.6, zorder=2)
+    mid = ((1 - f) * pos[i][0] + f * pos[j][0] + off[0], (1 - f) * pos[i][1] + f * pos[j][1] + off[1])
+    ax.text(*mid, label, ha="center", va="center", fontsize=10, color=ORANGE,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.5))
+for p in pos:
+    lattice_qubit(ax, *p)
+ax.set_xlim(-1.9, 1.9)
+ax.set_ylim(-1.9, 1.9)
+ax.set_title("(b) 2-local", fontsize=9.5)
+for ax in axes:
+    ax.set_aspect("equal")
+    ax.axis("off")
+fig.subplots_adjust(wspace=0.15)
+save_fig(fig, "locality")
+
+
 # ------------------------------------------- L3: the two measurement settings of the TFIM
 
 def circuit_box(ax, x, y, w, hgt, text, fs=9):

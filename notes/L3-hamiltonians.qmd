@@ -38,7 +38,37 @@ In the eigenbasis of $H$, $e^{-iHt} = \sum_k e^{-iE_kt}\ket{E_k}\bra{E_k}$: each
 For a single qubit with $H = -\frac{\omega}{2}Z$, for example, the relative phase of $\ket{0}$ and $\ket{1}$ turns at the angular frequency $\omega = E_1 - E_0 = 2\pi f_{01}$, where $f_{01}$ is the qubit frequency of @sec-pulses.
 As long as the frequency $f_{01}$ is known, this rotation about the $Z$ axis can be compensated using virtual $Z$ rotations (@sec-virtual-z).
 
-## Hamiltonians as sums of Pauli strings {#sec-pauli-sums}
+## Local Hamiltonians {#sec-local-hamiltonians}
+
+A Hamiltonian on $n$ qubits is a Hermitian $2^n\times 2^n$ matrix, described by $4^n$ real numbers.
+On 50 qubits, that is far too many to write down or store in memory.
+In practice, physics spares us this cost through [locality]{.gloss key="locality"}.
+Interactions in physical systems involve only a few sub-systems (e.g. particles) at a time, often only neighbouring ones, so the Hamiltonian is a sum
+$$
+H = \sum_{i=1}^{M} h_i
+$$ {#eq-local-terms}
+of terms $h_i$ that each act on a few qubits, and as the identity on all others, with a number of terms $M$ that grows polynomially in $n$ rather than as $4^n$.
+@fig-locality shows the two common forms of locality.
+
+::: {#def-local-hamiltonian}
+## $k$-local Hamiltonian
+A Hamiltonian $H = \sum_i h_i$ on $n$ qubits is [$k$-local]{.gloss key="local-hamiltonian"} if each term $h_i$ acts on at most $k$ qubits, with $k$ fixed as $n$ grows.
+:::
+
+::: {#def-geometrically-local}
+## Geometrically local Hamiltonian
+Place the $n$ qubits on the sites of a chain or a lattice.
+A Hamiltonian $H = \sum_i h_i$ is [geometrically local]{.gloss key="geometrically-local"} if each term $h_i$ acts only on qubits within a fixed distance of each other, with the distance fixed as $n$ grows.
+:::
+
+![Two forms of locality. (a) Geometrically local: the qubits sit on a lattice, and each term acts on qubits close to each other, such as a pair of neighbours ($h_1$), a single qubit ($h_2$) or a square of four ($h_3$). (b) 2-local: each term acts on at most two qubits, but any pair can interact (grey lines), however far apart.](figures/locality){#fig-locality width=75%}
+
+In the models of this chapter, the terms act on single qubits or on pairs of neighbours.
+Every qubit then appears in only a few terms, and the number of terms is proportional to $n$.
+A geometrically local Hamiltonian is also $k$-local, but not the other way round: a Hamiltonian with a $ZZ$ term on every pair of qubits is 2-local, but it has $n(n-1)/2$ terms, and no arrangement of the qubits on a lattice makes it geometrically local.
+Several results below, such as the growth of the Trotter error and the light cones (which we discuss in @sec-dynamics-observables), rely on this stronger property.
+
+### Pauli decomposition {#sec-pauli-sums}
 
 To measure a Hamiltonian, or to build a circuit from it, we write it as a sum of [Pauli strings]{.gloss key="pauli-string"}.
 We write $\mathcal{P}_n = \{I, X, Y, Z\}^{\otimes n}$ for the set of the $4^n$ Pauli strings on $n$ qubits (@def-pauli-string).
@@ -49,29 +79,9 @@ H = \sum_{P\in\mathcal{P}_n} c_P\, P, \qquad c_P = \frac{\Tr[PH]}{2^n} ,
 $$ {#eq-pauli-sum}
 with real coefficients, since $c_P^* = \Tr[(PH)^\dagger]/2^n = \Tr[HP]/2^n = c_P$.
 
-In general, all $4^n$ coefficients can be nonzero, as many as the matrix has entries.
-However, a sum of $4^n$ terms on 50 qubits would be expensive to write down or store in memory.
-In practice, physics spares us this cost through [locality]{.gloss key="locality"}.
-Interactions in physical systems involve only a few sub-systems (e.g. particles) at a time, often only neighbouring ones, so the Hamiltonian is a sum of few-body terms and the number of terms grows polynomially in $n$ rather than as $4^n$.
-
-::: {#def-local-hamiltonian}
-## $k$-local Hamiltonian
-A Hamiltonian on $n$ qubits is [$k$-local]{.gloss key="local-hamiltonian"} if it is a sum of terms that each act on at most $k$ qubits, with $k$ fixed as $n$ grows.
-As a sum of Pauli strings, all its strings have [weight]{.gloss key="weight"} at most $k$.
-:::
-
-Counting the strings of weight $w \le k$ (choose $w$ qubits, and $X$, $Y$ or $Z$ on each) shows that a $k$-local Hamiltonian has at most $\sum_{w\le k}\binom{n}{w}3^w$ terms, a polynomial in $n$.
-
-::: {#def-geometrically-local}
-## Geometrically local Hamiltonian
-Place the $n$ qubits on the sites of a chain or a lattice.
-A Hamiltonian is [geometrically local]{.gloss key="geometrically-local"} if each of its terms acts only on qubits within a fixed distance of each other, with the distance fixed as $n$ grows.
-:::
-
-In the models of this chapter, the terms act on single qubits or on pairs of neighbours.
-Every qubit then appears in only a few terms, and the number of terms is proportional to $n$.
-A geometrically local Hamiltonian is also $k$-local, but not the other way round: a Hamiltonian with a $ZZ$ term on every pair of qubits is 2-local, but it has $n(n-1)/2$ terms, and no arrangement of the qubits on a lattice makes it geometrically local.
-Several results below, such as the growth of the Trotter error and the light cones (which we discuss in @sec-dynamics-observables), rely on this stronger property.
+In general, all $4^n$ coefficients can be nonzero.
+For a $k$-local Hamiltonian, most of them vanish: each term $h_i$ acts as $I$ outside its qubits, so its Pauli strings do too, and all strings have [weight]{.gloss key="weight"} at most $k$.
+Counting the strings of weight $w \le k$ (choose $w$ qubits, and $X$, $Y$ or $Z$ on each) shows that a $k$-local Hamiltonian is a sum of at most $\sum_{w\le k}\binom{n}{w}3^w$ Pauli strings, a polynomial in $n$.
 
 ## Spin models {#sec-spin-models}
 
