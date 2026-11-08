@@ -714,7 +714,7 @@ window.Quarto = {
 </div>
 <div class="exercise-copy">
 <p><strong><a href="L3-hamiltonians.html#exr-two-site-tfim" class="quarto-xref">Exercise&nbsp;<span>3.2</span></a></strong> (The TFIM on two qubits)</p>
-<p>The TFIM on two qubits is <span class="math inline">\(H = -JZ_1Z_2 - h(X_1 + X_2)\)</span>.</p>
+<p>The <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> on two qubits is <span class="math inline">\(H = -JZ_1Z_2 - h(X_1 + X_2)\)</span>.</p>
 <ol type="a">
 <li><p>Write <span class="math inline">\(H\)</span> as a <span class="math inline">\(4\times 4\)</span> matrix in the basis <span class="math inline">\(\ket{00}, \ket{01}, \ket{10}, \ket{11}\)</span>.</p></li>
 <li><p>Show that <span class="math inline">\(H\)</span> maps the states <span class="math inline">\(\ket{00}+\ket{11}\)</span> and <span class="math inline">\(\ket{01}+\ket{10}\)</span> into combinations of each other, and the states <span class="math inline">\(\ket{00}-\ket{11}\)</span> and <span class="math inline">\(\ket{01}-\ket{10}\)</span> to multiples of themselves. Find the four eigenvalues, and show that the ground-state energy is <span class="math inline">\(-\sqrt{J^2 + 4h^2}\)</span>.</p></li>
@@ -736,7 +736,7 @@ window.Quarto = {
 <p>A Hamiltonian is measured in several settings, with single-shot variances <span class="math inline">\(\sigma_g^2\)</span>.</p>
 <ol type="a">
 <li><p>Show that the best split of <span class="math inline">\(N\)</span> shots gives setting <span class="math inline">\(g\)</span> a number of shots proportional to <span class="math inline">\(\sigma_g\)</span>, and that <span class="math inline">\(N = (\sum_g \sigma_g)^2/\varepsilon^2\)</span> shots give the standard error <span class="math inline">\(\varepsilon\)</span>.</p></li>
-<li><p>For the TFIM chain with <span class="math inline">\(n = 10\)</span>, <span class="math inline">\(J = 1\)</span> and <span class="math inline">\(h = 0.2\)</span>, assume that the terms of each group are uncorrelated and <span class="math inline">\(\sigma_i = 1\)</span>. How many shots go to each setting for a standard error of 0.1? How many would an equal split need?</p></li>
+<li><p>For the <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> chain with <span class="math inline">\(n = 10\)</span>, <span class="math inline">\(J = 1\)</span> and <span class="math inline">\(h = 0.2\)</span>, assume that the terms of each group are uncorrelated and <span class="math inline">\(\sigma_i = 1\)</span>. How many shots go to each setting for a standard error of 0.1? How many would an equal split need?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
@@ -763,7 +763,7 @@ window.Quarto = {
 <div class="exercise-copy">
 <p><strong><a href="L3-hamiltonians.html#exr-trotter-cost" class="quarto-xref">Exercise&nbsp;<span>3.7</span></a></strong> (The cost of a step on a device)</p>
 <ol type="a">
-<li><p>How many CZs does one Trotter step of the TFIM on an <span class="math inline">\(L\times L\)</span> square lattice cost on a device with a square coupling graph?</p></li>
+<li><p>How many CZs does one Trotter step of the <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> on an <span class="math inline">\(L\times L\)</span> square lattice cost on a device with a square coupling graph?</p></li>
 <li><p>Place a <span class="math inline">\(3\times 3\)</span> lattice on a line of 9 qubits, along a path like that of <a href="L3-hamiltonians.html#fig-lattices" class="quarto-xref">Figure&nbsp;<span>3.2</span></a> (c). Which bonds join qubits that are not neighbours on the line, and how far apart are they?</p></li>
 <li><p>Implement each such bond by moving one of its qubits next to the other with SWAPs, applying <span class="math inline">\(R_{ZZ}\)</span>, and moving it back. Without cancelling any gates, how many CZs does one step cost now?</p>
 <details class="hint"><summary>Hint</summary>
@@ -794,7 +794,7 @@ window.Quarto = {
 </div>
 <div class="exercise-copy">
 <p><strong><a href="L3-hamiltonians.html#exr-noisy-energy" class="quarto-xref">Exercise&nbsp;<span>3.11</span></a></strong> (The energy of a noisy state)</p>
-<p>A circuit prepares a state of the TFIM chain of <span class="math inline">\(n\)</span> qubits, but each qubit undergoes local depolarising noise with parameter <span class="math inline">\(p\)</span> (<a href="L2-noise.html#def-local-depolarising" class="quarto-xref">Definition&nbsp;<span>2.7</span></a>) just before the measurement. Write <span class="math inline">\(E_A\)</span> and <span class="math inline">\(E_B\)</span> for the ideal expectation values of the bond terms and of the field terms.</p>
+<p>A circuit prepares a state of the <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> chain of <span class="math inline">\(n\)</span> qubits, but each qubit undergoes local depolarising noise with parameter <span class="math inline">\(p\)</span> (<a href="L2-noise.html#def-local-depolarising" class="quarto-xref">Definition&nbsp;<span>2.7</span></a>) just before the measurement. Write <span class="math inline">\(E_A\)</span> and <span class="math inline">\(E_B\)</span> for the ideal expectation values of the bond terms and of the field terms.</p>
 <ol type="a">
 <li><p>Which energy does the measurement give on average, in terms of <span class="math inline">\(E_A\)</span>, <span class="math inline">\(E_B\)</span> and <span class="math inline">\(p\)</span>?</p></li>
 <li><p>For <span class="math inline">\(n = 10\)</span>, <span class="math inline">\(p = 1\%\)</span>, <span class="math inline">\(E_A = -6\)</span> and <span class="math inline">\(E_B = -5\)</span>, compute the <a href="glossary.html#gloss-bias" class="gloss" data-gloss="The difference between the average of an estimator and the true value. Noise biases estimates of expectation values; more shots do not reduce the bias.">bias</a>. Compare it with the standard error of 0.1 of <a href="L3-hamiltonians.html#sec-shot-budget" class="quarto-xref"><span>Section 3.4.1</span></a>. Do more shots help?</p></li>
