@@ -208,16 +208,16 @@ N = \frac{\big(\sum_i |c_i|\sigma_i\big)^2}{\varepsilon^2}
 \;\le\; \frac{\big(\sum_i |c_i|\big)^2}{\varepsilon^2}
 $$ {#eq-shot-budget}
 shots in total.
-In the worst case, the cost depends only on the sum of the absolute values of the coefficients[, the [Pauli 1-norm]{.gloss key="pauli-1-norm"} $\|c\|_1 = \sum_i |c_i|$ of the vector $c = (c_1, \dots, c_M)$, so that $N \le \|c\|_1^2/\varepsilon^2$]{.chg}.
-[In the literature, $\|c\|_1$ is often written $\lambda$; here that letter is already taken by the Lagrange multiplier.]{.chg}
+In the worst case, the cost depends only on the sum of the absolute values of the coefficients, the [Pauli 1-norm]{.gloss key="pauli-1-norm"} $\|c\|_1 = \sum_i |c_i|$ of the vector $c = (c_1, \dots, c_M)$, so that $N \le \|c\|_1^2/\varepsilon^2$.
+In the literature, $\|c\|_1$ is often written $\lambda$; here that letter is already taken by the Lagrange multiplier.
 
-[If we instead split the shots equally, $N_i = N/M$, @eq-variance-sum gives $\mathrm{Var} = (M/N)\sum_i c_i^2\sigma_i^2 \le M\|c\|_2^2/N$, with the *Pauli 2-norm* $\|c\|_2 = \big(\sum_i c_i^2\big)^{1/2}$.]{.chg}
-[By the Cauchy-Schwarz inequality, $\|c\|_1^2 \le M\|c\|_2^2$, so the optimal split never needs more shots than the equal one.]{.chg}
-[The two are equal when all $|c_i|$ are equal, and the optimal split saves most when a few large coefficients dominate many small ones.]{.chg}
+If we instead split the shots equally, $N_i = N/M$, @eq-variance-sum gives $\mathrm{Var} = (M/N)\sum_i c_i^2\sigma_i^2 \le M\|c\|_2^2/N$, with the *Pauli 2-norm* $\|c\|_2 = \big(\sum_i c_i^2\big)^{1/2}$.
+By the Cauchy-Schwarz inequality, $\|c\|_1^2 \le M\|c\|_2^2$, so the optimal split never needs more shots than the equal one.
+The two are equal when all $|c_i|$ are equal, and the optimal split saves most when a few large coefficients dominate many small ones.
 
 ::: {.example}
-For the [TFIM]{.gloss key="tfim"} on a chain of $n = 10$ qubits with $J = h = 1$, [$\|c\|_1 = 19$]{.chg}, and a standard error of 0.1 takes at most $19^2/0.1^2 = 36{,}100$ shots, spread over 19 different circuits.
-[All 19 coefficients have the same size, so in the worst case the equal split is already optimal.]{.chg}
+For the [TFIM]{.gloss key="tfim"} on a chain of $n = 10$ qubits with $J = h = 1$, $\|c\|_1 = 19$, and a standard error of 0.1 takes at most $19^2/0.1^2 = 36{,}100$ shots, spread over 19 different circuits.
+All 19 coefficients have the same size, so in the worst case the equal split is already optimal.
 Switching between circuits costs time (@sec-timescales), so the number of circuits matters too.
 :::
 
@@ -342,7 +342,7 @@ To evolve for a time $t$, we divide it into $r$ steps of length $\delta = t/r$: 
 
 To make this precise, we need a size for matrices.
 The [operator norm]{.gloss key="operator-norm"} $\|M\| = \max_{\|\psi\| = 1}\|M\ket{\psi}\|$ is the largest factor by which $M$ can stretch the length of a vector; for a Hermitian matrix, it is the largest absolute value of its eigenvalues.
-[For a Pauli sum $H = \sum_i c_iP_i$, the triangle inequality $\|M + N\| \le \|M\| + \|N\|$ and $\|P_i\| = 1$ give $\|H\| \le \|c\|_1$: the [Pauli 1-norm]{.gloss key="pauli-1-norm"} of @sec-shot-budget also bounds the energies of $H$.]{.chg}
+For a Pauli sum $H = \sum_i c_iP_i$, the triangle inequality $\|M + N\| \le \|M\| + \|N\|$ and $\|P_i\| = 1$ give $\|H\| \le \|c\|_1$: the [Pauli 1-norm]{.gloss key="pauli-1-norm"} of @sec-shot-budget also bounds the energies of $H$.
 
 ::: {#def-trotter}
 ## First-order Trotter formula
@@ -376,7 +376,7 @@ In general, a Hamiltonian may need more than two groups of commuting terms; each
 For the TFIM, two groups suffice on any lattice, since all $ZZ$ terms commute with each other, and so do all $X$ terms.
 The TFIM is also geometrically local (@def-geometrically-local), so only terms that overlap fail to commute: $Z_iZ_{i+1}$ anticommutes with $X_i$ and $X_{i+1}$, and commutes with every other $X_j$.
 As a result, $\|[A,B]\| \le 4Jh(n-1)$ (@exr-commutator): the bound grows in proportion to the number of qubits.
-[The weaker bound $O(\|A\|\|B\|\,t^2/r)$ grows faster: here the norms reach the Pauli 1-norms of the two groups, $\|A\| = J(n-1)$ and $\|B\| = hn$ (all spins aligned along $z$, or along $x$), so $\|A\|\|B\|$ grows as $n^2$.]{.chg}
+The weaker bound $O(\|A\|\|B\|\,t^2/r)$ grows faster: here the norms reach the Pauli 1-norms of the two groups, $\|A\| = J(n-1)$ and $\|B\| = hn$ (all spins aligned along $z$, or along $x$), so $\|A\|\|B\|$ grows as $n^2$.
 :::
 
 ### Circuits for one step {#sec-trotter-circuits}
@@ -411,7 +411,7 @@ Take the TFIM chain of @def-tfim, with $A$ the bond terms and $B$ the field term
 (b) Show that $\|[A,B]\| \le 4Jh(n-1)$.
 
     :::: {.hint}
-    [Write $[A,B]$ as a sum of Pauli strings, and bound its norm by its Pauli 1-norm.]{.chg}
+    Write $[A,B]$ as a sum of Pauli strings, and bound its norm by its Pauli 1-norm.
     ::::
 :::
 
