@@ -34,7 +34,8 @@ light cone. A rerun rewrites every file with a new timestamp, so commit only the
 | `hints.lua` | Exercise hints: `::: {.hint}` becomes a "Hint" button on the web and an inline "Hint:" in the PDF |
 | `page-dates.lua` | Web only: "Published" and "Last updated" under the title of every page, from git. Published is the first gh-pages commit of the page (following renames), so it restarts in a new repository; last updated is the last commit of the page, its includes and the paths in its `page-sources` front matter (glossary: `glossary.yml`; exercises: `L*.qmd`), or today with uncommitted changes. Build after committing. The author comes from `_quarto.yml` |
 | `copy_notebooks.py` | Pre-render step: copies the tutorial notebooks into `downloads/` (git-ignored), published with the site so the tutorial table can offer direct downloads |
-| `styles.css`, `preamble.tex` | Web and PDF styling: exercises in a box, hint buttons (PDF: `tcolorbox`) |
+| `examples.lua` | Worked examples: `::: {.example}` gets an italic "Example." run-in label and a thin bar on the left, unnumbered |
+| `styles.css`, `preamble.tex` | Web and PDF styling: exercises in a box, hint buttons, example bars (PDF: `tcolorbox`) |
 | `_prx-widget.qmd` | Interactive Bloch sphere for PRX (raw HTML and JavaScript, web only), included in L1 |
 | `_bloch-ball.qmd` | Shared drawing code (style and JavaScript) of the two Bloch-ball widgets of L2; each widget includes it |
 | `_pauli-widget.qmd` | Interactive Bloch ball under a Pauli channel, with sliders for its error probabilities (web only), included in L2 |
