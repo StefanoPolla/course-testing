@@ -75,7 +75,7 @@ glossary:
     def: "A state of an atom in which one electron is excited very far from the nucleus. Atoms in Rydberg states interact strongly over micrometre distances."
   spin:
     term: spin
-    def: "An intrinsic two-level property of an electron (up or down), which can serve as a qubit."
+    def: "An intrinsic two-level property of an electron (spin-1/2: up or down), which can serve as a qubit."
   quantum-dot:
     term: quantum dot
     def: "A tiny region in a semiconductor that can trap single electrons."
@@ -257,11 +257,17 @@ glossary:
     term: ground state
     def: "The eigenvector of a Hamiltonian with the lowest eigenvalue, the state of lowest energy. A system that is cold enough settles in or near its ground state."
   local-hamiltonian:
-    term: local Hamiltonian
-    def: "A Hamiltonian that is a sum of terms that each act on a few qubits (k-local: at most k). As a sum of Pauli strings, it has polynomially many terms instead of exponentially many."
+    term: k-local Hamiltonian
+    def: "A Hamiltonian that is a sum of terms that each act on at most k qubits, with k fixed as the number of qubits grows. As a sum of Pauli strings, it has polynomially many terms instead of exponentially many. Often simply called a local Hamiltonian."
+  quantum-advantage:
+    term: quantum advantage
+    def: "A task that a quantum computer solves better than any classical method, faster, more cheaply or more accurately. For a task of a given size, it is a claim against the best classical methods known, and it is lost if better ones are found."
+  geometrically-local:
+    term: geometrically local Hamiltonian
+    def: "A Hamiltonian on qubits placed on a chain or lattice, whose terms each act only on qubits within a fixed distance of each other, for example single qubits and pairs of neighbours. Every qubit appears in only a few terms, so the number of terms is proportional to the number of qubits. A stronger property than k-locality."
   locality:
     term: locality
-    def: "The principle that physical interactions involve only a few particles at a time, usually ones close to each other in space. It is why the Hamiltonians of physical systems are local, with polynomially many terms instead of exponentially many. Few-body (k-local) is the weaker form; geometric locality, with terms only between neighbours on a chain or lattice, is the stronger."
+    def: "The principle that physical interactions involve only a few particles at a time, usually ones close to each other in space. It is why the Hamiltonians of physical systems are local, with polynomially many terms instead of exponentially many."
   tfim:
     term: transverse-field Ising model
     def: "A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM."
