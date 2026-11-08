@@ -81,7 +81,7 @@ with real coefficients, since $c_P^* = \Tr[(PH)^\dagger]/2^n = \Tr[HP]/2^n = c_P
 
 In general, all $4^n$ coefficients can be nonzero.
 For a $k$-local Hamiltonian, most of them vanish: each term $h_i$ acts as $I$ outside its qubits, so its Pauli strings do too, and all strings have [weight]{.gloss key="weight"} at most $k$.
-Counting the strings of weight $w \le k$ (choose $w$ qubits, and $X$, $Y$ or $Z$ on each) shows that a $k$-local Hamiltonian is a sum of at most $\sum_{w\le k}\binom{n}{w}3^w$ Pauli strings, a polynomial in $n$.
+Counting the strings of weight $w \le k$ (choose $w$ qubits, and $X$, $Y$ or $Z$ on each) shows that a $k$-local Hamiltonian is a sum of at most $\sum_{w\le k}\binom{n}{w}3^w$ Pauli strings, which grows at most like $n^k$.
 
 ## Spin models {#sec-spin-models}
 
