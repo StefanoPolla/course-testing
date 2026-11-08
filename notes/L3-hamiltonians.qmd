@@ -88,7 +88,7 @@ Counting the strings of weight $w \le k$ (choose $w$ qubits, and $X$, $Y$ or $Z$
 Which local Hamiltonians do we study on a quantum computer?
 The simplest are spin models.
 Many particles, such as electrons, carry a [spin]{.gloss key="spin"}, which makes each of them a tiny magnet.
-The spin of an electron is a *spin-1/2*: measured along any axis, it gives one of two values, up or down: it is a qubit. 
+The spin of an electron is a *spin-1/2*: measured along any axis, it gives one of two values, up or down: it is a qubit.
 The Pauli matrices $X$, $Y$ and $Z$ represent its components along the three axes (up to a factor $\hbar/2$, which is $1/2$ in our units).
 In a magnetic material, the spins of neighbouring atoms interact.
 A spin model describes this with one qubit on each site of a chain or lattice, and terms that couple neighbouring qubits (for spin-1/2; larger spins have more levels).
@@ -251,7 +251,7 @@ $$
 \qquad
 \mathrm{Cov}(s_i, s_j) = \langle P_iP_j\rangle - \langle P_i\rangle\langle P_j\rangle .
 $$ {#eq-group-variance}
-Different settings can use different number of shots, so @eq-shot-budget holds with groups in place of terms: $N = (\sum_g\sigma_g)^2/\varepsilon^2$ (@exr-group-shots).
+Different settings can use different numbers of shots, so @eq-shot-budget holds with groups in place of terms: $N = (\sum_g\sigma_g)^2/\varepsilon^2$ (@exr-group-shots).
 In the worst case, nothing is gained: $|s_g| \le \sum_{i\in g}|c_i|$, so $\sigma_g \le \sum_{i\in g}|c_i|$, and the bound of @eq-shot-budget stays the same.
 In practice, most pairs of terms in a group act on distant qubits, and in many states distant qubits are nearly uncorrelated.
 If all terms of a group are uncorrelated, $\sigma_g^2 = \sum_{i\in g} c_i^2\sigma_i^2 \le \sum_{i\in g} c_i^2$: a group of $m$ terms with equal coefficients costs up to $m$ times fewer shots than in the worst case.
@@ -272,9 +272,9 @@ number of flipped qubits (@sec-spin-models), read from the Z setting. -->
 How many measurement settings does $H = Z_1Z_2 + Z_2Z_3 + X_1 + X_2 + X_3 + Z_1X_2$ need, with single-qubit rotations only?
 Give the settings and the terms that each measures.
 
-    :::: {.hint}
-    Look for terms that cannot pairwise share a setting.
-    ::::
+:::: {.hint}
+Look for terms that cannot pairwise share a setting.
+::::
 :::
 
 ::: {#exr-group-shots}
@@ -434,7 +434,8 @@ Without cancelling any gates, how many CZs does one step cost now?
 
 What does the circuit do when $\delta$ is not small?
 Each step is still a unitary, and every unitary can be written as $e^{-iH_F\delta}$ for some Hermitian $H_F$, by taking the logarithms of its eigenvalues.
-The circuit therefore follows the exact evolution under the Hamiltonian $H_F$, seen at the times $t = \delta, 2\delta, \dots$ Expanding $e^{-iH_F\delta}$ to second order in $\delta$ and comparing with @eq-trotter-step-error gives
+The circuit therefore follows the exact evolution under the Hamiltonian $H_F$, seen at the times $t = \delta, 2\delta, \dots$.
+Expanding $e^{-iH_F\delta}$ to second order in $\delta$ and comparing with @eq-trotter-step-error gives
 $$
 H_F = A + B + \frac{i\delta}{2}[A,B] + O(\delta^2) ,
 $$ {#eq-floquet}
