@@ -358,11 +358,9 @@ The bound is the same for the other order, $e^{-iA\delta}e^{-iB\delta}$.
 :::
 
 @eq-trotter-bound says that, for every initial state, the state of the circuit differs from the exact one by a vector of length at most $(t^2/2r)\|[A,B]\|$.
-
-::: {.chg}
-The bound rests on two facts.
-First, the error of a single step is at most $(\delta^2/2)\|[A,B]\|$ for every $\delta$, with the terms of higher order in @eq-trotter-step-error included.
-A Taylor expansion cannot show this, since its remainder grows with the norms of $A$ and $B$, and so with the number of qubits, much faster than $\|[A,B]\|$; the proof in @childs2021 [sec. V A] writes the error as an integral instead.
+This bound rests on two facts.
+First, the error of a single step is at most $(\delta^2/2)\|[A,B]\|$ for every $\delta$.
+@eq-trotter-step-error suggests this, but the proof takes more work [@childs2021, sec. V.A].
 Second, the errors of the $r$ steps add up at most linearly.
 With $U = e^{-iB\delta}e^{-iA\delta}$ for one Trotter step and $V = e^{-iH\delta}$ for one exact step, the sum
 $$
@@ -370,15 +368,15 @@ V^r - U^r = \sum_{k=0}^{r-1} V^{r-1-k}\,(V - U)\,U^{k}
 $$
 telescopes: neighbouring terms cancel, and only $V^r$ and $-U^r$ remain.
 Unitaries do not change the length of vectors, so each term has norm at most $\|V - U\|$, and $\|V^r - U^r\| \le r\,\|V - U\| \le r\,(\delta^2/2)\|[A,B]\| = (t^2/2r)\|[A,B]\|$.
-@dewolf2026 [sec. 9.2] derives the simpler bound $O(\|A\|\|B\|\,t^2/r)$ in the same way.
-:::
+@dewolf2026 [sec. 9.2] derives the bound $O(\|A\|\|B\|\,t^2/r)$ in the same way.
+
 In general, a Hamiltonian may need more than two groups of commuting terms; each step then applies one exponential per group, and the bound becomes a sum over the commutators of all pairs of groups.
 
 ::: {.example}
 For the TFIM, two groups suffice on any lattice, since all $ZZ$ terms commute with each other, and so do all $X$ terms.
 The TFIM is also geometrically local (@def-geometrically-local), so only terms that overlap fail to commute: $Z_iZ_{i+1}$ anticommutes with $X_i$ and $X_{i+1}$, and commutes with every other $X_j$.
 As a result, $\|[A,B]\| \le 4Jh(n-1)$ (@exr-commutator): the bound grows in proportion to the number of qubits.
-[The simpler bound $O(\|A\|\|B\|\,t^2/r)$ grows faster: here the norms reach the Pauli 1-norms of the two groups, $\|A\| = J(n-1)$ and $\|B\| = hn$ (all spins aligned along $z$, or along $x$), so $\|A\|\|B\|$ grows as $n^2$.]{.chg}
+[The weaker bound $O(\|A\|\|B\|\,t^2/r)$ grows faster: here the norms reach the Pauli 1-norms of the two groups, $\|A\| = J(n-1)$ and $\|B\| = hn$ (all spins aligned along $z$, or along $x$), so $\|A\|\|B\|$ grows as $n^2$.]{.chg}
 :::
 
 ### Circuits for one step {#sec-trotter-circuits}
@@ -441,8 +439,8 @@ $$
 H_F = A + B + \frac{i\delta}{2}[A,B] + O(\delta^2) ,
 $$ {#eq-floquet}
 which is close to $H$ only for small $\delta$.
-[For small $\delta$, this gives a second way to read the Trotter error: the circuit evolves exactly, but under $H_F$ instead of $H$.]{.chg}
-[Two Hamiltonians that differ by $\|H_F - H\| \approx (\delta/2)\|[A,B]\|$ give evolutions that drift apart by at most $t\,\|H_F - H\|$ in a time $t$, which for $\delta = t/r$ is the bound of @eq-trotter-bound.]{.chg}
+For small $\delta$, this gives a second way to read the Trotter error: the circuit evolves exactly, but under $H_F$ instead of $H$.
+Two Hamiltonians that differ by $\|H_F - H\| \approx (\delta/2)\|[A,B]\|$ give evolutions that drift apart by at most $t\,\|H_F - H\|$ in a time $t$, which for $\delta = t/r$ is the bound of @eq-trotter-bound.
 At large $\delta$, the circuit therefore simulates a different Hamiltonian: it costs the same per step, but its dynamics can be completely different from that of $H$.
 A circuit that repeats one layer of gates is called a [Floquet circuit]{.gloss key="floquet-circuit"}, after the mathematician Gaston Floquet, whose theory describes systems that are driven periodically in time, such as atoms under a pulsed laser.
 The circuit applies $A$ and $B$ in turn, over and over, and so acts like such a periodic drive.
