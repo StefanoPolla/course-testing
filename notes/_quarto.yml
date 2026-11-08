@@ -37,7 +37,9 @@ filters:
   - tutorials.lua
   - hints.lua
   - examples.lua
-  - glossary.lua
+  - path: glossary.lua
+    at: pre-ast  # before Quarto turns definition boxes into its own nodes
+  - glossary.lua  # again, for the terms that exercises.lua copies into exercises.qmd
   - changes.lua  # temporary: review highlighting
   - page-dates.lua  # author, published, last updated on every web page
 crossref:

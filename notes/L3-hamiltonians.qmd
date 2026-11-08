@@ -118,11 +118,17 @@ On an $L\times L$ square lattice (@fig-lattices), it has $2L(L-1)$ bonds and $L^
 
 ![Spin models on (a) an open chain of 6 qubits and (b) a $4\times 4$ square lattice. Each circle is a qubit, with its field term $-hX_i$, and each line a bond, with its term $-JZ_iZ_j$ in the TFIM. (c) A path through all qubits of the lattice (orange). Placed on a line of qubits in this order, the bonds along the path join neighbours, while the others (dashed) join qubits up to 7 positions apart (@sec-trotter-circuits).](figures/spin-lattices){#fig-lattices width=100%}
 
-The second model of this chapter is the [Heisenberg model]{.gloss key="heisenberg-model"},
+The second model of this chapter describes the magnetism of many materials.
+
+::: {#def-heisenberg}
+## Heisenberg model
+The [Heisenberg model]{.gloss key="heisenberg-model"} on a chain or lattice of $n$ qubits is
 $$
 H = J\sum_{\langle i,j\rangle}\big(X_iX_j + Y_iY_j + Z_iZ_j\big) ,
 $$ {#eq-heisenberg}
-which describes the magnetism of many materials.
+with the bonds $\langle i,j\rangle$ of @def-tfim and a coupling energy $J$.
+:::
+
 Each bond treats the three axes alike, so its energy depends only on how the two spins are oriented relative to each other.
 In the rest of the chapter, the TFIM is the running example, and the Heisenberg model appears where it makes a point more clearly.
 
@@ -152,7 +158,7 @@ What does this gate do to $\ket{10}$?
 
 ::: {#exr-two-site-tfim}
 ## The TFIM on two qubits
-The TFIM on two qubits is $H = -JZ_1Z_2 - h(X_1 + X_2)$.
+The [TFIM]{.gloss key="tfim"} on two qubits is $H = -JZ_1Z_2 - h(X_1 + X_2)$.
 
 (a) Write $H$ as a $4\times 4$ matrix in the basis $\ket{00}, \ket{01}, \ket{10}, \ket{11}$.
 
@@ -205,7 +211,7 @@ shots in total.
 In the worst case, the cost depends only on the sum of the absolute values of the coefficients.
 
 ::: {.example}
-For the TFIM on a chain of $n = 10$ qubits with $J = h = 1$, $\sum_i |c_i| = 19$, and a standard error of 0.1 takes at most $19^2/0.1^2 = 36{,}100$ shots, spread over 19 different circuits.
+For the [TFIM]{.gloss key="tfim"} on a chain of $n = 10$ qubits with $J = h = 1$, $\sum_i |c_i| = 19$, and a standard error of 0.1 takes at most $19^2/0.1^2 = 36{,}100$ shots, spread over 19 different circuits.
 Switching between circuits costs time (@sec-timescales), so the number of circuits matters too.
 :::
 
@@ -222,7 +228,7 @@ A [measurement setting]{.gloss key="measurement-setting"} assigns a basis, $X$, 
 It measures every Pauli string whose factors agree with it wherever they are not $I$, and these strings are qubit-wise commuting.
 :::
 
-The TFIM needs only two settings, on any chain or lattice: in the $Z$ setting, each shot gives the signs of all bond terms, and in the $X$ setting, with a Hadamard on every qubit, the signs of all field terms (@fig-tfim-settings).
+The [TFIM]{.gloss key="tfim"} needs only two settings, on any chain or lattice: in the $Z$ setting, each shot gives the signs of all bond terms, and in the $X$ setting, with a Hadamard on every qubit, the signs of all field terms (@fig-tfim-settings).
 The Heisenberg model needs three, $X$, $Y$ and $Z$ on all qubits, also on any lattice.
 Its terms $X_1X_2$ and $Y_1Y_2$ commute as matrices, but not qubit-wise, so no setting measures both; with an entangling circuit before the measurement, they could be measured together (@sec-L3-reading).
 
@@ -273,7 +279,7 @@ A Hamiltonian is measured in several settings, with single-shot variances $\sigm
 
 (a) Show that the best split of $N$ shots gives setting $g$ a number of shots proportional to $\sigma_g$, and that $N = (\sum_g \sigma_g)^2/\varepsilon^2$ shots give the standard error $\varepsilon$.
 
-(b) For the TFIM chain with $n = 10$, $J = 1$ and $h = 0.2$, assume that the terms of each group are uncorrelated and $\sigma_i = 1$.
+(b) For the [TFIM]{.gloss key="tfim"} chain with $n = 10$, $J = 1$ and $h = 0.2$, assume that the terms of each group are uncorrelated and $\sigma_i = 1$.
 How many shots go to each setting for a standard error of 0.1?
 How many would an equal split need?
 :::
@@ -320,7 +326,7 @@ Finding such problems is part of the work, and it is hard: there is no general t
 ### The Trotter formula {#sec-trotter-formula}
 
 If all terms of $H$ commuted, $e^{-iHt}$ would split exactly into a product of exponentials of single terms, each a rotation about a Pauli string (@eq-pauli-rotation).
-For the TFIM, we split $H = A + B$ into the bond terms $A = -J\sum_i Z_iZ_{i+1}$ and the field terms $B = -h\sum_i X_i$.
+For the [TFIM]{.gloss key="tfim"}, we split $H = A + B$ into the bond terms $A = -J\sum_i Z_iZ_{i+1}$ and the field terms $B = -h\sum_i X_i$.
 The terms of $A$ commute with each other, and so do those of $B$, so $e^{-iA\delta}$ and $e^{-iB\delta}$ are products of rotations that a circuit can apply.
 But $A$ and $B$ do not commute, so applying first $e^{-iA\delta}$ and then $e^{-iB\delta}$, which is the product $e^{-iB\delta}e^{-iA\delta}$ (the rightmost factor acts first), differs from $e^{-i(A+B)\delta}$.
 For a short time $\delta$, the difference is small.
@@ -370,7 +376,7 @@ For any Hamiltonian, each group of commuting terms gives one Pauli rotation per 
 To run it, we arrange the rotations so that those on different qubits act at the same time, compile them into native gates, and fit them on the coupling graph of the device.
 
 ::: {.example}
-For the TFIM, these rotations are $e^{iJ\delta Z_iZ_{i+1}} = R_{ZZ}(-2J\delta)$ on every bond, and $e^{ih\delta X_i} = R_X(-2h\delta)$ on every qubit.
+For the [TFIM]{.gloss key="tfim"}, these rotations are $e^{iJ\delta Z_iZ_{i+1}} = R_{ZZ}(-2J\delta)$ on every bond, and $e^{ih\delta X_i} = R_X(-2h\delta)$ on every qubit.
 Two bond gates that share a qubit cannot act at the same time, so the bonds are applied in two layers, first $(1,2)$, $(3,4)$, …, then $(2,3)$, $(4,5)$, …, and the field rotations in a third (@fig-trotter-step).
 Two-qubit gates on alternating pairs of neighbours form a [brick-wall circuit]{.gloss key="brick-wall-circuit"}, as in @fig-brick-wall.
 On a device with CZ gates, each $R_{ZZ}$ is two CNOTs and an $R_Z$ (@fig-trotter-step b), so it costs two CZs, and a step on a chain of $n$ qubits costs $2(n-1)$ CZs; on some trapped-ion devices, $R_{ZZ}(\theta)$ is a single [native gate]{.gloss key="native-gate"} (@tbl-native).
@@ -406,7 +412,7 @@ How do this bound and the bound of (b) grow with $n$?
 
 ::: {#exr-trotter-cost}
 ## The cost of a step on a device
-(a) How many CZs does one Trotter step of the TFIM on an $L\times L$ square lattice cost on a device with a square coupling graph?
+(a) How many CZs does one Trotter step of the [TFIM]{.gloss key="tfim"} on an $L\times L$ square lattice cost on a device with a square coupling graph?
 
 (b) Place a $3\times 3$ lattice on a line of 9 qubits, along a path like that of @fig-lattices (c).
 Which bonds join qubits that are not neighbours on the line, and how far apart are they?
@@ -433,7 +439,7 @@ A circuit that repeats one layer of gates is called a [Floquet circuit]{.gloss k
 The circuit applies $A$ and $B$ in turn, over and over, and so acts like such a periodic drive.
 
 ::: {.example}
-@fig-trotter-time shows both regimes for a TFIM chain of 6 qubits that starts in $\ket{0\cdots0}$.
+@fig-trotter-time shows both regimes for a [TFIM]{.gloss key="tfim"} chain of 6 qubits that starts in $\ket{0\cdots0}$.
 Panel (a) shows the magnetisation.
 With steps of 0.25, it follows the exact curve.
 With steps of 1, it follows a different one, for example $-0.42$ instead of $0.20$ at $t = 1$.
@@ -508,7 +514,7 @@ r^* = \Big(\frac{2a^2t^4}{\varepsilon_{\text{step}}}\Big)^{1/3} .
 $$ {#eq-optimal-steps}
 
 ::: {.example}
-Take a TFIM chain of 4 qubits, $t = 1$ and $J = h = 1$.
+Take a [TFIM]{.gloss key="tfim"} chain of 4 qubits, $t = 1$ and $J = h = 1$.
 The bound gives $a = 2Jh(n-1) = 6$.
 For the noise, we take the depolarising [noise model]{.gloss key="noise-model"} of Tutorial 2 with the values typical of current devices quoted there, $p = 0.1\%$ after each single-qubit gate and $0.5\%$ after each CZ, which are Pauli errors of $3p/4$ and $15p/16$ (@def-depolarising and @def-global-depolarising).
 As in Tutorial 2, the circuit is compiled into PRX and CZ gates without simplification, and every single-qubit gate, $Z$ rotations included, is a noisy pulse.
@@ -553,7 +559,7 @@ For how many steps can it compute $\langle Z_i\rangle$ exactly on a chain of 100
 
 ::: {#exr-noisy-energy}
 ## The energy of a noisy state
-A circuit prepares a state of the TFIM chain of $n$ qubits, but each qubit undergoes local depolarising noise with parameter $p$ (@def-local-depolarising) just before the measurement.
+A circuit prepares a state of the [TFIM]{.gloss key="tfim"} chain of $n$ qubits, but each qubit undergoes local depolarising noise with parameter $p$ (@def-local-depolarising) just before the measurement.
 Write $E_A$ and $E_B$ for the ideal expectation values of the bond terms and of the field terms.
 
 (a) Which energy does the measurement give on average, in terms of $E_A$, $E_B$ and $p$?

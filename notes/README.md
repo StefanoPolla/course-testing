@@ -41,8 +41,8 @@ light cone. A rerun rewrites every file with a new timestamp, so commit only the
 | `_pauli-widget.qmd` | Interactive Bloch ball under a Pauli channel, with sliders for its error probabilities (web only), included in L2 |
 | `_channel-widget.qmd` | Interactive Bloch ball under the single-qubit channels of L2's table (web only), included in L2 |
 | `changes.lua` | Temporary, during a review round: colours text marked `[...]{.chg}` or `::: {.chg}`; remove it and the marks when the round is accepted |
-| `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths) |
-| `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text |
+| `glossary.yml` | Glossary entries, **plain text only** (the web tooltips cannot render maths). Optional `ref: def-name`: the term then links to that definition box instead of the glossary page (web and PDF), except inside the box itself |
+| `glossary.lua`, `glossary-tooltips.html` | Glossary filter: write `[term]{.gloss key="..."}` in the text. Listed twice in `_quarto.yml`: at `pre-ast`, to see the definition boxes before Quarto converts them, and again after `exercises.lua`, for the copied exercises |
 | `macros.tex` + `_macros.qmd` | LaTeX macros, once for the PDF and once for the web; keep them in step |
 | `references.bib` | Bibliography. Each chapter ends with its own reference list on the web only; the PDF has one list at the end (`reference-section-title` in `_quarto.yml`) |
 | `figures/CREDITS.txt` | Source and licence of every third-party image in `figures/` (CC BY requires credit and a note of changes) |
