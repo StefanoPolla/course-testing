@@ -372,7 +372,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">7 November 2026</p>
+      <p class="date-modified">8 November 2026</p>
     </div>
   </div>
     
@@ -520,6 +520,10 @@ A number between 0 and 1 measuring how close a state or operation is to the inte
 <dd>
 A circuit that repeats the same layer of gates many times, like a system driven periodically in time. With large Trotter steps, it follows the exact evolution under a Hamiltonian that differs from the intended one.
 </dd>
+<dt><span id="gloss-geometrically-local">geometrically local Hamiltonian</span></dt>
+<dd>
+A Hamiltonian on qubits placed on a chain or lattice, whose terms each act only on qubits within a fixed distance of each other, for example single qubits and pairs of neighbours. Every qubit appears in only a few terms, so the number of terms is proportional to the number of qubits. A stronger property than k-locality.
+</dd>
 <dt><span id="gloss-global-depolarising">global depolarising channel</span></dt>
 <dd>
 The depolarising channel acting on all qubits at once: with probability p, the state of all qubits is replaced by the maximally mixed state. It shrinks every Pauli expectation value by the same factor, whatever its weight.
@@ -552,6 +556,10 @@ A device that holds ions in vacuum with electric fields, typically lined up in a
 <dd>
 A thin insulating barrier between two superconductors. In a circuit it makes the energy levels unevenly spaced, which is what turns the circuit into a usable qubit.
 </dd>
+<dt><span id="gloss-local-hamiltonian">k-local Hamiltonian</span></dt>
+<dd>
+A Hamiltonian that is a sum of terms that each act on at most k qubits, with k fixed as the number of qubits grows. As a sum of Pauli strings, it has polynomially many terms instead of exponentially many. Often simply called a local Hamiltonian.
+</dd>
 <dt><span id="gloss-kraus-operators">Kraus operators</span></dt>
 <dd>
 A set of matrices that defines a quantum channel: the channel maps a density matrix to the sum of each Kraus operator times the density matrix times its adjoint. The same channel can have different sets of Kraus operators.
@@ -572,13 +580,9 @@ The qubits that an operation, an error or a change can influence after a given n
 <dd>
 Depolarising noise that acts on each qubit separately and independently. It shrinks the expectation value of a Pauli string by one factor for each qubit on which the string acts, so strings of higher weight shrink faster.
 </dd>
-<dt><span id="gloss-local-hamiltonian">local Hamiltonian</span></dt>
-<dd>
-A Hamiltonian that is a sum of terms that each act on a few qubits (k-local: at most k). As a sum of Pauli strings, it has polynomially many terms instead of exponentially many.
-</dd>
 <dt><span id="gloss-locality">locality</span></dt>
 <dd>
-The principle that physical interactions involve only a few particles at a time, usually ones close to each other in space. It is why the Hamiltonians of physical systems are local, with polynomially many terms instead of exponentially many. Few-body (k-local) is the weaker form; geometric locality, with terms only between neighbours on a chain or lattice, is the stronger.
+The principle that physical interactions involve only a few particles at a time, usually ones close to each other in space. It is why the Hamiltonians of physical systems are local, with polynomially many terms instead of exponentially many.
 </dd>
 <dt><span id="gloss-logical-qubit">logical qubit</span></dt>
 <dd>
@@ -668,6 +672,10 @@ The trace of the square of a density matrix: 1 for pure states, smaller for mixe
 <dd>
 Quantum charge-coupled device: a trapped-ion architecture in which ions are moved between zones of the trap, so that any two ions can be brought together for a gate.
 </dd>
+<dt><span id="gloss-quantum-advantage">quantum advantage</span></dt>
+<dd>
+A task that a quantum computer solves better than any classical method, faster, more cheaply or more accurately. For a task of a given size, it is a claim against the best classical methods known, and it is lost if better ones are found.
+</dd>
 <dt><span id="gloss-quantum-channel">quantum channel</span></dt>
 <dd>
 The general description of how a quantum state changes, including noise: a linear map of density matrices that can be written with Kraus operators. Unitary gates are the channels with a single Kraus operator.
@@ -726,7 +734,7 @@ State preparation and measurement errors, characterised together because a measu
 </dd>
 <dt><span id="gloss-spin">spin</span></dt>
 <dd>
-An intrinsic two-level property of an electron (up or down), which can serve as a qubit.
+An intrinsic two-level property of an electron (spin-1/2: up or down), which can serve as a qubit.
 </dd>
 <dt><span id="gloss-state-fidelity">state fidelity</span></dt>
 <dd>
