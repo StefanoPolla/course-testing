@@ -132,7 +132,7 @@ with the bonds $\langle i,j\rangle$ of @def-tfim and a coupling energy $J$.
 Each bond treats the three axes alike, so its energy depends only on how the two spins are oriented relative to each other.
 In the rest of the chapter, the TFIM is the running example, and the Heisenberg model appears where it makes a point more clearly.
 
-One property of the Heisenberg model is used twice below.
+One property of the Heisenberg model is used for the light cones of @sec-dynamics-observables.
 A bond term equals $J(2\,\gate{SWAP} - I)$ (@exr-pauli-decomposition), so it can move a 1 from one qubit to its neighbour, but never create or remove one.
 The number of qubits in $\ket{1}$, which we call the number of *flipped qubits*, therefore never changes during the evolution: it is a *conserved quantity* of the model.
 In particular, $\ket{0\cdots 0}$ is an eigenstate.
@@ -228,9 +228,11 @@ A [measurement setting]{.gloss key="measurement-setting"} assigns a basis, $X$, 
 It measures every Pauli string whose factors agree with it wherever they are not $I$, and these strings are qubit-wise commuting.
 :::
 
+::: {.example}
 The [TFIM]{.gloss key="tfim"} needs only two settings, on any chain or lattice: in the $Z$ setting, each shot gives the signs of all bond terms, and in the $X$ setting, with a Hadamard on every qubit, the signs of all field terms (@fig-tfim-settings).
 The Heisenberg model needs three, $X$, $Y$ and $Z$ on all qubits, also on any lattice.
 Its terms $X_1X_2$ and $Y_1Y_2$ commute as matrices, but not qubit-wise, so no setting measures both; with an entangling circuit before the measurement, they could be measured together (@sec-L3-reading).
+:::
 
 ![The two measurement settings of the TFIM on four qubits, after the circuit that prepares the state $\ket{\psi}$. M is a measurement in the computational basis. (a) Each shot gives the signs of all $Z_iZ_{i+1}$; (b) after a Hadamard on every qubit, each shot gives the signs of all $X_i$.](figures/tfim-settings){#fig-tfim-settings width=70%}
 
@@ -364,11 +366,13 @@ The bound is the same for the other order, $e^{-iA\delta}e^{-iB\delta}$.
 @eq-trotter-bound says that, for every initial state, the state of the circuit differs from the exact one by a vector of length at most $(t^2/2r)\|[A,B]\|$.
 It turns the estimate of @eq-trotter-step-error into a rigorous bound for $r$ steps, using that the errors of the steps add up at most linearly, since unitaries do not change the length of vectors.
 A proof is in @childs2021 [sec. V A]; @dewolf2026 [sec. 9.2] derives the simpler bound $O(\|A\|\|B\|\,t^2/r)$.
-For the TFIM, two groups suffice on any lattice, since all $ZZ$ terms commute with each other, and so do all $X$ terms.
-Other models might need more groups; in that case, each step then applies one exponential per group, and the bound becomes a sum over the commutators of all pairs of groups.
+In general, a Hamiltonian may need more than two groups of commuting terms; each step then applies one exponential per group, and the bound becomes a sum over the commutators of all pairs of groups.
 
-For the TFIM, which is geometrically local (@def-geometrically-local), only terms that overlap fail to commute: $Z_iZ_{i+1}$ anticommutes with $X_i$ and $X_{i+1}$, and commutes with every other $X_j$.
+::: {.example}
+For the TFIM, two groups suffice on any lattice, since all $ZZ$ terms commute with each other, and so do all $X$ terms.
+The TFIM is also geometrically local (@def-geometrically-local), so only terms that overlap fail to commute: $Z_iZ_{i+1}$ anticommutes with $X_i$ and $X_{i+1}$, and commutes with every other $X_j$.
 As a result, $\|[A,B]\| \le 4Jh(n-1)$ (@exr-commutator): the bound grows in proportion to the number of qubits.
+:::
 
 ### Circuits for one step {#sec-trotter-circuits}
 
@@ -469,10 +473,13 @@ Three quantities are common, and the shots of the $Z$ setting give all of them:
 - the return probability $|\bra{\psi(0)}e^{-iHt}\ket{\psi(0)}|^2$, which for $\ket{\psi(0)} = \ket{0\cdots0}$ is the fraction of shots that give all zeros; it decreases quickly with $n$, so large systems need many shots.
 
 How fast does a change spread through a system?
+
+::: {.example}
 @fig-light-cone shows a Heisenberg chain of 21 qubits, with $J = 1$, that starts in $\ket{0\cdots0}$ with the middle qubit flipped, evolved with Trotter steps of 0.2.
 Each bond gate conserves the number of flipped qubits, as the Hamiltonian does (@sec-spin-models), so there is always exactly one flipped qubit, and $(1-\langle Z_i\rangle)/2$ is the probability of finding it on qubit $i$.
 Since $\ket{0\cdots0}$ is an eigenstate, the qubits that the flip has not reached show no change at all, so the spreading can be read off directly.
 Each bond gate partly swaps its two qubits (@exr-pauli-decomposition), and the flip spreads out from the middle.
+:::
 
 ![Light cones in a Heisenberg chain of 21 qubits ($J = 1$) that starts in $\ket{0\cdots0}$ with qubit 11 flipped, evolved with Trotter steps of 0.2. The colour is the probability of finding the flip on qubit $i$, on a logarithmic scale; white is $10^{-3}$ or less. Dashed: the light cone of the circuit, 2 qubits per side per step.](figures/light-cone){#fig-light-cone width=100%}
 
