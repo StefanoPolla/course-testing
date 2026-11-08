@@ -704,7 +704,7 @@ window.Quarto = {
 <li><p>Write <span class="math inline">\(M = \begin{pmatrix} 0 &amp; 1-i \\ 1+i &amp; 2 \end{pmatrix}\)</span> as a sum of Pauli matrices.</p></li>
 <li><p>Write the SWAP gate as a sum of two-qubit Pauli strings, and conclude that <span class="math inline">\(X\otimes X + Y\otimes Y + Z\otimes Z = 2\,\gate{SWAP} - I\)</span>. Which eigenvalues does a bond term of the Heisenberg model have, and for which states?</p>
 <details class="hint"><summary>Hint</summary>
-<p>Use <a href="L3-hamiltonians.html#eq-pauli-sum" class="quarto-xref">Equation&nbsp;<span>3.2</span></a>, and compute each trace as a sum over the basis states <span class="math inline">\(\ket{ab}\)</span>.</p>
+<p>Use <a href="L3-hamiltonians.html#eq-pauli-sum" class="quarto-xref">Equation&nbsp;<span>3.3</span></a>, and compute each trace as a sum over the basis states <span class="math inline">\(\ket{ab}\)</span>.</p>
 </details></li>
 <li><p>Show that <span class="math inline">\(e^{-i\theta\,\gate{SWAP}} = \cos\theta\, I - i\sin\theta\,\gate{SWAP}\)</span>. What does this gate do to <span class="math inline">\(\ket{10}\)</span>?</p>
 <details class="hint"><summary>Hint</summary>
@@ -743,7 +743,7 @@ window.Quarto = {
 <p><strong><a href="L3-hamiltonians.html#exr-plausibility" class="quarto-xref">Exercise&nbsp;<span>3.5</span></a></strong> (Is it plausible?)</p>
 <p>A study reports the energy of a state of a 50-qubit Hamiltonian with 200 Pauli strings, all with coefficients <span class="math inline">\(\pm 1\)</span>, estimated from <span class="math inline">\(10^4\)</span> shots in total with a standard error of 0.01.</p>
 <ol type="a">
-<li><p>How many shots would the worst case of <a href="L3-hamiltonians.html#eq-shot-budget" class="quarto-xref">Equation&nbsp;<span>3.5</span></a> require?</p></li>
+<li><p>How many shots would the worst case of <a href="L3-hamiltonians.html#eq-shot-budget" class="quarto-xref">Equation&nbsp;<span>3.6</span></a> require?</p></li>
 <li><p>Suppose the strings fall into four settings of 50 strings each, and the terms of each group are uncorrelated. How many shots are needed now?</p></li>
 <li><p>Is the claim plausible? What would have to be true of the state?</p></li>
 </ol>
@@ -764,7 +764,7 @@ window.Quarto = {
 <p><strong><a href="L3-hamiltonians.html#exr-trotter-cost" class="quarto-xref">Exercise&nbsp;<span>3.7</span></a></strong> (The cost of a step on a device)</p>
 <ol type="a">
 <li><p>How many CZs does one Trotter step of the TFIM on an <span class="math inline">\(L\times L\)</span> square lattice cost on a device with a square coupling graph?</p></li>
-<li><p>Place a <span class="math inline">\(3\times 3\)</span> lattice on a line of 9 qubits, along a path like that of <a href="L3-hamiltonians.html#fig-lattices" class="quarto-xref">Figure&nbsp;<span>3.1</span></a> (c). Which bonds join qubits that are not neighbours on the line, and how far apart are they?</p></li>
+<li><p>Place a <span class="math inline">\(3\times 3\)</span> lattice on a line of 9 qubits, along a path like that of <a href="L3-hamiltonians.html#fig-lattices" class="quarto-xref">Figure&nbsp;<span>3.2</span></a> (c). Which bonds join qubits that are not neighbours on the line, and how far apart are they?</p></li>
 <li><p>Implement each such bond by moving one of its qubits next to the other with SWAPs, applying <span class="math inline">\(R_{ZZ}\)</span>, and moving it back. Without cancelling any gates, how many CZs does one step cost now?</p>
 <details class="hint"><summary>Hint</summary>
 <p>A SWAP is three CNOTs (<a href="L1-platforms-and-measurement.html#fig-swap" class="quarto-xref">Figure&nbsp;<span>1.11</span></a>), and each CNOT is one CZ with single-qubit gates (<a href="L1-platforms-and-measurement.html#exr-swap-native" class="quarto-xref">Exercise&nbsp;<span>1.6</span></a>).</p>
@@ -777,7 +777,7 @@ window.Quarto = {
 </div>
 <div class="exercise-copy">
 <p><strong><a href="L3-hamiltonians.html#exr-optimal-steps" class="quarto-xref">Exercise&nbsp;<span>3.9</span></a></strong> (How many steps?)</p>
-<p>A circuit evolves a system for a time <span class="math inline">\(t = 1\)</span>, with <span class="math inline">\(a = 1\)</span> in <a href="L3-hamiltonians.html#eq-tradeoff" class="quarto-xref">Equation&nbsp;<span>3.10</span></a>, on a device with <span class="math inline">\(\varepsilon_{\text{step}} = 0.01\)</span>.</p>
+<p>A circuit evolves a system for a time <span class="math inline">\(t = 1\)</span>, with <span class="math inline">\(a = 1\)</span> in <a href="L3-hamiltonians.html#eq-tradeoff" class="quarto-xref">Equation&nbsp;<span>3.11</span></a>, on a device with <span class="math inline">\(\varepsilon_{\text{step}} = 0.01\)</span>.</p>
 <ol type="a">
 <li><p>Compute <span class="math inline">\(r^*\)</span> and the two terms of the infidelity at <span class="math inline">\(r^*\)</span>. How do they compare? Is this a coincidence?</p></li>
 <li><p>The device improves tenfold, to <span class="math inline">\(\varepsilon_{\text{step}} = 0.001\)</span>. By which factors do <span class="math inline">\(r^*\)</span> and the smallest infidelity change?</p></li>
@@ -787,7 +787,7 @@ window.Quarto = {
 <div class="exercise-copy">
 <p><strong><a href="L3-hamiltonians.html#exr-cone-size" class="quarto-xref">Exercise&nbsp;<span>3.10</span></a></strong> (Light cones and classical simulation)</p>
 <ol type="a">
-<li><p>In the Trotter circuit of <a href="L3-hamiltonians.html#fig-trotter-step" class="quarto-xref">Figure&nbsp;<span>3.3</span></a> on a long chain, on which qubits of the initial state can <span class="math inline">\(\langle Z_i\rangle\)</span> depend after <span class="math inline">\(k\)</span> steps?</p></li>
+<li><p>In the Trotter circuit of <a href="L3-hamiltonians.html#fig-trotter-step" class="quarto-xref">Figure&nbsp;<span>3.4</span></a> on a long chain, on which qubits of the initial state can <span class="math inline">\(\langle Z_i\rangle\)</span> depend after <span class="math inline">\(k\)</span> steps?</p></li>
 <li><p>On a square lattice, each step has four layers of bond gates, two along the rows and two along the columns. Which qubits can <span class="math inline">\(\langle Z_i\rangle\)</span> depend on after <span class="math inline">\(k\)</span> steps, and how many are they?</p></li>
 <li><p>A laptop can simulate about 30 qubits exactly. For how many steps can it compute <span class="math inline">\(\langle Z_i\rangle\)</span> exactly on a chain of 1000 qubits, and on a square lattice of 1000 qubits?</p></li>
 </ol>
