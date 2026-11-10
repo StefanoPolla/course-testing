@@ -1002,6 +1002,7 @@ for delta, colour, marker in zip([0.25, 0.5, 1.0], blues, ["o", "s", "^"]):
     f = [abs(ground.conj() @ Statevector(layers_circuit(n, schedule(max(int(round(T / delta)), 1), T))).data) ** 2
          for T in Ts]
     ax_f.plot(Ts, f, marker + "--", color=colour, ms=4.5, lw=1.1, label=f"step {delta}")
+ax_f.axvline(4.0, ls=":", color="0.5", lw=1)   # the evolution of panel (a)
 ax_f.set_xscale("log")
 ax_f.set_xticks([1, 3, 10, 30])
 ax_f.set_xticklabels(["1", "3", "10", "30"])
@@ -1153,7 +1154,7 @@ sizes = [2, 4, 6, 8, 10, 12]
 spread_hea = [slope_spread(lambda x, n=n: hardware_efficient(n, 4 * n, x), 8 * n * n, n) for n in sizes]
 spread_vha = [slope_spread(lambda x, n=n: layers_circuit(n, x.reshape(-1, 2)), 8 * n, n) for n in sizes]
 fig, ax = plt.subplots(figsize=(4.6, 2.9))
-ax.semilogy(sizes, spread_vha, "o-", color=ACCENT, ms=5, lw=1.4, label="Hamiltonian ansatz")
+ax.semilogy(sizes, spread_vha, "o-", color=ACCENT, ms=5, lw=1.4, label="VHA")
 ax.semilogy(sizes, spread_hea, "s-", color=ORANGE, ms=5, lw=1.4, label="hardware-efficient")
 ax.set_xlabel("number of qubits $n$")
 ax.set_ylabel("typical slope of $E(\\theta)$")
