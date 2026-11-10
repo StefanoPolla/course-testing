@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Stefano Polla">
+<meta name="dcterms.date" content="2026-11-10">
+
+<title>4&nbsp; Preparing ground states – Near-term Quantum Computing — lecture notes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./exercises.html" rel="next">
+<link href="./L3-hamiltonians.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-37a0ccb6f5b9899fcb884e11bb6f7458.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-d3f7f8e73c8d287b30bcf59c2b563615.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="robots" content="noindex, nofollow">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./L4-ground-states.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparing ground states</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Near-term Quantum Computing — lecture notes</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/StefanoPolla/course-testing/tree/main/notes/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="./ntqc-lecture-notes.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About these notes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L1-platforms-and-measurement.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Platforms, gates and measurement</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L2-noise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Noise channels and error budgets</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L3-hamiltonians.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Measuring and simulating Hamiltonians</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./L4-ground-states.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparing ground states</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-variational-principle" id="toc-sec-variational-principle" class="nav-link active" data-scroll-target="#sec-variational-principle"><span class="header-section-number">4.1</span> Ground states and the variational principle</a></li>
+  <li><a href="#sec-adiabatic" id="toc-sec-adiabatic" class="nav-link" data-scroll-target="#sec-adiabatic"><span class="header-section-number">4.2</span> Adiabatic state preparation</a>
+  <ul class="collapse">
+  <li><a href="#sec-adiabatic-circuits" id="toc-sec-adiabatic-circuits" class="nav-link" data-scroll-target="#sec-adiabatic-circuits"><span class="header-section-number">4.2.1</span> Adiabatic circuits</a></li>
+  </ul></li>
+  <li><a href="#sec-vqe" id="toc-sec-vqe" class="nav-link" data-scroll-target="#sec-vqe"><span class="header-section-number">4.3</span> Variational circuits</a>
+  <ul class="collapse">
+  <li><a href="#sec-vha" id="toc-sec-vha" class="nav-link" data-scroll-target="#sec-vha"><span class="header-section-number">4.3.1</span> The variational Hamiltonian ansatz</a></li>
+  <li><a href="#sec-vqe-loop" id="toc-sec-vqe-loop" class="nav-link" data-scroll-target="#sec-vqe-loop"><span class="header-section-number">4.3.2</span> The variational quantum eigensolver</a></li>
+  <li><a href="#sec-ansatz" id="toc-sec-ansatz" class="nav-link" data-scroll-target="#sec-ansatz"><span class="header-section-number">4.3.3</span> Choosing an ansatz</a></li>
+  <li><a href="#sec-qaoa" id="toc-sec-qaoa" class="nav-link" data-scroll-target="#sec-qaoa"><span class="header-section-number">4.3.4</span> Quantum annealing and QAOA</a></li>
+  </ul></li>
+  <li><a href="#sec-optimisers" id="toc-sec-optimisers" class="nav-link" data-scroll-target="#sec-optimisers"><span class="header-section-number">4.4</span> Optimising with shots</a>
+  <ul class="collapse">
+  <li><a href="#sec-gradients" id="toc-sec-gradients" class="nav-link" data-scroll-target="#sec-gradients"><span class="header-section-number">4.4.1</span> Gradients from shots</a></li>
+  </ul></li>
+  <li><a href="#sec-barren-plateaus" id="toc-sec-barren-plateaus" class="nav-link" data-scroll-target="#sec-barren-plateaus"><span class="header-section-number">4.5</span> Barren plateaus</a></li>
+  <li><a href="#sec-L4-exercises" id="toc-sec-L4-exercises" class="nav-link" data-scroll-target="#sec-L4-exercises"><span class="header-section-number">4.6</span> More exercises</a></li>
+  <li><a href="#sec-L4-reading" id="toc-sec-L4-reading" class="nav-link" data-scroll-target="#sec-L4-reading"><span class="header-section-number">4.7</span> Further reading</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ground-states" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Preparing ground states</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Stefano Polla </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">10 November 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Last updated</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">10 November 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="hidden">
+<p><span class="math display">\[
+\newcommand{\ket}[1]{\left|#1\right\rangle}
+\newcommand{\bra}[1]{\left\langle#1\right|}
+\newcommand{\gate}[1]{\mathrm{#1}}
+\newcommand{\Tr}{\mathrm{Tr}}
+\]</span></p>
+</div>
+<p>In the previous chapter, we estimated the energy of a state that a circuit prepares, and we built circuits that simulate how a state evolves in time. In this chapter, we ask how to prepare the lowest-energy state of a Hamiltonian, its ground state, on a quantum computer. We start from adiabatic evolution, which reaches the ground state by changing a Hamiltonian slowly, and turn its circuits into variational ones, whose angles a classical optimiser chooses to minimise the measured energy. This is the variational quantum eigensolver (VQE), one of the most widely studied ground-state methods for current devices. Most of the chapter is about what makes its optimisation hard, when every value of the energy is estimated from shots.</p>
+<p>By the end of the chapter, you should be able to explain how adiabatic evolution prepares a ground state, and why its circuits are too deep for current devices; set up a VQE, with its circuit, its cost, its optimiser and a starting point; estimate gradients with the parameter-shift rule and count their cost in circuits; and recognise when an optimisation, or a claimed result, is limited by shot noise or by a barren plateau.</p>
+<section id="sec-variational-principle" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-variational-principle"><span class="header-section-number">4.1</span> Ground states and the variational principle</h2>
+<p>Recall from <a href="L3-hamiltonians.html#sec-energy-dynamics" class="quarto-xref"><span>Section 3.1</span></a> that the <a href="glossary.html#gloss-ground-state" class="gloss" data-gloss="The eigenvector of a Hamiltonian with the lowest eigenvalue, the state of lowest energy. A system that is cold enough settles in or near its ground state.">ground state</a> <span class="math inline">\(\ket{E_0}\)</span> of a Hamiltonian <span class="math inline">\(H\)</span> is its eigenvector with the lowest eigenvalue <span class="math inline">\(E_0\)</span>, and that a system that is cold enough settles in it. The difference <span class="math inline">\(\Delta = E_1 - E_0\)</span> between the two lowest energies is the <a href="glossary.html#gloss-gap" class="gloss" data-gloss="The difference between the two lowest energies of a Hamiltonian, the first excited energy minus the ground-state energy. A small gap makes a ground state hard to prepare adiabatically.">gap</a>. It returns below as the quantity that decides how fast a ground state can be prepared.</p>
+<p>In general, finding the ground-state energy of a local Hamiltonian is believed to be hard even for a quantum computer: the problem is QMA-complete, the quantum analogue of NP-complete, already for 2-local Hamiltonians <span class="citation" data-cites="kempe2006">(<a href="L1-platforms-and-measurement.html#ref-kempe2006" role="doc-biblioref">Kempe et al. 2006</a>)</span>. This is a worst-case statement, and many Hamiltonians that describe real materials and molecules are believed to be easier. The methods of this chapter are heuristics: they come with no general guarantee, and we judge them by testing them on problems whose answer we know.</p>
+<p>The key tool is the <a href="glossary.html#gloss-variational-principle" class="gloss" data-gloss="No state has a lower energy than the ground state: the expectation value of a Hamiltonian in any state is at least its lowest eigenvalue, with equality only in the ground state.">variational principle</a>. Write a state <span class="math inline">\(\ket{\psi}\)</span> in the eigenbasis of <span class="math inline">\(H\)</span>, <span class="math inline">\(\ket{\psi} = \sum_k \alpha_k\ket{E_k}\)</span>, with <span class="math inline">\(p_k = |\alpha_k|^2\)</span> summing to 1. Then <span id="eq-variational"><span class="math display">\[
+\bra{\psi}H\ket{\psi} = \sum_k p_k E_k \;\ge\; E_0 ,
+\tag{4.1}\]</span></span> since a weighted average of the energies is at least the smallest of them, with equality only if all the weight is on the ground state. No state has a lower energy than the ground state, so to find the ground state we can look for the state of lowest energy, and a lower energy brings us closer to it. How much closer depends on the gap (<a href="#exr-variational" class="quarto-xref">Exercise&nbsp;<span>4.1</span></a>).</p>
+<p>Our running example is again the <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> chain of <a href="L3-hamiltonians.html#def-tfim" class="quarto-xref">Definition&nbsp;<span>3.3</span></a>, now with <span class="math inline">\(J = 1\)</span> and <span class="math inline">\(h = 0.5\)</span>, on <span class="math inline">\(n = 8\)</span> qubits. For <span class="math inline">\(h &lt; J\)</span>, the bond terms dominate, and the ground state is close to the superposition <span class="math inline">\((\ket{0\cdots0} + \ket{1\cdots1})/\sqrt{2}\)</span> of the two aligned states: an entangled state, correlated across the whole chain. The state close to <span class="math inline">\((\ket{0\cdots0} - \ket{1\cdots1})/\sqrt{2}\)</span> lies only <span class="math inline">\(0.006\)</span> higher, so the gap of the chain is tiny. The two states differ in their <em>parity</em> <span class="math inline">\(X_1X_2\cdots X_n\)</span>, which flips all qubits and so swaps <span class="math inline">\(\ket{0\cdots0}\)</span> and <span class="math inline">\(\ket{1\cdots1}\)</span>: the first has parity <span class="math inline">\(+1\)</span>, the second <span class="math inline">\(-1\)</span>. Every term of the TFIM commutes with the parity (<span class="math inline">\(Z_iZ_{i+1}\)</span> anticommutes with it on two qubits, <span class="math inline">\(X_i\)</span> on none), and so do the <span class="math inline">\(R_{ZZ}\)</span> and <span class="math inline">\(R_X\)</span> rotations of all the TFIM circuits in this chapter. Starting from <span class="math inline">\(\ket{+\cdots+}\)</span>, which has parity <span class="math inline">\(+1\)</span>, these circuits never reach the states of parity <span class="math inline">\(-1\)</span>, and the gap that matters is the one between the states of parity <span class="math inline">\(+1\)</span>, which is <span class="math inline">\(1.18\)</span>.</p>
+<div id="exr-variational" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.1 (How close is a low energy to the ground state?)</strong></span> A state <span class="math inline">\(\ket{\psi}\)</span> has the energy <span class="math inline">\(E = \bra{\psi}H\ket{\psi}\)</span> and the fidelity <span class="math inline">\(F = |\langle E_0|\psi\rangle|^2\)</span> with the ground state, which we assume to be unique, with gap <span class="math inline">\(\Delta\)</span> (or, if the state can only be a combination of states with a given symmetry, as for the parity of the TFIM, the gap among those states).</p>
+<ol type="a">
+<li><p>Show that <span class="math inline">\(E - E_0 \ge (1 - F)\,\Delta\)</span>, so that the fidelity is at least <span class="math inline">\(1 - (E - E_0)/\Delta\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Start from <a href="#eq-variational" class="quarto-xref">Equation&nbsp;<span>4.1</span></a> and use <span class="math inline">\(E_k - E_0 \ge \Delta\)</span> for <span class="math inline">\(k \ge 1\)</span>.</p>
+</details></li>
+<li><p>A VQE reaches an energy <span class="math inline">\(0.05\)</span> above <span class="math inline">\(E_0\)</span>, for a Hamiltonian with <span class="math inline">\(\Delta = 0.5\)</span>. What can you say about its fidelity with the ground state? What if the gap is <span class="math inline">\(0.01\)</span>?</p></li>
+<li><p>For a chain of 20 qubits, a paper reports a VQE energy <span class="math inline">\(0.03\)</span> below <span class="math inline">\(E_0\)</span>, with a standard error of <span class="math inline">\(0.02\)</span>; the exact <span class="math inline">\(E_0\)</span> is known from a classical method. What could explain the result? What would you check first?</p></li>
+</ol>
+</div>
+</section>
+<section id="sec-adiabatic" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-adiabatic"><span class="header-section-number">4.2</span> Adiabatic state preparation</h2>
+<p>Suppose we know a Hamiltonian <span class="math inline">\(H_0\)</span> whose ground state is easy to prepare. For the TFIM, a natural choice is the field term alone, <span class="math inline">\(H_0 = -h\sum_i X_i\)</span>, with the ground state <span class="math inline">\(\ket{+\cdots+}\)</span>, a Hadamard gate on every qubit. We then change the Hamiltonian slowly from <span class="math inline">\(H_0\)</span> to the target <span class="math inline">\(H\)</span>, along <span id="eq-adiabatic-path"><span class="math display">\[
+H(s) = (1 - s)\,H_0 + s\,H, \qquad s = t/T ,
+\tag{4.2}\]</span></span> over a total time <span class="math inline">\(T\)</span>, with <span class="math inline">\(s\)</span> growing from 0 to 1. For the TFIM, this keeps the field fixed and switches on the bonds, <span class="math inline">\(H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i\)</span>.</p>
+<p>The <em>adiabatic theorem</em>, first proved by <span class="citation" data-cites="born1928">Born and Fock (<a href="L1-platforms-and-measurement.html#ref-born1928" role="doc-biblioref">1928</a>)</span>, says that if <span class="math inline">\(H(s)\)</span> changes slowly enough and its gap stays open (nonzero), a state that starts in the ground state of <span class="math inline">\(H(0)\)</span> stays in the ground state of <span class="math inline">\(H(s)\)</span> at every moment, and so it ends in the ground state of <span class="math inline">\(H\)</span>. Using this to solve problems is called <a href="glossary.html#gloss-adiabatic-preparation" class="gloss" data-gloss="Preparing the ground state of a Hamiltonian by starting in the ground state of a simple one and changing the Hamiltonian slowly into the target. It works if the change is slow compared with the inverse square of the smallest gap along the way.">adiabatic state preparation</a>, or the adiabatic algorithm <span class="citation" data-cites="farhi2000">(<a href="L1-platforms-and-measurement.html#ref-farhi2000" role="doc-biblioref">Farhi et al. 2000</a>)</span>. “Slowly enough” depends on the smallest gap <span class="math inline">\(\Delta_{\min}\)</span> along the path. A common rule of thumb is <span class="math display">\[
+T \gg \frac{\|dH/ds\|}{\Delta_{\min}^2} ,
+\]</span> where the numerator measures how much the Hamiltonian changes along the whole path; the precise conditions are in <span class="citation" data-cites="albash2018">Albash and Lidar (<a href="L1-platforms-and-measurement.html#ref-albash2018" role="doc-biblioref">2018</a>)</span>. Intuitively, the state cannot follow a change that is fast compared with the rate <span class="math inline">\(\Delta\)</span> at which the relative phase between the ground state and the first excited state turns (<a href="L3-hamiltonians.html#sec-energy-dynamics" class="quarto-xref"><span>Section 3.1</span></a>), and the closer the two levels, the more a given change of <span class="math inline">\(H\)</span> mixes them: each effect gives one factor of <span class="math inline">\(\Delta\)</span>.</p>
+<p><a href="#fig-adiabatic" class="quarto-xref">Figure&nbsp;<span>4.1</span></a> (a) shows this for our TFIM chain. It shows only the states of parity <span class="math inline">\(+1\)</span>, the only ones the evolution can reach. The gap is smallest near <span class="math inline">\(s = 0.6\)</span>, where the bond terms start to dominate the field, with <span class="math inline">\(\Delta_{\min} \approx 0.69\)</span>. Along the path, <span class="math inline">\(dH/ds = -J\sum_i Z_iZ_{i+1}\)</span> has the norm <span class="math inline">\(J(n-1) = 7\)</span>, so the rule of thumb asks for <span class="math inline">\(T \gg 7/0.69^2 \approx 15\)</span>. An evolution with <span class="math inline">\(T = 4\)</span> is too fast for this gap: around the minimum, part of the state leaks into the first excited state, and the final fidelity with the ground state is only 0.58. Panel (b) shows how the fidelity grows with <span class="math inline">\(T\)</span>: it exceeds 0.99 at <span class="math inline">\(T = 20\)</span>. On a long chain, the smallest gap of this path shrinks in proportion to <span class="math inline">\(1/n\)</span>, so the time needed grows only polynomially. For hard problems, the smallest gap can shrink exponentially with <span class="math inline">\(n\)</span>, and so the time grows exponentially, as expected from the worst-case hardness of the previous section.</p>
+<div id="fig-adiabatic" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-adiabatic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/adiabatic.svg" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-adiabatic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Adiabatic preparation of the ground state of a TFIM chain of 8 qubits (<span class="math inline">\(J = 1\)</span>, <span class="math inline">\(h = 0.5\)</span>), from <span class="math inline">\(\ket{+\cdots+}\)</span> along <span class="math inline">\(H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i\)</span>. (a) The lowest energies of <span class="math inline">\(H(s)\)</span> above the ground-state energy (grey), and the occupation <span class="math inline">\(|\langle E_k(s)|\psi(t)\rangle|^2\)</span> of each eigenstate as the width of the blue band, for a total time <span class="math inline">\(T = 4\)</span> (dotted line in panel b). (b) The fidelity of the final state with the ground state, against <span class="math inline">\(T\)</span>: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).
+</figcaption>
+</figure>
+</div>
+<section id="sec-adiabatic-circuits" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="sec-adiabatic-circuits"><span class="header-section-number">4.2.1</span> Adiabatic circuits</h3>
+<p>On a digital quantum computer, we apply the evolution under <span class="math inline">\(H(s)\)</span> with a Trotter circuit (<a href="L3-hamiltonians.html#sec-trotter" class="quarto-xref"><span>Section 3.5</span></a>). Each step of length <span class="math inline">\(\delta\)</span> applies <span class="math inline">\(e^{-iH(s)\delta}\)</span>, approximated by the circuit of <a href="L3-hamiltonians.html#fig-trotter-step" class="quarto-xref">Figure&nbsp;<span>3.4</span></a>, with <span class="math inline">\(s\)</span> taken at the middle of the step: <span class="math inline">\(R_{ZZ}(-2sJ\delta)\)</span> on every bond and <span class="math inline">\(R_X(-2h\delta)\)</span> on every qubit. Only the angles of the bond gates change from step to step, following the <em>schedule</em> <span class="math inline">\(s = t/T\)</span>.</p>
+<p>The blue curves of <a href="#fig-adiabatic" class="quarto-xref">Figure&nbsp;<span>4.1</span></a> (b) show what the Trotter error does: with steps of 0.25, the fidelity levels off at 0.97, with steps of 0.5 at 0.87, and with steps of 1 at 0.35, however long the evolution. The Floquet picture of <a href="L3-hamiltonians.html#sec-floquet" class="quarto-xref"><span>Section 3.5.4</span></a> explains why: each step evolves the state exactly, but under the Floquet Hamiltonian <span class="math inline">\(H_F\)</span> instead of <span class="math inline">\(H(s)\)</span>, so a slow circuit prepares the ground state of <span class="math inline">\(H_F\)</span>, not of <span class="math inline">\(H\)</span>, and the fidelity of the two states is where the curves level off.</p>
+<p>The circuits are long. Reaching a fidelity of 0.97 takes <span class="math inline">\(T \approx 20\)</span> with steps of 0.25, which is 80 steps. Each step has 7 bond gates, or 14 CZs (<a href="L3-hamiltonians.html#sec-trotter-circuits" class="quarto-xref"><span>Section 3.5.3</span></a>), so the circuit has 1,120 CZs. With an error of 0.5% per CZ, <a href="L2-noise.html#eq-circuit-fidelity" class="quarto-xref">Equation&nbsp;<span>2.12</span></a> gives a probability of <span class="math inline">\(e^{-5.6} \approx 0.004\)</span> that the circuit runs without an error: the noise destroys the state long before the end.</p>
+</section>
+</section>
+<section id="sec-vqe" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="sec-vqe"><span class="header-section-number">4.3</span> Variational circuits</h2>
+<p>The adiabatic circuit has a fixed structure: layers of <span class="math inline">\(R_{ZZ}\)</span> on all bonds and <span class="math inline">\(R_X\)</span> on all qubits, with angles that the schedule prescribes. With only a few layers, the schedule gives a poor state: either the steps are long, with a large Trotter error, or the total time is short, too fast for the gap. But the variational principle tells us how to judge any choice of angles: the lower the energy, the better. So we keep the structure, <em>free the angles</em>, and let an optimiser choose them.</p>
+<section id="sec-vha" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="sec-vha"><span class="header-section-number">4.3.1</span> The variational Hamiltonian ansatz</h3>
+<p>For the TFIM, the circuit with <span class="math inline">\(p\)</span> layers starts from <span class="math inline">\(\ket{+\cdots+}\)</span> and applies, in layer <span class="math inline">\(k\)</span>, <span class="math inline">\(R_{ZZ}(\gamma_k)\)</span> on every bond and <span class="math inline">\(R_X(\beta_k)\)</span> on every qubit, as in <a href="L3-hamiltonians.html#fig-trotter-step" class="quarto-xref">Figure&nbsp;<span>3.4</span></a> but with free angles. Its <span class="math inline">\(2p\)</span> angles <span class="math inline">\(\theta = (\gamma_1, \beta_1, \dots, \gamma_p, \beta_p)\)</span> prepare the state <span class="math inline">\(\ket{\psi(\theta)}\)</span>, with energy <span class="math display">\[
+E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)} ,
+\]</span> and we look for the angles that minimise it. A family of circuits like this one, fixed up to its parameters, is called an <a href="glossary.html#gloss-ansatz" class="gloss" data-gloss="A family of circuits with a fixed structure and free parameters, such as rotation angles, used to prepare trial states in a variational algorithm. Plural: ansätze.">ansatz</a> (German for “approach”, plural <em>ansätze</em>), and this one, built from the terms of <span class="math inline">\(H\)</span>, is the <a href="glossary.html#gloss-vha" class="gloss" data-gloss="An ansatz built from the terms of the Hamiltonian: layers that look like Trotter steps, with one free angle per group of terms in each layer. With the angles of a slow schedule, it reproduces adiabatic state preparation.">variational Hamiltonian ansatz</a> (VHA) <span class="citation" data-cites="wecker2015">(<a href="L1-platforms-and-measurement.html#ref-wecker2015" role="doc-biblioref">Wecker et al. 2015</a>)</span>. Each layer is one Trotter step of <span class="math inline">\(H(s)\)</span> with free angles: the schedule of <a href="#sec-adiabatic-circuits" class="quarto-xref"><span>Section 4.2.1</span></a> is the point <span class="math inline">\(\gamma_k = -2s_kJ\delta\)</span>, <span class="math inline">\(\beta_k = -2h\delta\)</span> of the ansatz, with <span class="math inline">\(s_k\)</span> the middle of step <span class="math inline">\(k\)</span>, and the obvious starting point for the optimiser.</p>
+<div class="example">
+<p><em>Example.</em> For our chain of 8 qubits, the schedule with 7 layers, at the total time <span class="math inline">\(T \approx 4\)</span> that minimises its energy, reaches a fidelity of 0.55 with the ground state. Starting from these angles and minimising the energy gives a fidelity of 0.991 with the same 7 layers, and an energy 0.018 above <span class="math inline">\(E_0\)</span>. The circuit has 98 CZs instead of 1,120. These numbers come from an exact simulation, which shows what the ansatz can reach; with shots, the optimiser only sees estimates of the energy, as discussed in <a href="#sec-optimisers" class="quarto-xref"><span>Section 4.4</span></a>.</p>
+</div>
+<p>How many layers are needed? A circuit of few layers of local gates cannot correlate distant qubits, because of its light cone (<a href="L3-hamiltonians.html#sec-dynamics-observables" class="quarto-xref"><span>Section 3.6</span></a>), so a ground state with correlations across the chain needs a number of layers that grows with <span class="math inline">\(n\)</span>. For the TFIM on a ring of an even number <span class="math inline">\(n\)</span> of qubits, <span class="citation" data-cites="ho2019">Ho and Hsieh (<a href="L1-platforms-and-measurement.html#ref-ho2019" role="doc-biblioref">2019</a>)</span> showed numerically that <span class="math inline">\(n/2\)</span> layers prepare the ground state exactly at <span class="math inline">\(h = J\)</span>, and conjectured it, with numerical support, for every <span class="math inline">\(h\)</span>. On our open chain, 4 layers are not enough (fidelity 0.75), and 7 give 0.99.</p>
+</section>
+<section id="sec-vqe-loop" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="sec-vqe-loop"><span class="header-section-number">4.3.2</span> The variational quantum eigensolver</h3>
+<p>The same idea works with any ansatz and any Hamiltonian.</p>
+<div id="def-vqe" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4.1 (Variational quantum eigensolver)</strong></span> The <a href="glossary.html#gloss-vqe" class="gloss" data-gloss="VQE: a loop in which a quantum computer prepares a state with a parametrised circuit and estimates its energy from shots, and a classical optimiser changes the parameters to lower the energy.">variational quantum eigensolver</a> (VQE) minimises the energy <span class="math inline">\(E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)}\)</span> of the state prepared by an ansatz with parameters <span class="math inline">\(\theta\)</span>. It repeats a loop:</p>
+<ol type="1">
+<li>the quantum computer prepares <span class="math inline">\(\ket{\psi(\theta)}\)</span> and estimates <span class="math inline">\(E(\theta)\)</span> from shots;</li>
+<li>a classical optimiser uses this estimate, and the earlier ones, to choose new parameters <span class="math inline">\(\theta\)</span>.</li>
+</ol>
+<p>The loop stops when the estimates stop improving, and returns the best parameters found and an estimate of their energy.</p>
+</div>
+<p>VQE was proposed by <span class="citation" data-cites="peruzzo2014">Peruzzo et al. (<a href="L1-platforms-and-measurement.html#ref-peruzzo2014" role="doc-biblioref">2014</a>)</span>, and it belongs to the wider class of variational quantum algorithms <span class="citation" data-cites="cerezo2021">(<a href="L1-platforms-and-measurement.html#ref-cerezo2021" role="doc-biblioref">Cerezo et al. 2021</a>)</span>. <a href="#fig-vqe-scheme" class="quarto-xref">Figure&nbsp;<span>4.2</span></a> shows the loop. Step 1 is the measurement of <a href="L3-hamiltonians.html#sec-measuring-observables" class="quarto-xref"><span>Section 3.4</span></a>: a few measurement settings (two for the TFIM, <span class="math inline">\(Z\)</span> and <span class="math inline">\(X\)</span>), and a shot budget that sets the standard error of each estimate. The quantum computer only ever runs short circuits, of a fixed depth, which is what makes the method suitable for noisy devices. It also absorbs some errors: if a gate over-rotates by a fixed amount (<a href="L2-noise.html#sec-gate-errors" class="quarto-xref"><span>Section 2.4</span></a>), the optimiser simply finds different angles. By <a href="#eq-variational" class="quarto-xref">Equation&nbsp;<span>4.1</span></a>, <span class="math inline">\(E(\theta) \ge E_0\)</span> for every <span class="math inline">\(\theta\)</span>, so the exact energy of any VQE state is an upper bound on <span class="math inline">\(E_0\)</span>.</p>
+<div id="fig-vqe-scheme" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vqe-scheme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/vqe-scheme.svg" class="img-fluid figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vqe-scheme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.2: The VQE loop. The quantum computer (QPU) prepares the state <span class="math inline">\(\ket{\psi(\theta)}\)</span> with a circuit of gates parametrised by <span class="math inline">\(\theta_1, \theta_2, \dots\)</span>, and estimates its energy <span class="math inline">\(E(\theta)\)</span> by sampling. A classical optimiser updates <span class="math inline">\(\theta\)</span>. The minimum over <span class="math inline">\(\theta\)</span> is an upper bound on the ground-state energy, written here <span class="math inline">\(E_{GS} = E_0\)</span>; the arrow on <span class="math inline">\(\vec\theta\)</span> marks the vector of all parameters.
+</figcaption>
+</figure>
+</div>
+<p>This bound holds for the exact energy, not for its estimate. The optimiser never sees <span class="math inline">\(E(\theta)\)</span>, only estimates with a standard error <span class="math inline">\(\varepsilon\)</span>, and noise adds a bias (<a href="L2-noise.html#sec-bias-variance" class="quarto-xref"><span>Section 2.7</span></a>), which usually raises the energy, since depolarising noise shrinks expectation values towards zero. Three habits follow.</p>
+<ol type="1">
+<li>Test the whole procedure on small instances whose ground state is known from exact diagonalisation (computing the lowest eigenvector of <span class="math inline">\(H\)</span> classically), as in the figures of this chapter.</li>
+<li>After the optimisation, estimate the energy of the final parameters again with fresh shots. The optimiser kept the parameters whose estimates were lowest, and among many estimates the lowest are often those that fluctuated downwards, so the last estimate is biased low.</li>
+<li>Read an estimate below <span class="math inline">\(E_0\)</span> as a fluctuation, or as a sign of a systematic error, such as readout errors or an error-mitigation step that over-corrects, not as a better state.</li>
+</ol>
+</section>
+<section id="sec-ansatz" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="sec-ansatz"><span class="header-section-number">4.3.3</span> Choosing an ansatz</h3>
+<p>The ansatz decides what the VQE can reach. It must contain a good approximation of the ground state, be shallow enough for the noise of the device, and have an energy landscape that the optimiser can navigate. There are two broad approaches, with many variations; we only introduce them here, and <span class="citation" data-cites="tilly2022">Tilly et al. (<a href="L1-platforms-and-measurement.html#ref-tilly2022" role="doc-biblioref">2022</a>)</span> review them.</p>
+<ul>
+<li><em>Physics-motivated ansätze</em> are built from the problem. The VHA uses the terms of <span class="math inline">\(H\)</span>. For molecules, the <em>unitary coupled-cluster</em> ansatz, from quantum chemistry and proposed for VQE by <span class="citation" data-cites="peruzzo2014">Peruzzo et al. (<a href="L1-platforms-and-measurement.html#ref-peruzzo2014" role="doc-biblioref">2014</a>)</span>, builds the circuit from the excitations of electrons between orbitals. Other ansätze keep a symmetry of <span class="math inline">\(H\)</span>, such as the number of flipped qubits in the Heisenberg model (<a href="L3-hamiltonians.html#sec-spin-models" class="quarto-xref"><span>Section 3.3</span></a>), so that the search stays among states with the right symmetry. <em>Adaptive</em> ansätze grow the circuit one gate at a time, choosing the gate along which the energy is steepest <span class="citation" data-cites="grimsley2019">(<a href="L1-platforms-and-measurement.html#ref-grimsley2019" role="doc-biblioref">Grimsley et al. 2019</a>)</span>. These ansätze usually have few parameters, but their gates follow the interactions of <span class="math inline">\(H\)</span>, which may not match the coupling graph of the device and then need SWAPs.</li>
+<li><em>Hardware-efficient ansätze</em> are built from the device <span class="citation" data-cites="kandala2017">(<a href="L1-platforms-and-measurement.html#ref-kandala2017" role="doc-biblioref">Kandala et al. 2017</a>)</span>. Each layer applies native single-qubit rotations, each with its own angle, and native two-qubit gates on the coupled pairs of the device. They are as shallow as a circuit can be, and need no SWAPs. But they carry no information about <span class="math inline">\(H\)</span>, they have many parameters (<span class="math inline">\(2n\)</span> per layer with two rotations per qubit), and they break most symmetries. They are also the most exposed to the barren plateaus of <a href="#sec-barren-plateaus" class="quarto-xref"><span>Section 4.5</span></a>.</li>
+</ul>
+<p>On 8 qubits, for example, 7 layers of the VHA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.</p>
+</section>
+<section id="sec-qaoa" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="sec-qaoa"><span class="header-section-number">4.3.4</span> Quantum annealing and QAOA</h3>
+<p>The adiabatic idea and the layered circuits also apply to classical optimisation problems. A standard example is <a href="glossary.html#gloss-maxcut" class="gloss" data-gloss="The problem of splitting the vertices of a graph into two groups so that as many edges as possible join vertices in different groups. It is equivalent to finding the ground state of a classical Ising model on the graph.">MaxCut</a>: given a graph, split its vertices into two groups so that as many edges as possible join vertices in different groups. With one qubit per vertex, whose bit marks its group, <span class="math inline">\(Z_iZ_j = -1\)</span> exactly when the edge <span class="math inline">\((i,j)\)</span> is cut, so maximising the number of cut edges means minimising <span class="math display">\[
+H_C = \sum_{(i,j)\in\text{edges}} Z_iZ_j ,
+\]</span> the TFIM with <span class="math inline">\(h = 0\)</span> on the graph, with <span class="math inline">\(J = -1\)</span> (outside the range of <a href="L3-hamiltonians.html#def-tfim" class="quarto-xref">Definition&nbsp;<span>3.3</span></a>: neighbours prefer to differ): a <em>classical</em> Ising model. <span class="math inline">\(H_C\)</span> is diagonal, so its eigenstates are bitstrings. For a variational method, this means that a single measurement setting, the <span class="math inline">\(Z\)</span> setting, measures all its terms, and that every shot gives a candidate solution, whose cut we can check classically: we keep the best bitstring seen, not only the average energy.</p>
+<p><a href="glossary.html#gloss-quantum-annealing" class="gloss" data-gloss="Adiabatic state preparation run on an analog device, usually to find low-energy states of a classical Ising model that encodes an optimisation problem.">Quantum annealing</a> runs the adiabatic path of <a href="#eq-adiabatic-path" class="quarto-xref">Equation&nbsp;<span>4.2</span></a> to such a classical Ising model on an analog device, which applies <span class="math inline">\(H(s)\)</span> directly instead of a Trotter circuit <span class="citation" data-cites="kadowaki1998">(<a href="L1-platforms-and-measurement.html#ref-kadowaki1998" role="doc-biblioref">Kadowaki and Nishimori 1998</a>)</span>. Annealers with thousands of superconducting qubits exist; they work at a finite temperature and faster than the adiabatic theorem requires, so they are heuristics, and whether they outperform classical methods is debated <span class="citation" data-cites="albash2018">(<a href="L1-platforms-and-measurement.html#ref-albash2018" role="doc-biblioref">Albash and Lidar 2018</a>)</span>. The <a href="glossary.html#gloss-qaoa" class="gloss" data-gloss="Two related names with the same acronym: the quantum approximate optimisation algorithm, a variational ansatz of alternating cost and mixing layers for classical optimisation problems, and its generalisation, the quantum alternating operator ansatz.">QAOA</a>, or <em>quantum approximate optimisation algorithm</em> <span class="citation" data-cites="farhi2014">(<a href="L1-platforms-and-measurement.html#ref-farhi2014" role="doc-biblioref">Farhi et al. 2014</a>)</span>, is the corresponding variational circuit: from <span class="math inline">\(\ket{+\cdots+}\)</span>, each layer applies <span class="math inline">\(e^{-i\gamma_kH_C}\)</span> and then <span class="math inline">\(e^{-i\beta_k\sum_iX_i}\)</span>, with <span class="math inline">\(2p\)</span> angles optimised as in a VQE.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+</section>
+<section id="sec-optimisers" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="sec-optimisers"><span class="header-section-number">4.4</span> Optimising with shots</h2>
+<p>The optimiser sees each energy only through an estimate <span class="math inline">\(\bar E(\theta)\)</span>, with a standard error <span class="math inline">\(\varepsilon\)</span> that is at most <span class="math inline">\(\|c\|_1/\sqrt{N}\)</span> for <span class="math inline">\(N\)</span> shots (<a href="L3-hamiltonians.html#eq-shot-budget" class="quarto-xref">Equation&nbsp;<span>3.6</span></a>). Comparing two parameter values is meaningful only if their energies differ by more than about <span class="math inline">\(\varepsilon\)</span>. Far from the minimum, energy differences are large and the optimiser makes progress. Near the minimum, the energy is flat, the differences shrink, and eventually the shot noise hides them: the shots, not the optimiser, set the final accuracy. Optimisers for VQE are chosen, and tuned, for this situation. The total number of shots this costs is the subject of Tutorial 4. <!-- T4-LINK: link "Tutorial 4" to the T4 notebook in Colab once it is published. --></p>
+<p>There are two families of optimisers. <em>Gradient-based</em> optimisers estimate the gradient <span class="math inline">\(\nabla E(\theta)\)</span>, the vector of partial derivatives, and step downhill, <span class="math inline">\(\theta \to \theta - \eta\,\nabla E(\theta)\)</span>, with a step size <span class="math inline">\(\eta\)</span> (<a href="glossary.html#gloss-gradient-descent" class="gloss" data-gloss="An optimiser that repeatedly moves the parameters a small step against the gradient of the cost, the direction in which it decreases fastest.">gradient descent</a>), or with one of its refinements from machine learning. How to estimate the gradient from shots is the subject of <a href="#sec-gradients" class="quarto-xref"><span>Section 4.4.1</span></a>. <em>Gradient-free</em> optimisers use only energy values. Two are widely used for VQE.</p>
+<ul>
+<li><a href="glossary.html#gloss-cobyla" class="gloss" data-gloss="Constrained optimisation by linear approximation: a gradient-free optimiser that fits a linear model of the cost through recent evaluations and steps towards its minimum within a shrinking region.">COBYLA</a>, constrained optimisation by linear approximation <span class="citation" data-cites="powell1994">(<a href="L1-platforms-and-measurement.html#ref-powell1994" role="doc-biblioref">Powell 1994</a>)</span>, fits a linear model of the energy through recent evaluations, and moves to the lowest point of the model within a region that it shrinks as the optimisation converges. With exact energies, it converges quickly for a few tens of parameters. With shot noise, the model fits the noise once its points are close together, so it tends to stop early.</li>
+<li><a href="glossary.html#gloss-spsa" class="gloss" data-gloss="Simultaneous perturbation stochastic approximation: an optimiser for noisy costs that changes all parameters at once along a random direction, using two cost evaluations per step whatever the number of parameters.">SPSA</a>, simultaneous perturbation stochastic approximation <span class="citation" data-cites="spall1992">(<a href="L1-platforms-and-measurement.html#ref-spall1992" role="doc-biblioref">Spall 1992</a>)</span>, estimates the slope along a single random direction <span class="math inline">\(d\)</span>, with entries <span class="math inline">\(\pm 1\)</span>, which changes all parameters at once. It estimates the energy at <span class="math inline">\(\theta \pm \Delta\theta\,d\)</span>, for a small step <span class="math inline">\(\Delta\theta\)</span>, and moves <span class="math display">\[
+\theta \to \theta - \eta\,\frac{\bar E(\theta + \Delta\theta\,d) - \bar E(\theta - \Delta\theta\,d)}{2\,\Delta\theta}\,d .
+\]</span> Each step costs two estimates, whatever the number of parameters, and <span class="math inline">\(\eta\)</span> and <span class="math inline">\(\Delta\theta\)</span> shrink slowly over the iterations, which averages out the noise. It was designed for noisy cost functions, and is popular for VQE on hardware.</li>
+</ul>
+<p>Other gradient-free methods, such as <em>surrogate</em> models (Bayesian optimisation) and <em>evolutionary strategies</em>, use many evaluations per step to average out the noise.</p>
+<section id="sec-gradients" class="level3" data-number="4.4.1">
+<h3 data-number="4.4.1" class="anchored" data-anchor-id="sec-gradients"><span class="header-section-number">4.4.1</span> Gradients from shots</h3>
+<p>The simplest estimate of a partial derivative is a <em>finite difference</em>, <span class="math display">\[
+\frac{\partial E}{\partial\theta_j} \approx \frac{E(\theta + \Delta\theta\,e_j) - E(\theta - \Delta\theta\,e_j)}{2\,\Delta\theta} ,
+\]</span> where <span class="math inline">\(e_j\)</span> changes only the parameter <span class="math inline">\(j\)</span>. With exact energies, its error is of order <span class="math inline">\(\Delta\theta^2\)</span>, so a small step <span class="math inline">\(\Delta\theta\)</span> is better. With shots, each estimate has a standard error <span class="math inline">\(\varepsilon\)</span>, and their difference is divided by <span class="math inline">\(2\,\Delta\theta\)</span>, so the standard error of the derivative is <span class="math inline">\(\varepsilon/(\sqrt{2}\,\Delta\theta)\)</span>: a small step amplifies the shot noise. <a href="#fig-parameter-shift" class="quarto-xref">Figure&nbsp;<span>4.3</span></a> (b) shows both effects: with 1,000 shots per setting for each estimate, the error of the derivative is 24 at <span class="math inline">\(\Delta\theta = 0.003\)</span>, far larger than the derivative itself (0.83), and it only becomes acceptable at steps so large that the approximation fails.</p>
+<p>For the gates of our ansätze, there is a better way. Suppose that the parameter <span class="math inline">\(\theta\)</span> enters through a single gate, a rotation <span class="math inline">\(e^{-i\theta P/2}\)</span> about a Pauli string <span class="math inline">\(P\)</span>, as all the rotations of the VHA and of hardware-efficient ansätze do. Write the circuit as <span class="math inline">\(V_2\,e^{-i\theta P/2}\,V_1\)</span>, where <span class="math inline">\(V_1\)</span> and <span class="math inline">\(V_2\)</span> are the gates before and after it, and let <span class="math inline">\(\ket{\phi} = V_1\ket{0\cdots0}\)</span> and <span class="math inline">\(O = V_2^\dagger HV_2\)</span>. By <a href="L1-platforms-and-measurement.html#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>, <span class="math display">\[
+E(\theta) = \bra{\phi}\Big(\cos\tfrac{\theta}{2}\,I + i\sin\tfrac{\theta}{2}\,P\Big)\,O\,\Big(\cos\tfrac{\theta}{2}\,I - i\sin\tfrac{\theta}{2}\,P\Big)\ket{\phi} .
+\]</span> Every term contains <span class="math inline">\(\cos^2\frac{\theta}{2}\)</span>, <span class="math inline">\(\sin^2\frac{\theta}{2}\)</span> or <span class="math inline">\(\sin\frac{\theta}{2}\cos\frac{\theta}{2}\)</span>, and these are combinations of <span class="math inline">\(1\)</span>, <span class="math inline">\(\cos\theta\)</span> and <span class="math inline">\(\sin\theta\)</span>. So the energy along one angle is a sinusoid with period <span class="math inline">\(2\pi\)</span>, <span id="eq-sinusoid"><span class="math display">\[
+E(\theta) = a_0 + a\cos\theta + b\sin\theta ,
+\tag{4.3}\]</span></span> where <span class="math inline">\(a_0\)</span>, <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> depend on the other parameters (<a href="#exr-parameter-shift" class="quarto-xref">Exercise&nbsp;<span>4.2</span></a>). It is fixed by three numbers, and so by the energies at three angles (<a href="#fig-parameter-shift" class="quarto-xref">Figure&nbsp;<span>4.3</span></a> a). In particular, its derivative <span class="math inline">\(E'(\theta) = -a\sin\theta + b\cos\theta\)</span> follows from two of them. Since <span class="math inline">\(\cos(\theta \pm \frac{\pi}{2}) = \mp\sin\theta\)</span> and <span class="math inline">\(\sin(\theta \pm \frac{\pi}{2}) = \pm\cos\theta\)</span>, we have <span class="math inline">\(E(\theta + \frac{\pi}{2}) - E(\theta - \frac{\pi}{2}) = 2(-a\sin\theta + b\cos\theta)\)</span>, which is the <a href="glossary.html#gloss-parameter-shift-rule" class="gloss" data-gloss="An exact formula for the derivative of an expectation value with respect to the angle of a Pauli rotation: half the difference of the values at the angle plus and minus a quarter turn.">parameter-shift rule</a> <span class="citation" data-cites="mitarai2018 schuld2019">(<a href="L1-platforms-and-measurement.html#ref-mitarai2018" role="doc-biblioref">Mitarai et al. 2018</a>; <a href="L1-platforms-and-measurement.html#ref-schuld2019" role="doc-biblioref">Schuld et al. 2019</a>)</span>: <span id="eq-parameter-shift"><span class="math display">\[
+\frac{\partial E}{\partial\theta} = \frac{E(\theta + \frac{\pi}{2}) - E(\theta - \frac{\pi}{2})}{2} .
+\tag{4.4}\]</span></span> Unlike a finite difference, it is exact, and its shift is large, so it does not amplify the shot noise: with estimates of standard error <span class="math inline">\(\varepsilon\)</span>, the derivative has the standard error <span class="math inline">\(\varepsilon/\sqrt{2}\)</span>, 0.06 in <a href="#fig-parameter-shift" class="quarto-xref">Figure&nbsp;<span>4.3</span></a> (b).</p>
+<div id="fig-parameter-shift" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-parameter-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/parameter-shift.svg" class="img-fluid figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-parameter-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.3: The energy along one angle <span class="math inline">\(\theta\)</span> of a VHA circuit with two layers, for the TFIM chain of <a href="#fig-adiabatic" class="quarto-xref">Figure&nbsp;<span>4.1</span></a>: here one gate, the <span class="math inline">\(R_X\)</span> of qubit 5 in the second layer, gets its own angle <span class="math inline">\(\theta\)</span>, added to <span class="math inline">\(\beta_2\)</span>, and all other angles stay at the schedule. (a) The exact energy (orange) is a sinusoid. Three estimates with 1,000 shots per setting (blue, with their standard errors), at <span class="math inline">\(\theta_0 = -0.9\)</span> and <span class="math inline">\(\theta_0 \pm \pi/2\)</span>, fix the dashed sinusoid. (b) The error of the derivative at <span class="math inline">\(\theta_0\)</span> (root mean square over 300 repetitions), from two estimates of 1,000 shots per setting each: finite differences against their step <span class="math inline">\(\Delta\theta\)</span> (blue), and the parameter-shift rule (orange). Dotted: the error of finite differences with exact energies.
+</figcaption>
+</figure>
+</div>
+<p>The rule costs two estimates per gate. A parameter shared by several gates, such as <span class="math inline">\(\gamma_k\)</span>, which sets all the bond gates of layer <span class="math inline">\(k\)</span> of the VHA, needs a shift of each of its gates in turn: by the product rule, its derivative is the sum of their derivatives. A full gradient therefore costs two estimates for every parametrised gate of the circuit, against two per step for SPSA (<a href="#exr-gradient-cost" class="quarto-xref">Exercise&nbsp;<span>4.3</span></a>).</p>
+<p>Since three estimates fix the whole sinusoid, some optimisers move one angle at a time straight to the minimum of its sinusoid, for angles that each enter a single gate <span class="citation" data-cites="nakanishi2020 ostaszewski2021">(<a href="L1-platforms-and-measurement.html#ref-nakanishi2020" role="doc-biblioref">Nakanishi et al. 2020</a>; <a href="L1-platforms-and-measurement.html#ref-ostaszewski2021" role="doc-biblioref">Ostaszewski et al. 2021</a>)</span> (<a href="#exr-parameter-shift" class="quarto-xref">Exercise&nbsp;<span>4.2</span></a>).</p>
+<div id="exr-parameter-shift" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.2 (The parameter-shift rule)</strong></span> A parameter <span class="math inline">\(\theta\)</span> enters a circuit only through the gate <span class="math inline">\(R_X(\theta) = e^{-i\theta X/2}\)</span> on one qubit.</p>
+<ol type="a">
+<li><p>Show that the energy has the form <span class="math inline">\(E(\theta) = a_0 + a\cos\theta + b\sin\theta\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Use <span class="math inline">\(\cos^2\frac{\theta}{2} = \frac{1 + \cos\theta}{2}\)</span>, <span class="math inline">\(\sin^2\frac{\theta}{2} = \frac{1 - \cos\theta}{2}\)</span> and <span class="math inline">\(2\sin\frac{\theta}{2}\cos\frac{\theta}{2} = \sin\theta\)</span>.</p>
+</details></li>
+<li><p>We estimate <span class="math inline">\(E(0) = -2.0\)</span>, <span class="math inline">\(E(\frac{\pi}{2}) = -3.0\)</span> and <span class="math inline">\(E(-\frac{\pi}{2}) = -1.4\)</span>. Find <span class="math inline">\(a_0\)</span>, <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, the derivative at <span class="math inline">\(\theta = 0\)</span>, and the angle that minimises <span class="math inline">\(E\)</span> along <span class="math inline">\(\theta\)</span>.</p>
+<details class="hint"><summary>Hint</summary>
+<p>Write <span class="math inline">\(a\cos\theta + b\sin\theta = A\cos(\theta - \theta_A)\)</span>, with <span class="math inline">\(A = \sqrt{a^2 + b^2}\)</span>.</p>
+</details></li>
+<li><p>Use (b) to sketch an optimiser that needs no gradient and no step size. What does one sweep through all <span class="math inline">\(m\)</span> angles of a circuit cost, in energy estimates? Why does this only work if each parameter enters a single gate?</p></li>
+</ol>
+</div>
+<div id="exr-gradient-cost" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.3 (The cost of a gradient)</strong></span> We run a VQE with the VHA of <a href="#sec-vha" class="quarto-xref"><span>Section 4.3.1</span></a>, with <span class="math inline">\(p\)</span> layers, for the <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> chain of <span class="math inline">\(n\)</span> qubits, using 1,000 shots per measurement setting for each energy estimate.</p>
+<ol type="a">
+<li><p>How many parametrised gates does the circuit have? How many circuits, counting each measurement setting separately, does one gradient by the parameter-shift rule need, and how many shots?</p></li>
+<li><p>Evaluate for <span class="math inline">\(n = 8\)</span> and <span class="math inline">\(p = 7\)</span>, and compare with one step of SPSA.</p></li>
+<li><p>Why might SPSA still need many steps, and so many shots, to reach the same energy?</p></li>
+</ol>
+</div>
+</section>
+</section>
+<section id="sec-barren-plateaus" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="sec-barren-plateaus"><span class="header-section-number">4.5</span> Barren plateaus</h2>
+<p>The sinusoid of <a href="#eq-sinusoid" class="quarto-xref">Equation&nbsp;<span>4.3</span></a> also limits the slopes: along one angle, the energy varies by at most <span class="math inline">\(2A\)</span>, with the amplitude <span class="math inline">\(A = \sqrt{a^2 + b^2}\)</span>, and its derivative is at most <span class="math inline">\(A\)</span>. For some ansätze, these amplitudes are exponentially small in the number of qubits for almost all parameters. By the parameter-shift rule, a slope is half the difference of two energies, so the slopes are small whenever the energies of all the states an ansatz can reach are close to each other.</p>
+<p>Consider first a random state of <span class="math inline">\(n\)</span> qubits, drawn uniformly from all states, in the same way as a uniformly random unit vector, with no preferred direction. For any Pauli string <span class="math inline">\(P \ne I\)</span>, the expectation value <span class="math inline">\(\bra{\psi}P\ket{\psi}\)</span> averages to zero over random states, with a variance of <span class="math inline">\(1/(2^n + 1)\)</span>: almost every state has exponentially small expectation values, and so the energies of almost all states are concentrated around the same value. We do not prove this; it follows from the symmetry of the uniform distribution of states <span class="citation" data-cites="mcclean2018">(<a href="L1-platforms-and-measurement.html#ref-mcclean2018" role="doc-biblioref">McClean et al. 2018</a>)</span>. A hardware-efficient circuit with random angles and enough layers prepares states that behave like random states for these averages, so the two energies of each parameter shift are both close to the same value, and the amplitudes <span class="math inline">\(A\)</span> of its sinusoids become exponentially small too. The energy landscape is then flat almost everywhere: a <a href="glossary.html#gloss-barren-plateau" class="gloss" data-gloss="A region of parameters, often almost all of them, where the cost of a variational circuit is nearly flat, with slopes that shrink exponentially with the number of qubits, so that estimating them takes exponentially many shots.">barren plateau</a>.</p>
+<p><a href="#fig-barren-plateau" class="quarto-xref">Figure&nbsp;<span>4.4</span></a> shows this for our TFIM chain. For a hardware-efficient ansatz with <span class="math inline">\(4n\)</span> layers, the typical slope at random angles falls by about a factor 0.6 for every two added qubits. For the VHA with the same number of layers, it does not fall exponentially. It even grows, because its first angle is shared by all <span class="math inline">\(n - 1\)</span> bond gates of the first layer; per bond gate, it falls only slowly, roughly like <span class="math inline">\(1/n\)</span>.</p>
+<div id="fig-barren-plateau" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-barren-plateau-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/barren-plateau.svg" class="img-fluid figure-img" style="width:55.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-barren-plateau-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.4: The typical slope of the energy <span class="math inline">\(E(\theta)\)</span> along the first angle, at random angles (the standard deviation of <span class="math inline">\(\partial E/\partial\theta_1\)</span> over 150 random choices of all angles), for TFIM chains of <span class="math inline">\(n\)</span> qubits (<span class="math inline">\(J = 1\)</span>, <span class="math inline">\(h = 0.5\)</span>) and ansätze with <span class="math inline">\(4n\)</span> layers: a hardware-efficient ansatz (<span class="math inline">\(R_Y\)</span> and <span class="math inline">\(R_Z\)</span> on every qubit, then CZ on every bond; orange) and the VHA (blue), whose first angle sets all the bond gates of the first layer. Exact energies, no shots.
+</figcaption>
+</figure>
+</div>
+<p>A flat landscape is a problem because the energies are estimated. This is the flatness near a minimum of <a href="#sec-optimisers" class="quarto-xref"><span>Section 4.4</span></a>, but now almost everywhere. To tell the sign of a slope of size <span class="math inline">\(g\)</span>, the standard error of its estimate must be smaller than <span class="math inline">\(g\)</span>, which takes a number of shots that grows like <span class="math inline">\(1/g^2\)</span>, and so exponentially with <span class="math inline">\(n\)</span> on a barren plateau (<a href="#exr-plateau" class="quarto-xref">Exercise&nbsp;<span>4.4</span></a>). Gradient-free optimisers do not escape: they compare energy differences, which are just as small <span class="citation" data-cites="arrasmith2021">(<a href="L1-platforms-and-measurement.html#ref-arrasmith2021" role="doc-biblioref">Arrasmith et al. 2021</a>)</span>.</p>
+<p>The ways out of barren plateaus keep the states away from random ones <span class="citation" data-cites="larocca2025">(<a href="L1-platforms-and-measurement.html#ref-larocca2025" role="doc-biblioref">Larocca et al. 2025</a>)</span>. The first is a <em>structured ansatz</em>: an ansatz built from <span class="math inline">\(H\)</span> with few parameters, such as the VHA, does not explore all states, and for the TFIM its slopes stay large (<a href="#fig-barren-plateau" class="quarto-xref">Figure&nbsp;<span>4.4</span></a>). The second is a <em>good starting point</em>: instead of random angles, start from a circuit known to prepare a reasonable state, such as the adiabatic schedule of <a href="#sec-vha" class="quarto-xref"><span>Section 4.3.1</span></a>, or from angles that make the circuit close to the identity, so that it starts from a simple state, far from random ones.</p>
+<p>These remedies come with a caveat, and this is an active field of research. The ansätze that are proved to avoid barren plateaus often turn out to be simulable efficiently on a classical computer, sometimes after collecting some data on a quantum computer <span class="citation" data-cites="cerezo2025">(<a href="L1-platforms-and-measurement.html#ref-cerezo2025" role="doc-biblioref">Cerezo et al. 2025</a>)</span>. The TFIM chain is an example: its VHA has no barren plateau, but the model is classically solvable at any size, which makes it a good test case, not a candidate for quantum advantage. Barren plateaus are also not the only obstacle: the landscape can have many local minima, and in the worst case, training a variational circuit is NP-hard <span class="citation" data-cites="bittel2021">(<a href="L1-platforms-and-measurement.html#ref-bittel2021" role="doc-biblioref">Bittel and Kliesch 2021</a>)</span>.</p>
+<p>A third way out brings us back to the start of the chapter: <em>continuation</em> along the adiabatic path. We minimise the energy of <span class="math inline">\(H(s)\)</span> for a small <span class="math inline">\(s\)</span>, whose ground state is close to <span class="math inline">\(\ket{+\cdots+}\)</span>, use the optimal angles as the starting point for a slightly larger <span class="math inline">\(s\)</span>, and continue until <span class="math inline">\(s = 1\)</span>. As long as the gap stays open, the ground state changes smoothly with <span class="math inline">\(s\)</span>, so each optimisation starts close to its solution. This is the adiabatic idea once more, applied to the optimisation instead of to the time evolution.</p>
+<div id="exr-plateau" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.4 (Shots on a plateau)</strong></span> For the hardware-efficient ansatz of <a href="#fig-barren-plateau" class="quarto-xref">Figure&nbsp;<span>4.4</span></a>, assume that the typical slope continues to fall by a factor 0.6 for every two added qubits, from 0.05 at 12 qubits.</p>
+<ol type="a">
+<li><p>Estimate the typical slope at 30 and at 50 qubits.</p></li>
+<li><p>We estimate a derivative with the parameter-shift rule, from two energy estimates with <span class="math inline">\(N\)</span> shots per setting each. Assume that each estimate has a standard error of about <span class="math inline">\(\sqrt{n/N}\)</span>, as for a nearly random state, whose terms are uncorrelated and have a single-shot variance close to 1. How many shots per setting does each estimate need to tell the sign of a typical derivative at 30 and at 50 qubits? Compare with the shot rates of <a href="L1-platforms-and-measurement.html#sec-timescales" class="quarto-xref"><span>Section 1.6</span></a>.</p></li>
+<li><p>Would SPSA avoid the problem?</p></li>
+</ol>
+</div>
+</section>
+<section id="sec-L4-exercises" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="sec-L4-exercises"><span class="header-section-number">4.6</span> More exercises</h2>
+<div id="exr-maxcut" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 4.5 (MaxCut as an Ising model)</strong></span> Take the graph with four vertices <span class="math inline">\(1, 2, 3, 4\)</span> on a ring, with the edges <span class="math inline">\((1,2)\)</span>, <span class="math inline">\((2,3)\)</span>, <span class="math inline">\((3,4)\)</span>, <span class="math inline">\((4,1)\)</span>.</p>
+<ol type="a">
+<li><p>Write the cost <span class="math inline">\(H_C\)</span> of <a href="#sec-qaoa" class="quarto-xref"><span>Section 4.3.4</span></a> for this graph. What are its smallest eigenvalue and its ground states, and which cuts do they correspond to?</p></li>
+<li><p>A QAOA circuit is run with 1,000 shots. How many measurement settings are needed to estimate <span class="math inline">\(\langle H_C\rangle\)</span>? How would you use the shots to find a solution, and why can you do better than with the average energy alone?</p></li>
+<li><p>Add the edge <span class="math inline">\((1,3)\)</span>. What is now the largest cut, and how many bitstrings reach it?</p></li>
+</ol>
+</div>
+</section>
+<section id="sec-L4-reading" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="sec-L4-reading"><span class="header-section-number">4.7</span> Further reading</h2>
+<p><span class="citation" data-cites="cerezo2021">Cerezo et al. (<a href="L1-platforms-and-measurement.html#ref-cerezo2021" role="doc-biblioref">2021</a>)</span> review variational quantum algorithms, and <span class="citation" data-cites="tilly2022">Tilly et al. (<a href="L1-platforms-and-measurement.html#ref-tilly2022" role="doc-biblioref">2022</a>)</span> the VQE in particular, including ansätze, optimisers and measurement. <span class="citation" data-cites="bharti2022">Bharti et al. (<a href="L1-platforms-and-measurement.html#ref-bharti2022" role="doc-biblioref">2022</a>)</span> cover algorithms for noisy devices more broadly, and <span class="citation" data-cites="albash2018">Albash and Lidar (<a href="L1-platforms-and-measurement.html#ref-albash2018" role="doc-biblioref">2018</a>)</span> adiabatic quantum computation and quantum annealing. <span class="citation" data-cites="larocca2025">Larocca et al. (<a href="L1-platforms-and-measurement.html#ref-larocca2025" role="doc-biblioref">2025</a>)</span> review barren plateaus, including the connection to classical simulability.</p>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-albash2018" class="csl-entry" role="listitem">
+Albash, Tameem, and Daniel A. Lidar. 2018. <span>“Adiabatic Quantum Computation.”</span> <em>Reviews of Modern Physics</em> 90 (1): 015002. <a href="https://doi.org/10.1103/RevModPhys.90.015002">https://doi.org/10.1103/RevModPhys.90.015002</a>.
+</div>
+<div id="ref-arrasmith2021" class="csl-entry" role="listitem">
+Arrasmith, Andrew, M. Cerezo, Piotr Czarnik, Lukasz Cincio, and Patrick J. Coles. 2021. <span>“Effect of Barren Plateaus on Gradient-Free Optimization.”</span> <em>Quantum</em> 5: 558. <a href="https://doi.org/10.22331/q-2021-10-05-558">https://doi.org/10.22331/q-2021-10-05-558</a>.
+</div>
+<div id="ref-bharti2022" class="csl-entry" role="listitem">
+Bharti, Kishor, Alba Cervera-Lierta, Thi Ha Kyaw, et al. 2022. <span>“Noisy Intermediate-Scale Quantum Algorithms.”</span> <em>Reviews of Modern Physics</em> 94 (1): 015004. <a href="https://doi.org/10.1103/RevModPhys.94.015004">https://doi.org/10.1103/RevModPhys.94.015004</a>.
+</div>
+<div id="ref-bittel2021" class="csl-entry" role="listitem">
+Bittel, Lennart, and Martin Kliesch. 2021. <span>“Training Variational Quantum Algorithms Is <span>NP</span>-Hard.”</span> <em>Physical Review Letters</em> 127 (12): 120502. <a href="https://doi.org/10.1103/PhysRevLett.127.120502">https://doi.org/10.1103/PhysRevLett.127.120502</a>.
+</div>
+<div id="ref-born1928" class="csl-entry" role="listitem">
+Born, Max, and Vladimir Fock. 1928. <span>“Beweis Des <span>Adiabatensatzes</span>.”</span> <em>Zeitschrift f<span>ü</span>r Physik</em> 51 (3–4): 165–80. <a href="https://doi.org/10.1007/BF01343193">https://doi.org/10.1007/BF01343193</a>.
+</div>
+<div id="ref-cerezo2021" class="csl-entry" role="listitem">
+Cerezo, M., Andrew Arrasmith, Ryan Babbush, et al. 2021. <span>“Variational Quantum Algorithms.”</span> <em>Nature Reviews Physics</em> 3 (9): 625–44. <a href="https://doi.org/10.1038/s42254-021-00348-9">https://doi.org/10.1038/s42254-021-00348-9</a>.
+</div>
+<div id="ref-cerezo2025" class="csl-entry" role="listitem">
+Cerezo, M., Martín Larocca, Diego García-Martín, et al. 2025. <span>“Does Provable Absence of Barren Plateaus Imply Classical Simulability?”</span> <em>Nature Communications</em> 16: 7907. <a href="https://doi.org/10.1038/s41467-025-63099-6">https://doi.org/10.1038/s41467-025-63099-6</a>.
+</div>
+<div id="ref-farhi2014" class="csl-entry" role="listitem">
+Farhi, Edward, Jeffrey Goldstone, and Sam Gutmann. 2014. <em>A Quantum Approximate Optimization Algorithm</em>. <a href="https://doi.org/10.48550/arXiv.1411.4028">https://doi.org/10.48550/arXiv.1411.4028</a>.
+</div>
+<div id="ref-farhi2000" class="csl-entry" role="listitem">
+Farhi, Edward, Jeffrey Goldstone, Sam Gutmann, and Michael Sipser. 2000. <em>Quantum Computation by Adiabatic Evolution</em>. <a href="https://doi.org/10.48550/arXiv.quant-ph/0001106">https://doi.org/10.48550/arXiv.quant-ph/0001106</a>.
+</div>
+<div id="ref-grimsley2019" class="csl-entry" role="listitem">
+Grimsley, Harper R., Sophia E. Economou, Edwin Barnes, and Nicholas J. Mayhall. 2019. <span>“An Adaptive Variational Algorithm for Exact Molecular Simulations on a Quantum Computer.”</span> <em>Nature Communications</em> 10: 3007. <a href="https://doi.org/10.1038/s41467-019-10988-2">https://doi.org/10.1038/s41467-019-10988-2</a>.
+</div>
+<div id="ref-hadfield2019" class="csl-entry" role="listitem">
+Hadfield, Stuart, Zhihui Wang, Bryan O’Gorman, Eleanor G. Rieffel, Davide Venturelli, and Rupak Biswas. 2019. <span>“From the Quantum Approximate Optimization Algorithm to a Quantum Alternating Operator Ansatz.”</span> <em>Algorithms</em> 12 (2): 34. <a href="https://doi.org/10.3390/a12020034">https://doi.org/10.3390/a12020034</a>.
+</div>
+<div id="ref-ho2019" class="csl-entry" role="listitem">
+Ho, Wen Wei, and Timothy H. Hsieh. 2019. <span>“Efficient Variational Simulation of Non-Trivial Quantum States.”</span> <em>SciPost Physics</em> 6 (3): 029. <a href="https://doi.org/10.21468/SciPostPhys.6.3.029">https://doi.org/10.21468/SciPostPhys.6.3.029</a>.
+</div>
+<div id="ref-kadowaki1998" class="csl-entry" role="listitem">
+Kadowaki, Tadashi, and Hidetoshi Nishimori. 1998. <span>“Quantum Annealing in the Transverse <span>Ising</span> Model.”</span> <em>Physical Review E</em> 58 (5): 5355–63. <a href="https://doi.org/10.1103/PhysRevE.58.5355">https://doi.org/10.1103/PhysRevE.58.5355</a>.
+</div>
+<div id="ref-kandala2017" class="csl-entry" role="listitem">
+Kandala, Abhinav, Antonio Mezzacapo, Kristan Temme, et al. 2017. <span>“Hardware-Efficient Variational Quantum Eigensolver for Small Molecules and Quantum Magnets.”</span> <em>Nature</em> 549 (7671): 242–46. <a href="https://doi.org/10.1038/nature23879">https://doi.org/10.1038/nature23879</a>.
+</div>
+<div id="ref-kempe2006" class="csl-entry" role="listitem">
+Kempe, Julia, Alexei Kitaev, and Oded Regev. 2006. <span>“The Complexity of the Local <span>Hamiltonian</span> Problem.”</span> <em>SIAM Journal on Computing</em> 35 (5): 1070–97. <a href="https://doi.org/10.1137/S0097539704445226">https://doi.org/10.1137/S0097539704445226</a>.
+</div>
+<div id="ref-larocca2025" class="csl-entry" role="listitem">
+Larocca, Martín, Supanut Thanasilp, Samson Wang, et al. 2025. <span>“Barren Plateaus in Variational Quantum Computing.”</span> <em>Nature Reviews Physics</em> 7 (4): 174–89. <a href="https://doi.org/10.1038/s42254-025-00813-9">https://doi.org/10.1038/s42254-025-00813-9</a>.
+</div>
+<div id="ref-mcclean2018" class="csl-entry" role="listitem">
+McClean, Jarrod R., Sergio Boixo, Vadim N. Smelyanskiy, Ryan Babbush, and Hartmut Neven. 2018. <span>“Barren Plateaus in Quantum Neural Network Training Landscapes.”</span> <em>Nature Communications</em> 9: 4812. <a href="https://doi.org/10.1038/s41467-018-07090-4">https://doi.org/10.1038/s41467-018-07090-4</a>.
+</div>
+<div id="ref-mitarai2018" class="csl-entry" role="listitem">
+Mitarai, Kosuke, Makoto Negoro, Masahiro Kitagawa, and Keisuke Fujii. 2018. <span>“Quantum Circuit Learning.”</span> <em>Physical Review A</em> 98 (3): 032309. <a href="https://doi.org/10.1103/PhysRevA.98.032309">https://doi.org/10.1103/PhysRevA.98.032309</a>.
+</div>
+<div id="ref-nakanishi2020" class="csl-entry" role="listitem">
+Nakanishi, Ken M., Keisuke Fujii, and Synge Todo. 2020. <span>“Sequential Minimal Optimization for Quantum-Classical Hybrid Algorithms.”</span> <em>Physical Review Research</em> 2 (4): 043158. <a href="https://doi.org/10.1103/PhysRevResearch.2.043158">https://doi.org/10.1103/PhysRevResearch.2.043158</a>.
+</div>
+<div id="ref-ostaszewski2021" class="csl-entry" role="listitem">
+Ostaszewski, Mateusz, Edward Grant, and Marcello Benedetti. 2021. <span>“Structure Optimization for Parameterized Quantum Circuits.”</span> <em>Quantum</em> 5: 391. <a href="https://doi.org/10.22331/q-2021-01-28-391">https://doi.org/10.22331/q-2021-01-28-391</a>.
+</div>
+<div id="ref-peruzzo2014" class="csl-entry" role="listitem">
+Peruzzo, Alberto, Jarrod McClean, Peter Shadbolt, et al. 2014. <span>“A Variational Eigenvalue Solver on a Photonic Quantum Processor.”</span> <em>Nature Communications</em> 5: 4213. <a href="https://doi.org/10.1038/ncomms5213">https://doi.org/10.1038/ncomms5213</a>.
+</div>
+<div id="ref-powell1994" class="csl-entry" role="listitem">
+Powell, M. J. D. 1994. <span>“A Direct Search Optimization Method That Models the Objective and Constraint Functions by Linear Interpolation.”</span> In <em>Advances in Optimization and Numerical Analysis</em>, edited by Susana Gomez and Jean-Pierre Hennart. Springer. <a href="https://doi.org/10.1007/978-94-015-8330-5_4">https://doi.org/10.1007/978-94-015-8330-5_4</a>.
+</div>
+<div id="ref-schuld2019" class="csl-entry" role="listitem">
+Schuld, Maria, Ville Bergholm, Christian Gogolin, Josh Izaac, and Nathan Killoran. 2019. <span>“Evaluating Analytic Gradients on Quantum Hardware.”</span> <em>Physical Review A</em> 99 (3): 032331. <a href="https://doi.org/10.1103/PhysRevA.99.032331">https://doi.org/10.1103/PhysRevA.99.032331</a>.
+</div>
+<div id="ref-spall1992" class="csl-entry" role="listitem">
+Spall, James C. 1992. <span>“Multivariate Stochastic Approximation Using a Simultaneous Perturbation Gradient Approximation.”</span> <em>IEEE Transactions on Automatic Control</em> 37 (3): 332–41. <a href="https://doi.org/10.1109/9.119632">https://doi.org/10.1109/9.119632</a>.
+</div>
+<div id="ref-tilly2022" class="csl-entry" role="listitem">
+Tilly, Jules, Hongxiang Chen, Shuxiang Cao, et al. 2022. <span>“The Variational Quantum Eigensolver: A Review of Methods and Best Practices.”</span> <em>Physics Reports</em> 986: 1–128. <a href="https://doi.org/10.1016/j.physrep.2022.08.003">https://doi.org/10.1016/j.physrep.2022.08.003</a>.
+</div>
+<div id="ref-wecker2015" class="csl-entry" role="listitem">
+Wecker, Dave, Matthew B. Hastings, and Matthias Troyer. 2015. <span>“Progress Towards Practical Quantum Variational Algorithms.”</span> <em>Physical Review A</em> 92 (4): 042303. <a href="https://doi.org/10.1103/PhysRevA.92.042303">https://doi.org/10.1103/PhysRevA.92.042303</a>.
+</div>
+</div>
+
+
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The same acronym also stands for the <em>quantum alternating operator ansatz</em> <span class="citation" data-cites="hadfield2019">(<a href="L1-platforms-and-measurement.html#ref-hadfield2019" role="doc-biblioref">Hadfield et al. 2019</a>)</span>, which generalises these layers, for example to keep the state among the bitstrings that satisfy the constraints of a problem.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<style>
+  a.gloss { text-decoration: underline dotted; color: inherit; }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof tippy === "undefined") return;
+    tippy("a.gloss", {
+      content: (el) => el.getAttribute("data-gloss"),
+      theme: "quarto",
+      maxWidth: 360,
+    });
+  });
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/stefanopolla\.github\.io\/course-testing\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./L3-hamiltonians.html" class="pagination-link" aria-label="Measuring and simulating Hamiltonians">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Measuring and simulating Hamiltonians</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./exercises.html" class="pagination-link" aria-label="Exercises">
+        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Exercises</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
