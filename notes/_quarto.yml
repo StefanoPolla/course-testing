@@ -19,6 +19,7 @@ book:
     - L1-platforms-and-measurement.qmd
     - L2-noise.qmd
     - L3-hamiltonians.qmd
+    - L4-ground-states.qmd
   appendices:
     - exercises.qmd
     - glossary.qmd

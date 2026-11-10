@@ -909,3 +909,256 @@ ax.set_xticks([1, 3, 5, 10, 15])
 ax.legend(frameon=False, fontsize=8.5, loc="lower right")
 clean_axes(ax)
 save_fig(fig, "trotter-noise")
+
+
+# ================================================================== L4 (about 2 minutes)
+from scipy.linalg import eigh  # noqa: E402
+from scipy.optimize import minimize  # noqa: E402
+
+rng = np.random.default_rng(7)
+n, J, h = 8, 1.0, 0.5     # the L4 example: a TFIM chain of 8 qubits, through the transition at h = J
+
+
+def bonds(n, J):
+    return SparsePauliOp.from_sparse_list([("ZZ", [i, i + 1], -J) for i in range(n - 1)], num_qubits=n)
+
+
+def fields(n, h):
+    return SparsePauliOp.from_sparse_list([("X", [i], -h) for i in range(n)], num_qubits=n)
+
+
+def layers_circuit(n, angles, extra=0.0):
+    # |+...+>, then one layer per pair (a, b): R_ZZ(a) on all bonds (two brick layers), R_X(b) on all
+    # qubits. The Trotterised adiabatic schedule and the variational Hamiltonian ansatz are both of
+    # this form. `extra` is added to the R_X of the middle qubit in the second layer (the one gate
+    # angle varied in the parameter-shift figure).
+    qc = QuantumCircuit(n)
+    qc.h(range(n))
+    for k, (a, b) in enumerate(angles):
+        for first in (0, 1):
+            for i in range(first, n - 1, 2):
+                qc.rzz(a, i, i + 1)
+        for i in range(n):
+            qc.rx(b + (extra if (k == 1 and i == n // 2) else 0.0), i)
+    return qc
+
+
+def schedule(r, T, J=J, h=h):
+    # r Trotter steps of H(s) = -sJ sum ZZ - h sum X, with s = t/T at the middle of each step
+    d = T / r
+    return [(-2 * (k + 0.5) / r * J * d, -2 * h * d) for k in range(r)]
+
+
+# ------------------------------------------- L4: adiabatic preparation, its gap and its Trotterisation
+A_mat, B_mat = bonds(n, J).to_matrix(), fields(n, h).to_matrix()
+H_target = tfim(n, J, h)
+w, v = eigh(SparsePauliOp("X" * n).to_matrix())
+even = v[:, w > 0]      # parity +1, like |+...+>: the only states the evolution can reach
+
+
+def levels(s, k=6):
+    e, vecs = eigh(even.conj().T @ (s * A_mat + B_mat) @ even)
+    return e[:k], even @ vecs[:, :k]
+
+
+ground = levels(1.0, 1)[1][:, 0]
+plus = Statevector.from_label("+" * n).data
+
+
+def adiabatic(T, steps_per_unit=50, record=False):
+    # exact evolution under H(t/T), in short steps of constant H
+    r = max(int(np.ceil(T * steps_per_unit)), 1)
+    psi, rec = plus.copy(), []
+    for k in range(r):
+        psi = expm(-1j * ((k + 0.5) / r * A_mat + B_mat) * T / r) @ psi
+        if record and k % 4 == 3:
+            e, vecs = levels((k + 1) / r)
+            rec.append(((k + 1) / r, e - e[0], np.abs(vecs.conj().T @ psi) ** 2))
+    return psi, rec
+
+
+fig, (ax_l, ax_f) = plt.subplots(1, 2, figsize=(8.2, 3.0))
+_, rec = adiabatic(4.0, record=True)
+ss = np.array([x[0] for x in rec])
+E = np.array([x[1] for x in rec])
+occ = np.array([x[2] for x in rec])
+for k in range(E.shape[1]):   # each level in grey, with a band whose width is its occupation
+    ax_l.plot(ss, E[:, k], "-", color="0.65", lw=0.8)
+    ax_l.fill_between(ss, E[:, k] - 0.09 * occ[:, k], E[:, k] + 0.09 * occ[:, k], color=ACCENT, lw=0)
+i_min = int(np.argmin(E[:, 1]))
+ax_l.annotate("", xy=(ss[i_min], 0), xytext=(ss[i_min], E[i_min, 1]),
+              arrowprops=dict(arrowstyle="<->", color=ORANGE, lw=1.3))
+ax_l.text(ss[i_min] + 0.03, E[i_min, 1] / 2, r"$\Delta_{\min}$", color=ORANGE, va="center")
+ax_l.set_xlim(0, 1)
+ax_l.set_ylim(-0.2, 2.4)
+ax_l.set_xlabel("$s = t/T$")
+ax_l.set_ylabel("$E_k(s) - E_0(s)$")
+ax_l.set_title("(a)", loc="left", fontsize=9.5)
+Ts = np.array([1, 2, 3, 5, 7, 10, 14, 20, 28, 40])
+ax_f.plot(Ts, [abs(ground.conj() @ adiabatic(T)[0]) ** 2 for T in Ts], "-", color=ORANGE, lw=2,
+          label="exact", zorder=5)
+blues = ["#7fa7d6", "#3f78bd", "#163f73"]
+for delta, colour, marker in zip([0.25, 0.5, 1.0], blues, ["o", "s", "^"]):
+    f = [abs(ground.conj() @ Statevector(layers_circuit(n, schedule(max(int(round(T / delta)), 1), T))).data) ** 2
+         for T in Ts]
+    ax_f.plot(Ts, f, marker + "--", color=colour, ms=4.5, lw=1.1, label=f"step {delta}")
+ax_f.set_xscale("log")
+ax_f.set_xticks([1, 3, 10, 30])
+ax_f.set_xticklabels(["1", "3", "10", "30"])
+ax_f.set_ylim(0, 1.03)
+ax_f.set_xlabel("total time $T$")
+ax_f.set_ylabel("fidelity with the ground state")
+ax_f.legend(frameon=False, fontsize=8.5, loc="upper left")
+ax_f.set_title("(b)", loc="left", fontsize=9.5)
+for ax in (ax_l, ax_f):
+    clean_axes(ax)
+fig.subplots_adjust(wspace=0.35)
+save_fig(fig, "adiabatic")
+print(f"L4 adiabatic: minimum gap {E[i_min, 1]:.2f} at s = {ss[i_min]:.2f}")
+
+# numbers quoted in the text: the Floquet step's eigenstate closest to the ground state
+for delta in [0.25, 0.5, 1.0]:
+    U = expm(-1j * B_mat * delta) @ expm(-1j * A_mat * delta)
+    print(f"L4 step {delta}: best overlap of a Floquet eigenstate with the ground state",
+          f"{np.max(np.abs(np.linalg.eig(U)[1].conj().T @ ground) ** 2):.2f}")
+
+
+# ------------------------------------------- L4: numbers for the VHA example (exact simulation)
+def energy(angles):
+    return Statevector(layers_circuit(n, angles)).expectation_value(H_target).real
+
+
+E0 = levels(1.0, 1)[0][0]
+for p in (2, 4, 7):
+    Ts_grid = np.linspace(0.2, 3 * p, 150)
+    T_best = Ts_grid[int(np.argmin([energy(schedule(p, T)) for T in Ts_grid]))]
+    start = np.array(schedule(p, T_best)).ravel()
+    res = minimize(lambda x: energy(x.reshape(-1, 2)), start, method="BFGS")
+    f_sched = abs(ground.conj() @ Statevector(layers_circuit(n, schedule(p, T_best))).data) ** 2
+    f_vha = abs(ground.conj() @ Statevector(layers_circuit(n, res.x.reshape(-1, 2))).data) ** 2
+    print(f"L4 VHA p={p}: schedule (T={T_best:.1f}) fidelity {f_sched:.2f}, optimised {f_vha:.3f}",
+          f"(energy error {res.fun - E0:.3f})")
+
+
+# ------------------------------------------- L4: the cost along one angle, and its gradient with shots
+had = QuantumCircuit(n)
+had.h(range(n))
+z_values = np.real(np.diag(bonds(n, J).to_matrix()))   # bond energy of each outcome of the Z setting
+x_values = np.real(np.diag(SparsePauliOp.from_sparse_list([("Z", [i], -h) for i in range(n)],
+                                                          num_qubits=n).to_matrix()))
+
+
+def estimate(state, shots):
+    # one energy estimate: `shots` shots in the Z setting and `shots` in the X setting
+    counts_z = rng.multinomial(shots, state.probabilities())
+    counts_x = rng.multinomial(shots, state.evolve(had).probabilities())
+    return (counts_z @ z_values + counts_x @ x_values) / shots
+
+
+angles = schedule(2, 2.0)
+shots, theta0 = 1000, -0.9
+
+
+def state_at(theta):
+    return Statevector(layers_circuit(n, angles, extra=theta))
+
+
+thetas = np.linspace(-np.pi, np.pi, 121)
+exact = [state_at(t).expectation_value(H_target).real for t in thetas]
+points = [theta0 - np.pi / 2, theta0, theta0 + np.pi / 2]
+estimates = [estimate(state_at(t), shots) for t in points]
+a, b, c = np.linalg.solve([[np.cos(t), np.sin(t), 1] for t in points], estimates)
+sigma = np.std([estimate(state_at(theta0), shots) for _ in range(300)])
+
+fig, (ax_c, ax_g) = plt.subplots(1, 2, figsize=(8.2, 3.0))
+ax_c.plot(thetas, exact, "-", color=ORANGE, lw=2, label="exact")
+ax_c.plot(thetas, a * np.cos(thetas) + b * np.sin(thetas) + c, "--", color=ACCENT, lw=1.2,
+          label="through the 3 estimates")
+ax_c.errorbar(points, estimates, yerr=sigma, fmt="o", color=ACCENT, ms=5, capsize=3,
+              label=f"estimates, {shots} shots")
+ax_c.set_xticks([-np.pi, -np.pi / 2, 0, np.pi / 2, np.pi])
+ax_c.set_xticklabels([r"$-\pi$", r"$-\pi/2$", "0", r"$\pi/2$", r"$\pi$"])
+ax_c.set_xlabel(r"angle $\theta$")
+ax_c.set_ylabel(r"energy $E(\theta)$")
+ax_c.set_ylim(top=-1.5)
+ax_c.legend(frameon=False, fontsize=8, loc="upper right")
+ax_c.set_title("(a)", loc="left", fontsize=9.5)
+
+
+def exact_energy(theta):
+    return state_at(theta).expectation_value(H_target).real
+
+
+slope = (exact_energy(theta0 + np.pi / 2) - exact_energy(theta0 - np.pi / 2)) / 2
+reps = 300
+plus_state, minus_state = state_at(theta0 + np.pi / 2), state_at(theta0 - np.pi / 2)
+err_shift = np.sqrt(np.mean([((estimate(plus_state, shots) - estimate(minus_state, shots)) / 2 - slope) ** 2
+                             for _ in range(reps)]))
+steps = np.logspace(-2.5, 0, 11)
+err_fd, err_fd_exact = [], []
+for d in steps:
+    sp, sm = state_at(theta0 + d), state_at(theta0 - d)
+    err_fd.append(np.sqrt(np.mean([((estimate(sp, shots) - estimate(sm, shots)) / (2 * d) - slope) ** 2
+                                   for _ in range(reps)])))
+    err_fd_exact.append(abs((sp.expectation_value(H_target).real - sm.expectation_value(H_target).real)
+                            / (2 * d) - slope))
+ax_g.loglog(steps, err_fd, "o-", color=ACCENT, ms=4.5, lw=1.2, label=f"finite differences, {shots} shots")
+ax_g.loglog(steps, err_fd_exact, ":", color=ACCENT, lw=1.2, label="finite differences, exact values")
+ax_g.axhline(err_shift, color=ORANGE, lw=2, label=f"parameter shift, {shots} shots")
+ax_g.set_xlabel(r"finite-difference step $\Delta\theta$")
+ax_g.set_ylabel("error of the derivative")
+ax_g.set_ylim(1e-4, 60)
+ax_g.legend(frameon=False, fontsize=8, loc="lower left")
+ax_g.set_title("(b)", loc="left", fontsize=9.5)
+for ax in (ax_c, ax_g):
+    clean_axes(ax)
+fig.subplots_adjust(wspace=0.35)
+save_fig(fig, "parameter-shift")
+print(f"L4 parameter shift: slope {slope:.3f}, one estimate +- {sigma:.3f}, shift error {err_shift:.3f},",
+      f"finite differences {err_fd[0]:.1f} (step {steps[0]:.3f}) to {err_fd[-1]:.2f} (step 1)")
+
+
+# ------------------------------------------- L4: barren plateaus (about 40 s)
+def hardware_efficient(n, n_layers, params):
+    # layers of R_Y and R_Z on every qubit, then CZ on every bond (two brick layers)
+    qc = QuantumCircuit(n)
+    it = iter(params)
+    for _ in range(n_layers):
+        for i in range(n):
+            qc.ry(next(it), i)
+            qc.rz(next(it), i)
+        for first in (0, 1):
+            for i in range(first, n - 1, 2):
+                qc.cz(i, i + 1)
+    return qc
+
+
+def slope_spread(build, n_params, n, samples=150, d=1e-4):
+    # standard deviation, over random angles, of the slope of the energy along the first angle
+    # (exact energies; a small difference, since in the VHA the first angle is shared by several gates)
+    Hn = tfim(n, J, h)
+    slopes = []
+    for _ in range(samples):
+        x = rng.uniform(0, 2 * np.pi, n_params)
+        e = []
+        for sign in (1, -1):
+            y = x.copy()
+            y[0] += sign * d
+            e.append(Statevector(build(y)).expectation_value(Hn).real)
+        slopes.append((e[0] - e[1]) / (2 * d))
+    return np.std(slopes)
+
+
+sizes = [2, 4, 6, 8, 10, 12]
+spread_hea = [slope_spread(lambda x, n=n: hardware_efficient(n, 4 * n, x), 8 * n * n, n) for n in sizes]
+spread_vha = [slope_spread(lambda x, n=n: layers_circuit(n, x.reshape(-1, 2)), 8 * n, n) for n in sizes]
+fig, ax = plt.subplots(figsize=(4.6, 2.9))
+ax.semilogy(sizes, spread_vha, "o-", color=ACCENT, ms=5, lw=1.4, label="Hamiltonian ansatz")
+ax.semilogy(sizes, spread_hea, "s-", color=ORANGE, ms=5, lw=1.4, label="hardware-efficient")
+ax.set_xlabel("number of qubits $n$")
+ax.set_ylabel("typical slope of $E(\\theta)$")
+ax.set_xticks(sizes)
+ax.legend(frameon=False, fontsize=8.5, loc="lower left")
+clean_axes(ax)
+save_fig(fig, "barren-plateau")
+print("L4 barren plateau: hardware-efficient", np.round(spread_hea, 3), "VHA", np.round(spread_vha, 2))

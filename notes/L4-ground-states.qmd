@@ -1,0 +1,383 @@
+# Preparing ground states {#sec-ground-states}
+
+{{< include _macros.qmd >}}
+
+In the previous chapter, we estimated the energy of a state that a circuit prepares, and we built circuits that simulate how a state evolves in time.
+In this chapter, we ask how to prepare the lowest-energy state of a Hamiltonian, its ground state, on a quantum computer.
+We start from adiabatic evolution, which reaches the ground state by changing a Hamiltonian slowly, and turn its circuits into variational ones, whose angles a classical optimiser chooses to minimise the measured energy.
+This is the variational quantum eigensolver (VQE), one of the most widely studied ground-state methods for current devices.
+Most of the chapter is about what makes its optimisation hard, when every value of the energy is estimated from shots.
+
+By the end of the chapter, you should be able to explain how adiabatic evolution prepares a ground state, and why its circuits are too deep for current devices; set up a VQE, with its circuit, its cost, its optimiser and a starting point; estimate gradients with the parameter-shift rule and count their cost in circuits; and recognise when an optimisation, or a claimed result, is limited by shot noise or by a barren plateau.
+
+## Ground states and the variational principle {#sec-variational-principle}
+
+Recall from @sec-energy-dynamics that the [ground state]{.gloss key="ground-state"} $\ket{E_0}$ of a Hamiltonian $H$ is its eigenvector with the lowest eigenvalue $E_0$, and that a system that is cold enough settles in it.
+The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"}.
+It sets how cold "cold enough" is, and it returns below as the quantity that decides how fast a ground state can be prepared.
+
+In general, finding the ground state of a local Hamiltonian is hard, even for a quantum computer: estimating $E_0$ to a precision that shrinks polynomially with the number of qubits is a QMA-complete problem, the quantum analogue of NP-complete, already for 2-local Hamiltonians [@kempe2006].
+This is a worst-case statement, and many Hamiltonians that describe real materials and molecules are believed to be easier.
+The methods of this chapter are heuristics: they come with no general guarantee, and we judge them by testing them on problems whose answer we know.
+
+The key tool is the [variational principle]{.gloss key="variational-principle"}.
+Write a state $\ket{\psi}$ in the eigenbasis of $H$, $\ket{\psi} = \sum_k \alpha_k\ket{E_k}$, with $p_k = |\alpha_k|^2$ summing to 1.
+Then
+$$
+\bra{\psi}H\ket{\psi} = \sum_k p_k E_k \;\ge\; E_0 ,
+$$ {#eq-variational}
+since a weighted average of the energies is at least the smallest of them, with equality only if all the weight is on the ground state.
+No state has a lower energy than the ground state, so to find the ground state we can look for the state of lowest energy, and a lower energy brings us closer to it.
+How much closer depends on the gap (@exr-variational).
+
+Our running example is again the [TFIM]{.gloss key="tfim"} chain of @def-tfim, now with $J = 1$ and $h = 0.5$, on $n = 8$ qubits.
+For $h < J$, the bond terms dominate, and the ground state is close to the superposition $(\ket{0\cdots0} + \ket{1\cdots1})/\sqrt{2}$ of the two aligned states: an entangled state, correlated across the whole chain.
+
+::: {#exr-variational}
+## How close is a low energy to the ground state?
+A state $\ket{\psi}$ has the energy $E = \bra{\psi}H\ket{\psi}$ and the fidelity $F = |\langle E_0|\psi\rangle|^2$ with the ground state, which we assume to be unique, with gap $\Delta$.
+
+(a) Show that $E - E_0 \ge (1 - F)\,\Delta$, so that the fidelity is at least $1 - (E - E_0)/\Delta$.
+
+    :::: {.hint}
+    Start from @eq-variational and use $E_k - E_0 \ge \Delta$ for $k \ge 1$.
+    ::::
+
+(b) A VQE reaches an energy $0.05$ above $E_0$, for a Hamiltonian with $\Delta = 0.5$.
+What can you say about its fidelity with the ground state?
+What if the gap is $0.01$?
+
+(c) For a chain of 20 qubits, a paper reports a VQE energy $0.03$ below the exact $E_0$, which a classical method gives, with a standard error of $0.02$.
+What could explain the result?
+What would you check first?
+:::
+
+## Adiabatic state preparation {#sec-adiabatic}
+
+Suppose we know a Hamiltonian $H_0$ whose ground state is easy to prepare.
+For the TFIM, a natural choice is the field term alone, $H_0 = -h\sum_i X_i$, with the ground state $\ket{+\cdots+}$, a Hadamard gate on every qubit.
+We then change the Hamiltonian slowly from $H_0$ to the target $H$, along
+$$
+H(s) = (1 - s)\,H_0 + s\,H, \qquad s = t/T ,
+$$ {#eq-adiabatic-path}
+over a total time $T$.
+For the TFIM, this keeps the field fixed and switches on the bonds, $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$.
+
+The *adiabatic theorem*, first proved by @born1928, says that if $H(s)$ changes slowly enough and its gap stays open, a state that starts in the ground state of $H(0)$ stays in the ground state of $H(s)$ at every moment, and so it ends in the ground state of $H$.
+Using this to solve problems is called [adiabatic state preparation]{.gloss key="adiabatic-preparation"}, or the adiabatic algorithm [@farhi2000].
+"Slowly enough" depends on the smallest gap $\Delta_{\min}$ along the path: roughly, the total time must grow like
+$$
+T \gg \frac{1}{\Delta_{\min}^2}
+$$
+(for an $H(s)$ whose terms change at a rate of order 1; the precise conditions are in @albash2018).
+Intuitively, the state leaks into an excited state when the Hamiltonian changes faster than the relative phase between the two states turns, which happens at the rate $\Delta$ (@sec-energy-dynamics).
+
+@fig-adiabatic (a) shows this for our TFIM chain.
+The gap is smallest near $s = 0.6$, where the bond terms start to dominate the field.^[Every term of $H(s)$ commutes with the *parity* $X_1X_2\cdots X_n$, and $\ket{+\cdots+}$ has parity $+1$, so the evolution never leaves the states of parity $+1$. The figure shows only these. At $s = 1$, the lowest state of parity $-1$ lies only $0.006$ above $E_0$, but the evolution cannot reach it.]
+For an evolution with $T = 4$, too fast for this gap, part of the state leaks into the first excited state right after the minimum.
+Panel (b) shows the fidelity of the final state with the ground state as $T$ grows: it exceeds 0.99 at $T = 20$.
+On a long chain, the smallest gap of this path shrinks in proportion to $1/n$, so the time needed grows only polynomially.
+For hard problems, the smallest gap can shrink exponentially with $n$, and so the time grows exponentially, as the worst-case hardness of the previous section requires.
+
+![Adiabatic preparation of the ground state of a TFIM chain of 8 qubits ($J = 1$, $h = 0.5$), from $\ket{+\cdots+}$ along $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$. (a) The lowest energies of $H(s)$ above the ground-state energy (grey), and the occupation $|\langle E_k(s)|\psi(t)\rangle|^2$ of each eigenstate as the width of the blue band, for a total time $T = 4$. (b) The fidelity of the final state with the ground state, against $T$: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).](figures/adiabatic){#fig-adiabatic width=100%}
+
+### Adiabatic circuits {#sec-adiabatic-circuits}
+
+On a digital quantum computer, we apply the evolution under $H(s)$ with a Trotter circuit (@sec-trotter).
+Each step of length $\delta$ applies $e^{-iH(s)\delta}$, approximated by the circuit of @fig-trotter-step, with $s$ taken at the middle of the step: $R_{ZZ}(-2sJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit.
+Only the angles of the bond gates change from step to step, following the *schedule* $s = t/T$.
+
+The blue curves of @fig-adiabatic (b) show what the Trotter error does.
+With steps of 0.25, the fidelity levels off at 0.97, with steps of 0.5 at 0.87, and with steps of 1 at 0.35, however long the evolution.
+The Floquet picture of @sec-floquet explains why.
+Each step evolves the state exactly, under the Floquet Hamiltonian $H_F$ instead of $H(s)$, so a slow enough circuit prepares the ground state of $H_F$ instead of that of $H$ (more precisely, the eigenstate of the step that continues it).
+The fidelity of these states with the ground state of $H$ is 0.97, 0.87 and 0.35, where the three curves level off.
+
+The circuits are long.
+Reaching a fidelity of 0.97 takes $T \approx 20$ with steps of 0.25, which is 80 steps.
+Each step has 7 bond gates, or 14 CZs (@sec-trotter-circuits), so the circuit has 1,120 CZs.
+With an error of 0.5% per CZ, @eq-circuit-fidelity gives a probability of $e^{-5.6} \approx 0.004$ that the circuit runs without an error: the noise destroys the state long before the end.
+
+## Variational circuits {#sec-vqe}
+
+The adiabatic circuit has a fixed structure: layers of $R_{ZZ}$ on all bonds and $R_X$ on all qubits, with angles that the schedule prescribes.
+With only a few layers, the schedule gives a poor state.
+But the variational principle tells us how to judge any choice of angles: the lower the energy, the better.
+So we keep the structure, *free the angles*, and let an optimiser choose them.
+
+### The variational Hamiltonian ansatz {#sec-vha}
+
+For the TFIM, the circuit with $p$ layers starts from $\ket{+\cdots+}$ and applies, in layer $k$, $R_{ZZ}(\gamma_k)$ on every bond and $R_X(\beta_k)$ on every qubit, as in @fig-trotter-step but with free angles.
+Its $2p$ angles $\theta = (\gamma_1, \beta_1, \dots, \gamma_p, \beta_p)$ prepare the state $\ket{\psi(\theta)}$, with energy
+$$
+E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)} ,
+$$
+and we look for the angles that minimise it.
+A family of circuits like this one, fixed up to its parameters, is called an [ansatz]{.gloss key="ansatz"} (German for "approach", plural *ansätze*), and this one, built from the terms of $H$, is the [variational Hamiltonian ansatz]{.gloss key="vha"} (VHA) [@wecker2015].
+Each layer is one Trotter step of $H(s)$ with free angles, so the adiabatic schedule is one point of the ansatz, and the obvious starting point for the optimiser.
+
+::: {.example}
+For our chain of 8 qubits, the schedule with 7 layers reaches a fidelity of at most 0.55 with the ground state, at the best total time $T \approx 4$.
+Starting from these angles and minimising the energy gives a fidelity of 0.991 with the same 7 layers, and an energy 0.018 above $E_0$.
+The circuit has 98 CZs instead of 1,120.
+These numbers come from an exact simulation, which shows what the ansatz can reach; with shots, the optimiser only sees estimates of the energy, as discussed in @sec-optimisers.
+:::
+
+How many layers are needed?
+A circuit of few layers of local gates cannot correlate distant qubits, because of its light cone (@sec-dynamics-observables), so a ground state with correlations across the chain needs a number of layers that grows with $n$.
+For the TFIM on a ring of $n$ qubits, $n/2$ layers are enough to prepare the ground state exactly [@ho2019].
+<!-- TODO verify: Ho and Hsieh 2019 show exact preparation of the TFIM ground state on a ring with p = N/2 layers (at the critical point, or for all h?). -->
+
+### The variational quantum eigensolver {#sec-vqe-loop}
+
+The same idea works with any ansatz and any Hamiltonian.
+
+::: {#def-vqe}
+## Variational quantum eigensolver
+The [variational quantum eigensolver]{.gloss key="vqe"} (VQE) minimises the energy $E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)}$ of the state prepared by an ansatz with parameters $\theta$.
+It repeats a loop:
+
+1. the quantum computer prepares $\ket{\psi(\theta)}$ and estimates $E(\theta)$ from shots;
+2. a classical optimiser uses this estimate, and the earlier ones, to choose new parameters $\theta$.
+
+The loop stops when the estimates stop improving, and returns the last parameters and their energy.
+:::
+
+VQE was proposed by @peruzzo2014, and it belongs to the wider class of variational quantum algorithms [@cerezo2021].
+@fig-vqe-scheme shows the loop.
+Step 1 is the measurement of @sec-measuring-observables: a few measurement settings, and a shot budget that sets the standard error of each estimate.
+The quantum computer only ever runs short circuits, of a fixed depth, which is what makes the method suitable for noisy devices.
+It also absorbs some errors: if a gate over-rotates by a fixed amount (@sec-gate-errors), the optimiser simply finds different angles.
+By @eq-variational, $E(\theta) \ge E_0$ for every $\theta$, so the exact energy of any VQE state is an upper bound on $E_0$.
+
+![The VQE loop. The quantum computer (QPU) prepares the state $\ket{\psi(\theta)}$ with a circuit of gates parametrised by $\theta_1, \theta_2, \dots$, and estimates its energy $E(\theta)$ by sampling. A classical optimiser updates $\theta$. The minimum over $\theta$ is an upper bound on the ground-state energy, written here $E_{GS} = E_0$.](figures/vqe-scheme){#fig-vqe-scheme width=80%}
+
+This bound holds for the exact energy, not for its estimate.
+The optimiser never sees $E(\theta)$, only estimates with a standard error $\varepsilon$, and noise adds a bias (@sec-bias-variance).
+Three habits follow.
+
+1. Test the whole procedure on small instances whose ground state is known from exact diagonalisation (computing the lowest eigenvector of $H$ classically), as in the figures of this chapter.
+2. After the optimisation, estimate the energy of the final parameters again with fresh shots.
+The optimiser kept the parameters whose estimates were lowest, and among many estimates the lowest are often those that fluctuated downwards, so the last estimate is biased low.
+3. Read an estimate below $E_0$ as a fluctuation, or as a sign of noise, not as a better state.
+
+### Choosing an ansatz {#sec-ansatz}
+
+The ansatz decides what the VQE can reach.
+It must contain a good approximation of the ground state, be shallow enough for the noise of the device, and have an energy landscape that the optimiser can navigate.
+There are two broad approaches, with many variations; we only introduce them here, and @tilly2022 review them.
+
+- *Physics-motivated ansätze* are built from the problem.
+The VHA uses the terms of $H$.
+For molecules, the *unitary coupled-cluster* ansatz builds the circuit from the excitations of electrons between orbitals [@peruzzo2014].
+Other ansätze keep a symmetry of $H$, such as the number of flipped qubits in the Heisenberg model (@sec-spin-models), so that the search stays among states with the right symmetry.
+*Adaptive* ansätze grow the circuit one gate at a time, choosing the gate that lowers the energy most [@grimsley2019].
+These ansätze usually have few parameters, but their gates follow the interactions of $H$, which may not match the coupling graph of the device and then need SWAPs.
+- *Hardware-efficient ansätze* are built from the device [@kandala2017].
+Each layer applies native single-qubit rotations, each with its own angle, and native two-qubit gates on the coupled pairs of the device.
+They are as shallow as a circuit can be, and need no SWAPs.
+But they carry no information about $H$, they have many parameters ($2n$ per layer with two rotations per qubit), and they break most symmetries.
+They are also the most exposed to the barren plateaus of @sec-barren-plateaus.
+
+On 8 qubits, for example, 7 layers of the VHA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.
+
+### Quantum annealing and QAOA {#sec-qaoa}
+
+The adiabatic idea and the layered circuits also apply to classical optimisation problems.
+A standard example is [MaxCut]{.gloss key="maxcut"}: given a graph, split its vertices into two groups so that as many edges as possible join vertices in different groups.
+With one qubit per vertex and its bit marking the group, $Z_iZ_j = -1$ exactly when the edge $(i,j)$ is cut, so the number of cut edges is $\sum_{(i,j)}(1 - Z_iZ_j)/2$, summed over the edges.
+Maximising it means minimising
+$$
+H_C = \sum_{(i,j)\in\text{edges}} Z_iZ_j ,
+$$
+the TFIM with $h = 0$ (and $J = -1$) on the graph instead of a chain: a *classical* Ising model.
+$H_C$ is diagonal, so its eigenstates are bitstrings.
+This has two consequences for a variational method: a single measurement setting, the $Z$ setting, measures all its terms; and every shot gives a bitstring that is a candidate solution, whose number of cut edges we can check classically.
+We keep the best bitstring seen, not only the average energy.
+
+[Quantum annealing]{.gloss key="quantum-annealing"} runs the adiabatic path of @eq-adiabatic-path from $H_0 = -\sum_i X_i$ to such a classical Ising model on an analog device, which applies $H(s)$ directly instead of a Trotter circuit [@kadowaki1998].
+Annealers with thousands of superconducting qubits exist, but they work at a finite temperature and usually faster than adiabatic, so they are heuristics, and whether they outperform classical methods is still debated [@albash2018].
+
+The acronym [QAOA]{.gloss key="qaoa"} has two meanings.
+The *quantum approximate optimisation algorithm* [@farhi2014] is the VHA applied to a classical cost $H_C$: starting from $\ket{+\cdots+}$, each layer applies $e^{-i\gamma_kH_C}$ and then $e^{-i\beta_k\sum_iX_i}$, with $2p$ angles optimised as in a VQE.
+The *quantum alternating operator ansatz* [@hadfield2019] generalises it to other layers, for example ones that keep the state among the bitstrings that satisfy the constraints of a problem.
+Both are called QAOA, and both are layered circuits that reduce to Trotterised adiabatic evolution for suitable angles.
+
+## Optimising with shots {#sec-optimisers}
+
+The optimiser sees each energy only through an estimate $\bar E(\theta)$, with a standard error $\varepsilon$ that is at most $\|c\|_1/\sqrt{N}$ for $N$ shots (@eq-shot-budget).
+Comparing two parameter values is meaningful only if their energies differ by more than about $\varepsilon$.
+Far from the minimum, energy differences are large and the optimiser makes progress.
+Near the minimum, the energy is flat, the differences shrink, and eventually the shot noise hides them: the shots, not the optimiser, set the final accuracy.
+Optimisers for VQE are chosen, and tuned, for this situation.
+The total number of shots this costs is the subject of Tutorial 4.
+<!-- T4-LINK: link "Tutorial 4" to the T4 notebook in Colab once it is published. -->
+
+There are two families of optimisers.
+*Gradient-free* optimisers use only energy values.
+Two are widely used for VQE.
+
+- [COBYLA]{.gloss key="cobyla"}, constrained optimisation by linear approximation [@powell1994], fits a linear model of the energy through recent evaluations, and steps towards its minimum within a region that it shrinks as the optimisation converges.
+With exact energies, it converges quickly for a few tens of parameters.
+With shot noise, the model fits the noise once its points are close together, so it tends to stop early.
+- [SPSA]{.gloss key="spsa"}, simultaneous perturbation stochastic approximation [@spall1992], changes all parameters at once along a random direction $d$ (each entry $\pm 1$).
+It estimates $E$ at $\theta + c\,d$ and $\theta - c\,d$, and moves $\theta$ along $d$ downhill, by an amount proportional to the difference of the two estimates.
+Each step costs two estimates, whatever the number of parameters, and the step sizes shrink slowly over the iterations, which averages out the noise.
+It was designed for noisy cost functions, and is popular for VQE on hardware.
+
+Other gradient-free methods use more evaluations per step to average out noise: *surrogate* methods, such as Bayesian optimisation, fit a model to all evaluations so far and choose the next point from it, and *evolutionary strategies* sample a population of points around the current one and move towards the best of them.
+
+*Gradient-based* optimisers estimate the gradient $\nabla E(\theta)$, the vector of partial derivatives, and step downhill, $\theta \to \theta - \eta\,\nabla E(\theta)$, with a step size $\eta$ ([gradient descent]{.gloss key="gradient-descent"}), or with one of its refinements from machine learning.
+How to estimate the gradient from shots is the subject of the next section.
+
+### Gradients from shots {#sec-gradients}
+
+The simplest estimate of a partial derivative is a *finite difference*,
+$$
+\frac{\partial E}{\partial\theta_j} \approx \frac{E(\theta + \Delta\theta\,e_j) - E(\theta - \Delta\theta\,e_j)}{2\,\Delta\theta} ,
+$$
+where $e_j$ changes only the parameter $j$.
+With exact energies, its error is of order $\Delta\theta^2$, so a small step $\Delta\theta$ is better.
+With shots, each estimate has a standard error $\varepsilon$, and their difference is divided by $2\,\Delta\theta$, so the standard error of the derivative is $\varepsilon/(\sqrt{2}\,\Delta\theta)$: a small step amplifies the shot noise.
+@fig-parameter-shift (b) shows both effects: with 1,000 shots per estimate, the error of the derivative is 24 at $\Delta\theta = 0.003$, far larger than the derivative itself (0.83), and it only becomes acceptable at steps so large that the approximation fails.
+
+For the gates of our ansätze, there is a better way.
+Suppose that the parameter $\theta$ enters through a single gate, a rotation $e^{-i\theta P/2}$ about a Pauli string $P$, as all the rotations of the VHA and of hardware-efficient ansätze do.
+Write the circuit as $V_2\,e^{-i\theta P/2}\,V_1$, where $V_1$ and $V_2$ are the gates before and after it, and let $\ket{\phi} = V_1\ket{0\cdots0}$ and $O = V_2^\dagger HV_2$.
+By @eq-pauli-rotation,
+$$
+E(\theta) = \bra{\phi}\Big(\cos\tfrac{\theta}{2}\,I + i\sin\tfrac{\theta}{2}\,P\Big)\,O\,\Big(\cos\tfrac{\theta}{2}\,I - i\sin\tfrac{\theta}{2}\,P\Big)\ket{\phi} .
+$$
+Every term contains $\cos^2\frac{\theta}{2}$, $\sin^2\frac{\theta}{2}$ or $\sin\frac{\theta}{2}\cos\frac{\theta}{2}$, and these are combinations of $1$, $\cos\theta$ and $\sin\theta$.
+So the energy along one angle is a sinusoid with period $2\pi$,
+$$
+E(\theta) = a\cos\theta + b\sin\theta + c ,
+$$ {#eq-sinusoid}
+where $a$, $b$ and $c$ depend on the other parameters (@exr-parameter-shift).
+It is fixed by three numbers, and so by the energies at three angles (@fig-parameter-shift a).
+In particular, its derivative $E'(\theta) = -a\sin\theta + b\cos\theta$ follows from two of them.
+Since $\cos(\theta \pm \frac{\pi}{2}) = \mp\sin\theta$ and $\sin(\theta \pm \frac{\pi}{2}) = \pm\cos\theta$, we have $E(\theta + \frac{\pi}{2}) - E(\theta - \frac{\pi}{2}) = 2(-a\sin\theta + b\cos\theta)$, which is the [parameter-shift rule]{.gloss key="parameter-shift-rule"} [@mitarai2018; @schuld2019]:
+$$
+\frac{\partial E}{\partial\theta} = \frac{E(\theta + \frac{\pi}{2}) - E(\theta - \frac{\pi}{2})}{2} .
+$$ {#eq-parameter-shift}
+Unlike a finite difference, it is exact, and its shift is large, so it does not amplify the shot noise: with estimates of standard error $\varepsilon$, the derivative has the standard error $\varepsilon/\sqrt{2}$, 0.06 in @fig-parameter-shift (b).
+
+![The energy along one angle $\theta$ of a VHA circuit (the $R_X$ of qubit 5 in the second of two layers, for the TFIM chain of @fig-adiabatic). (a) The exact energy (orange) is a sinusoid. Three estimates with 1,000 shots per setting (blue, with their standard errors), at $\theta_0 = -0.9$ and $\theta_0 \pm \pi/2$, fix the dashed sinusoid. (b) The error of the derivative at $\theta_0$ (root mean square over 300 repetitions), from two estimates of 1,000 shots per setting each: finite differences against their step $\Delta\theta$ (blue), and the parameter-shift rule (orange). Dotted: the error of finite differences with exact energies.](figures/parameter-shift){#fig-parameter-shift width=100%}
+
+The rule costs two estimates per gate.
+A parameter shared by several gates, such as $\gamma_k$, which sets all the bond gates of layer $k$ of the VHA, needs a shift of each of its gates in turn: by the product rule, its derivative is the sum of their derivatives.
+A full gradient therefore costs two estimates for every parametrised gate of the circuit, against two per step for SPSA (@exr-gradient-cost).
+
+Since three estimates fix the whole sinusoid, an optimiser can also move one angle at a time straight to the minimum of its sinusoid, and cycle through the angles.
+Optimisers of this kind [@nakanishi2020; @ostaszewski2021] need no step size, and work well with shots.
+
+::: {#exr-parameter-shift}
+## The parameter-shift rule
+A parameter $\theta$ enters a circuit only through the gate $R_X(\theta) = e^{-i\theta X/2}$ on one qubit.
+
+(a) Show that the energy has the form $E(\theta) = a\cos\theta + b\sin\theta + c$.
+
+    :::: {.hint}
+    Use $\cos^2\frac{\theta}{2} = \frac{1 + \cos\theta}{2}$, $\sin^2\frac{\theta}{2} = \frac{1 - \cos\theta}{2}$ and $2\sin\frac{\theta}{2}\cos\frac{\theta}{2} = \sin\theta$.
+    ::::
+
+(b) We estimate $E(0) = -2.0$, $E(\frac{\pi}{2}) = -3.0$ and $E(-\frac{\pi}{2}) = -1.4$.
+Find $a$, $b$ and $c$, the derivative at $\theta = 0$, and the angle that minimises $E$ along $\theta$.
+
+    :::: {.hint}
+    Write $a\cos\theta + b\sin\theta = A\cos(\theta - \theta_A)$, with $A = \sqrt{a^2 + b^2}$.
+    ::::
+
+(c) Each estimate has a standard error $\varepsilon$.
+Compare the standard error of the derivative from the parameter-shift rule with that of a finite difference with step $\Delta\theta = 0.1$.
+How many more shots does the finite difference need for the same standard error?
+:::
+
+::: {#exr-gradient-cost}
+## The cost of a gradient
+We run a VQE with the VHA of @sec-vha, with $p$ layers, for the [TFIM]{.gloss key="tfim"} chain of $n$ qubits, using 1,000 shots per measurement setting for each energy estimate.
+
+(a) How many parametrised gates does the circuit have?
+How many circuits, counting each measurement setting separately, does one gradient by the parameter-shift rule need, and how many shots?
+
+(b) Evaluate for $n = 8$ and $p = 7$, and compare with one step of SPSA.
+
+(c) Why might SPSA still need many steps, and so many shots, to reach the same energy?
+:::
+
+## Barren plateaus {#sec-barren-plateaus}
+
+The sinusoid of @eq-sinusoid also limits the slopes: along one angle, the energy varies by at most $2A$, with the amplitude $A = \sqrt{a^2 + b^2}$, and its derivative is at most $A$.
+For some ansätze, these amplitudes are exponentially small in the number of qubits for almost all parameters.
+
+Consider first a random state of $n$ qubits, drawn uniformly from all states.
+For any Pauli string $P \ne I$, the expectation value $\bra{\psi}P\ket{\psi}$ averages to zero over random states, with a variance of $1/(2^n + 1)$: almost every state has exponentially small expectation values, and so the energies of almost all states are concentrated around the same value.
+We do not prove this; it follows from the symmetry of the uniform distribution of states [@mcclean2018].
+A hardware-efficient circuit with random angles and enough layers prepares states that behave like random states for these averages, and the amplitudes $A$ of its sinusoids become exponentially small too.
+The energy landscape is then flat almost everywhere: a [barren plateau]{.gloss key="barren-plateau"}.
+
+@fig-barren-plateau shows this for our TFIM chain.
+For a hardware-efficient ansatz with $4n$ layers, the typical slope at random angles falls by about a factor 0.6 for every two added qubits.
+For the VHA with the same number of layers, it does not fall at all.
+
+![The typical slope of the energy $E(\theta)$ along the first angle, at random angles (the standard deviation of $\partial E/\partial\theta_1$ over 150 random choices of all angles), for TFIM chains of $n$ qubits ($J = 1$, $h = 0.5$) and ansätze with $4n$ layers: a hardware-efficient ansatz ($R_Y$ and $R_Z$ on every qubit, then CZ on every bond; orange) and the VHA (blue). Exact energies, no shots.](figures/barren-plateau){#fig-barren-plateau width=55%}
+
+A flat landscape is a problem because the energies are estimated.
+To tell the sign of a slope of size $g$, the standard error of its estimate must be smaller than $g$, which takes a number of shots that grows like $1/g^2$, and so exponentially with $n$ on a barren plateau (@exr-plateau).
+Gradient-free optimisers do not escape: they compare energy differences, which are just as small [@larocca2025].
+
+There are several ways to avoid barren plateaus, all of which keep the states away from random ones [@larocca2025].
+
+1. *Structured ansätze.* An ansatz built from $H$, with few parameters, such as the VHA, does not explore all states, and for the TFIM its slopes stay large (@fig-barren-plateau).
+2. *Good starting points.* Instead of random angles, start from a circuit known to prepare a reasonable state, such as the adiabatic schedule of @sec-vha, or from angles that make the circuit close to the identity.
+3. *Continuation along the adiabatic path.* Minimise the energy of $H(s)$ for a small $s$, whose ground state is close to $\ket{+\cdots+}$; use the optimal angles as the starting point for a slightly larger $s$, and continue until $s = 1$.
+As long as the gap stays open, the ground state changes smoothly with $s$, so each optimisation starts close to its solution.
+This is the adiabatic idea of @sec-adiabatic once more, applied to the optimisation instead of to the time evolution.
+
+These remedies come with a caveat, and this is an active field of research.
+The ansätze that are proved to avoid barren plateaus often turn out to be simulable efficiently on a classical computer [@cerezo2025].
+The TFIM chain is an example: its VHA has no barren plateau, but the model is classically solvable at any size, which makes it a good test case, not a candidate for quantum advantage.
+Barren plateaus are also not the only obstacle: the landscape can have many local minima, and in the worst case, training a variational circuit is NP-hard [@bittel2021].
+
+::: {#exr-plateau}
+## Shots on a plateau
+For the hardware-efficient ansatz of @fig-barren-plateau, assume that the typical slope continues to fall by a factor 0.6 for every two added qubits, from 0.05 at 12 qubits.
+
+(a) Estimate the typical slope at 30 and at 50 qubits.
+
+(b) We estimate a derivative with the parameter-shift rule, from two energy estimates with $N$ shots each, and a single-shot standard deviation of the energy of about $\sqrt{n}$, as for a nearly random state.
+How many shots does each estimate need to tell the sign of a typical derivative at 30 and at 50 qubits?
+Compare with the shot rates of @sec-timescales.
+
+(c) Would SPSA avoid the problem?
+:::
+
+## More exercises {#sec-L4-exercises}
+
+::: {#exr-maxcut}
+## MaxCut as an Ising model
+Take the graph with four vertices $1, 2, 3, 4$ on a ring, with the edges $(1,2)$, $(2,3)$, $(3,4)$, $(4,1)$.
+
+(a) Write the cost $H_C$ of @sec-qaoa for this graph.
+What are its smallest eigenvalue and its ground states, and which cuts do they correspond to?
+
+(b) A QAOA circuit is run with 1,000 shots.
+How many measurement settings are needed to estimate $\langle H_C\rangle$?
+How would you use the shots to find a solution, and why can you do better than with the average energy alone?
+
+(c) Add the edge $(1,3)$.
+What is now the largest cut, and how many bitstrings reach it?
+:::
+
+## Further reading {#sec-L4-reading}
+
+@cerezo2021 review variational quantum algorithms, and @tilly2022 the VQE in particular, including ansätze, optimisers and measurement.
+@bharti2022 cover algorithms for noisy devices more broadly, and @albash2018 adiabatic quantum computation and quantum annealing.
+@larocca2025 review barren plateaus, including the connection to classical simulability.
+
+::: {.content-visible when-format="html"}
+## References {.unnumbered}
+
+::: {#refs}
+:::
+:::
