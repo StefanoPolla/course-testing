@@ -1008,7 +1008,7 @@ ax_f.set_xticks([1, 3, 10, 30])
 ax_f.set_xticklabels(["1", "3", "10", "30"])
 ax_f.set_ylim(0, 1.03)
 ax_f.set_xlabel("total time $T$")
-ax_f.set_ylabel("fidelity with the ground state")
+ax_f.set_ylabel(r"fidelity $|\langle E_0(1)|\psi(T)\rangle|^2$")
 ax_f.legend(frameon=False, fontsize=8.5, loc="upper left")
 ax_f.set_title("(b)", loc="left", fontsize=9.5)
 for ax in (ax_l, ax_f):

@@ -115,7 +115,7 @@ Panel (b) shows how the fidelity grows with $T$: it exceeds 0.99 at $T = 20$.
 On a long chain, the smallest gap of this path shrinks in proportion to $1/n$, so the time needed grows only polynomially.
 For hard problems, the smallest gap can shrink exponentially with $n$, and so the time grows exponentially, as expected from the worst-case hardness of @sec-hardness.
 
-![Adiabatic preparation of the ground state of a TFIM chain of 8 qubits ($J = 1$, $h = 0.5$), from $\ket{+\cdots+}$ along $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$. (a) The lowest energies of $H(s)$ above the ground-state energy (grey), and the occupation $|\langle E_k(s)|\psi(t)\rangle|^2$ of each eigenstate as the width of the blue band, for a total time $T = 4$ (dotted line in panel b). (b) The fidelity of the final state with the ground state, against $T$: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).](figures/adiabatic){#fig-adiabatic width=100%}
+![Adiabatic preparation of the ground state of a TFIM chain of 8 qubits ($J = 1$, $h = 0.5$), from $\ket{+\cdots+}$ along $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$. (a) The lowest energies of $H(s)$ above the ground-state energy (grey), and the occupation $|\langle E_k(s)|\psi(t)\rangle|^2$ of each eigenstate as the width of the blue band, for a total time $T = 4$ (dotted line in panel b). (b) The fidelity $|\langle E_0(1)|\psi(T)\rangle|^2$ of the final state $\ket{\psi(T)}$ with the ground state of $H = H(1)$, against the total time $T$: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).](figures/adiabatic){#fig-adiabatic width=100%}
 
 ### Adiabatic circuits {#sec-adiabatic-circuits}
 
