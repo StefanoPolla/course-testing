@@ -14,11 +14,6 @@ By the end of the chapter, you should be able to explain how adiabatic evolution
 
 Recall from @sec-energy-dynamics that the [ground state]{.gloss key="ground-state"} $\ket{E_0}$ of a Hamiltonian $H$ is its eigenvector with the lowest eigenvalue $E_0$.
 The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"} (also known as *spectral gap* or *ground state gap*).
-If $\Delta = 0$, the ground state is *degenerate*: several states share the lowest energy.
-A small gap is almost as hard, because a state can then have an energy close to $E_0$ and still be far from the ground state (@exr-variational).
-What often helps is a conserved quantity, such as the number of flipped qubits of the Heisenberg model (@sec-spin-models); we call it a [symmetry]{.gloss key="symmetry"} of $H$.
-A circuit that conserves it, started from a state with a given value, only reaches states with that value, and then only the gap among those states matters.
-<!-- L5-LINK: symmetry verification in L5 builds on this definition. -->
 
 A system in thermal equilibrium with an environment at a temperature $T$ much lower than the gap, $k_B T \ll \Delta$, is almost always found in its ground state.
 Many molecules and materials are in this regime.
@@ -26,12 +21,7 @@ The electronic gap of a typical molecule is a few eV, and 1 eV corresponds to $k
 The gap of a superconductor is much smaller: in aluminium, the metal used in superconducting qubits, it is about 0.2 meV, which corresponds to about 2 K: this is one reason why these devices are cooled to about 10 mK.
 This is the same argument we used for the qubits themselves in @sec-superconducting: a transmon at 5 GHz has a gap $hf$ that corresponds to about 0.25 K, so at 10 mK it relaxes into its ground state $\ket{0}$.
 
-In general, finding the ground-state energy of a local Hamiltonian is believed to be hard even for a quantum computer: the problem is QMA-complete, the quantum analogue of NP-complete, already for 2-local Hamiltonians [@kempe2006].
-This is a worst-case statement, and many Hamiltonians that describe real materials and molecules are believed to be easier.
-Most of the methods of this chapter are heuristics: they come with no general guarantee of performance. 
-We judge them by testing them on problems whose answer we know, examining experimentally how they perform with changing system size, and extrapolating to larger systems.
-
-A key tool we use is the [variational principle]{.gloss key="variational-principle"}.
+To find the ground state, a key tool is the [variational principle]{.gloss key="variational-principle"}.
 Write a state $\ket{\psi}$ in the eigenbasis of $H$, $\ket{\psi} = \sum_k \alpha_k\ket{E_k}$, with $p_k = |\alpha_k|^2$ summing to 1.
 Then
 $$
@@ -71,6 +61,20 @@ What can you say about its fidelity with the ground state?
 What if the gap is $0.01$?
 :::
 
+### When is the ground state hard to find? {#sec-hardness}
+
+@exr-variational shows that a small gap makes the ground state hard to recognise by its energy: a state can have an energy close to $E_0$ and still be far from the ground state.
+If $\Delta = 0$, the ground state is *degenerate*: several states share the lowest energy, and the energy alone cannot tell them apart.
+What often helps is a conserved quantity, such as the number of flipped qubits of the Heisenberg model (@sec-spin-models); we call it a [symmetry]{.gloss key="symmetry"} of $H$.
+A circuit that conserves it, started from a state with a given value, only reaches states with that value, and then only the gap among those states matters.
+<!-- L5-LINK: symmetry verification in L5 builds on this definition. -->
+
+A small gap can make a single Hamiltonian hard.
+Complexity theory adds a general limit: finding the ground-state energy of a local Hamiltonian is believed to be hard even for a quantum computer: the problem is QMA-complete, the quantum analogue of NP-complete, already for 2-local Hamiltonians [@kempe2006].
+This is a worst-case statement, and many Hamiltonians that describe real materials and molecules are believed to be easier.
+Most of the methods of this chapter are heuristics: they come with no general guarantee of performance. 
+We judge them by testing them on problems whose answer we know, examining experimentally how they perform with changing system size, and extrapolating to larger systems.
+
 ## Adiabatic state preparation {#sec-adiabatic}
 
 Suppose we know a Hamiltonian $H_0$ whose ground state is easy to prepare.
@@ -109,7 +113,7 @@ Panel (b) shows how the fidelity grows with $T$: it exceeds 0.99 at $T = 20$.
 :::
 
 On a long chain, the smallest gap of this path shrinks in proportion to $1/n$, so the time needed grows only polynomially.
-For hard problems, the smallest gap can shrink exponentially with $n$, and so the time grows exponentially, as expected from the worst-case hardness of the previous section.
+For hard problems, the smallest gap can shrink exponentially with $n$, and so the time grows exponentially, as expected from the worst-case hardness of @sec-hardness.
 
 ![Adiabatic preparation of the ground state of a TFIM chain of 8 qubits ($J = 1$, $h = 0.5$), from $\ket{+\cdots+}$ along $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$. (a) The lowest energies of $H(s)$ above the ground-state energy (grey), and the occupation $|\langle E_k(s)|\psi(t)\rangle|^2$ of each eigenstate as the width of the blue band, for a total time $T = 4$ (dotted line in panel b). (b) The fidelity of the final state with the ground state, against $T$: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).](figures/adiabatic){#fig-adiabatic width=100%}
 
