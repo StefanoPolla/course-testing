@@ -12,15 +12,21 @@ By the end of the chapter, you should be able to explain how adiabatic evolution
 
 ## Ground states and the variational principle {#sec-variational-principle}
 
-Recall from @sec-energy-dynamics that the [ground state]{.gloss key="ground-state"} $\ket{E_0}$ of a Hamiltonian $H$ is its eigenvector with the lowest eigenvalue $E_0$, and that a system that is cold enough settles in it.
-The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"}.
-It returns below as the quantity that decides how fast a ground state can be prepared.
+Recall from @sec-energy-dynamics that the [ground state]{.gloss key="ground-state"} $\ket{E_0}$ of a Hamiltonian $H$ is its eigenvector with the lowest eigenvalue $E_0$.
+The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"} (also known as *spectral gap* or *ground state gap*).
+
+A system in thermal equilibrium with an environment at a temperature $T$ much lower than the gap, $k_B T \ll \Delta$, is almost always found in its ground state.
+Many molecules and materials are in this regime.
+The electronic gap of a typical molecule is a few eV, and 1 eV corresponds to $k_B T$ at about 11600 K, so at room temperature ($k_B T \approx 0.025$ eV) the electrons sit in their ground state.
+The gap of a superconductor is much smaller: in aluminium, the metal used in superconducting qubits, it is about 0.2 meV, which corresponds to about 2 K: this is one reason why these devices are cooled to about 10 mK.
+This is the same argument we used for the qubits themselves in @sec-superconducting: a transmon at 5 GHz has a gap $hf$ that corresponds to about 0.25 K, so at 10 mK it relaxes into its ground state $\ket{0}$.
 
 In general, finding the ground-state energy of a local Hamiltonian is believed to be hard even for a quantum computer: the problem is QMA-complete, the quantum analogue of NP-complete, already for 2-local Hamiltonians [@kempe2006].
 This is a worst-case statement, and many Hamiltonians that describe real materials and molecules are believed to be easier.
-The methods of this chapter are heuristics: they come with no general guarantee, and we judge them by testing them on problems whose answer we know.
+Most of the methods of this chapter are heuristics: they come with no general guarantee of performance. 
+We judge them by testing them on problems whose answer we know, examining experimentally how they perform with changing system size, and extrapolating to larger systems.
 
-The key tool is the [variational principle]{.gloss key="variational-principle"}.
+A key tool we use is the [variational principle]{.gloss key="variational-principle"}.
 Write a state $\ket{\psi}$ in the eigenbasis of $H$, $\ket{\psi} = \sum_k \alpha_k\ket{E_k}$, with $p_k = |\alpha_k|^2$ summing to 1.
 Then
 $$
@@ -29,6 +35,12 @@ $$ {#eq-variational}
 since a weighted average of the energies is at least the smallest of them, with equality only if all the weight is on the ground state.
 No state has a lower energy than the ground state, so to find the ground state we can look for the state of lowest energy, and a lower energy brings us closer to it.
 How much closer depends on the gap (@exr-variational).
+
+In other words, the ground-state energy is the minimum of the energy over all states,
+$$
+E_0 = \min_{\ket{\psi}} \bra{\psi}H\ket{\psi} ,
+$$ {#eq-variational-min}
+and the ground state is the state where the minimum is reached.
 
 Our running example is again the [TFIM]{.gloss key="tfim"} chain of @def-tfim, now with $J = 1$ and $h = 0.5$, on $n = 8$ qubits.
 For $h < J$, the bond terms dominate, and the ground state is close to the superposition $(\ket{0\cdots0} + \ket{1\cdots1})/\sqrt{2}$ of the two aligned states: an entangled state, correlated across the whole chain.
