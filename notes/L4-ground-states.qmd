@@ -61,13 +61,9 @@ A state $\ket{\psi}$ has the energy $E = \bra{\psi}H\ket{\psi}$ and the fidelity
     Start from @eq-variational and use $E_k - E_0 \ge \Delta$ for $k \ge 1$.
     ::::
 
-(b) A VQE reaches an energy $0.05$ above $E_0$, for a Hamiltonian with $\Delta = 0.5$.
+(b) A state has an energy $0.05$ above $E_0$, for a Hamiltonian with $\Delta = 0.5$.
 What can you say about its fidelity with the ground state?
 What if the gap is $0.01$?
-
-(c) For a chain of 20 qubits, a paper reports a VQE energy $0.03$ below $E_0$, with a standard error of $0.02$; the exact $E_0$ is known from a classical method.
-What could explain the result?
-What would you check first?
 :::
 
 ## Adiabatic state preparation {#sec-adiabatic}
@@ -189,6 +185,14 @@ Three habits follow.
 2. After the optimisation, estimate the energy of the final parameters again with fresh shots.
 The optimiser kept the parameters whose estimates were lowest, and among many estimates the lowest are often those that fluctuated downwards, so the last estimate is biased low.
 3. Read an estimate below $E_0$ as a fluctuation, or as a sign of a systematic error, such as readout errors or an error-mitigation step that over-corrects, not as a better state.
+
+::: {#exr-below-E0}
+## An energy below the ground state
+For a chain of 20 qubits, a paper reports a VQE energy $0.03$ below $E_0$, with a standard error of $0.02$; the exact $E_0$ is known from a classical method.
+What could explain the result?
+What would you check first?
+Why does the bound of @exr-variational not apply here?
+:::
 
 ### Choosing an ansatz {#sec-ansatz}
 
