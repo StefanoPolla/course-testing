@@ -803,12 +803,15 @@ window.Quarto = {
 <details class="hint"><summary>Hint</summary>
 <p>Start from <a href="L4-ground-states.html#eq-variational" class="quarto-xref">Equation&nbsp;<span>4.1</span></a> and use <span class="math inline">\(E_k - E_0 \ge \Delta\)</span> for <span class="math inline">\(k \ge 1\)</span>.</p>
 </details></li>
-<li><p>A VQE reaches an energy <span class="math inline">\(0.05\)</span> above <span class="math inline">\(E_0\)</span>, for a Hamiltonian with <span class="math inline">\(\Delta = 0.5\)</span>. What can you say about its fidelity with the ground state? What if the gap is <span class="math inline">\(0.01\)</span>?</p></li>
-<li><p>For a chain of 20 qubits, a paper reports a VQE energy <span class="math inline">\(0.03\)</span> below <span class="math inline">\(E_0\)</span>, with a standard error of <span class="math inline">\(0.02\)</span>; the exact <span class="math inline">\(E_0\)</span> is known from a classical method. What could explain the result? What would you check first?</p></li>
+<li><p>A state has an energy <span class="math inline">\(0.05\)</span> above <span class="math inline">\(E_0\)</span>, for a Hamiltonian with <span class="math inline">\(\Delta = 0.5\)</span>. What can you say about its fidelity with the ground state? What if the gap is <span class="math inline">\(0.01\)</span>?</p></li>
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="L4-ground-states.html#exr-parameter-shift" class="quarto-xref">Exercise&nbsp;<span>4.2</span></a></strong> (The parameter-shift rule)</p>
+<p><strong><a href="L4-ground-states.html#exr-below-E0" class="quarto-xref">Exercise&nbsp;<span>4.2</span></a></strong> (An energy below the ground state)</p>
+<p>For a chain of 20 qubits, a paper reports a VQE energy <span class="math inline">\(0.03\)</span> below <span class="math inline">\(E_0\)</span>, with a standard error of <span class="math inline">\(0.02\)</span>; the exact <span class="math inline">\(E_0\)</span> is known from a classical method. What could explain the result? What would you check first? Why does the bound of <a href="L4-ground-states.html#exr-variational" class="quarto-xref">Exercise&nbsp;<span>4.1</span></a> not apply here?</p>
+</div>
+<div class="exercise-copy">
+<p><strong><a href="L4-ground-states.html#exr-parameter-shift" class="quarto-xref">Exercise&nbsp;<span>4.3</span></a></strong> (The parameter-shift rule)</p>
 <p>A parameter <span class="math inline">\(\theta\)</span> enters a circuit only through the gate <span class="math inline">\(R_X(\theta) = e^{-i\theta X/2}\)</span> on one qubit.</p>
 <ol type="a">
 <li><p>Show that the energy has the form <span class="math inline">\(E(\theta) = a_0 + a\cos\theta + b\sin\theta\)</span>.</p>
@@ -823,7 +826,7 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="L4-ground-states.html#exr-gradient-cost" class="quarto-xref">Exercise&nbsp;<span>4.3</span></a></strong> (The cost of a gradient)</p>
+<p><strong><a href="L4-ground-states.html#exr-gradient-cost" class="quarto-xref">Exercise&nbsp;<span>4.4</span></a></strong> (The cost of a gradient)</p>
 <p>We run a VQE with the VHA of <a href="L4-ground-states.html#sec-vha" class="quarto-xref"><span>Section 4.3.1</span></a>, with <span class="math inline">\(p\)</span> layers, for the <a href="L3-hamiltonians.html#def-tfim" class="gloss" data-gloss="A spin model with a ZZ coupling on every pair of neighbouring qubits, which favours aligned neighbours, and a field along x on every qubit, which favours the state plus. Abbreviated TFIM.">TFIM</a> chain of <span class="math inline">\(n\)</span> qubits, using 1,000 shots per measurement setting for each energy estimate.</p>
 <ol type="a">
 <li><p>How many parametrised gates does the circuit have? How many circuits, counting each measurement setting separately, does one gradient by the parameter-shift rule need, and how many shots?</p></li>
@@ -832,7 +835,7 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="L4-ground-states.html#exr-plateau" class="quarto-xref">Exercise&nbsp;<span>4.4</span></a></strong> (Shots on a plateau)</p>
+<p><strong><a href="L4-ground-states.html#exr-plateau" class="quarto-xref">Exercise&nbsp;<span>4.5</span></a></strong> (Shots on a plateau)</p>
 <p>For the hardware-efficient ansatz of <a href="L4-ground-states.html#fig-barren-plateau" class="quarto-xref">Figure&nbsp;<span>4.4</span></a>, assume that the typical slope continues to fall by a factor 0.6 for every two added qubits, from 0.05 at 12 qubits.</p>
 <ol type="a">
 <li><p>Estimate the typical slope at 30 and at 50 qubits.</p></li>
@@ -841,7 +844,7 @@ window.Quarto = {
 </ol>
 </div>
 <div class="exercise-copy">
-<p><strong><a href="L4-ground-states.html#exr-maxcut" class="quarto-xref">Exercise&nbsp;<span>4.5</span></a></strong> (MaxCut as an Ising model)</p>
+<p><strong><a href="L4-ground-states.html#exr-maxcut" class="quarto-xref">Exercise&nbsp;<span>4.6</span></a></strong> (MaxCut as an Ising model)</p>
 <p>Take the graph with four vertices <span class="math inline">\(1, 2, 3, 4\)</span> on a ring, with the edges <span class="math inline">\((1,2)\)</span>, <span class="math inline">\((2,3)\)</span>, <span class="math inline">\((3,4)\)</span>, <span class="math inline">\((4,1)\)</span>.</p>
 <ol type="a">
 <li><p>Write the cost <span class="math inline">\(H_C\)</span> of <a href="L4-ground-states.html#sec-qaoa" class="quarto-xref"><span>Section 4.3.4</span></a> for this graph. What are its smallest eigenvalue and its ground states, and which cuts do they correspond to?</p></li>
