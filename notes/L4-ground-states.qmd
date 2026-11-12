@@ -42,16 +42,18 @@ E_0 = \min_{\ket{\psi}} \bra{\psi}H\ket{\psi} ,
 $$ {#eq-variational-min}
 and the ground state is the state where the minimum is reached.
 
+<!-- Cut (Stefano, 2026-11-12): the TFIM example after the variational principle.
 Our running example is again the [TFIM]{.gloss key="tfim"} chain of @def-tfim, now with $J = 1$ and $h = 0.5$, on $n = 8$ qubits.
 For $h < J$, the bond terms dominate, and the ground state is close to the superposition $(\ket{0\cdots0} + \ket{1\cdots1})/\sqrt{2}$ of the two aligned states: an entangled state, correlated across the whole chain.
 The state close to $(\ket{0\cdots0} - \ket{1\cdots1})/\sqrt{2}$ lies only $0.006$ higher, so the gap of the chain is tiny.
 The two states differ in their *parity* $X_1X_2\cdots X_n$, which flips all qubits and so swaps $\ket{0\cdots0}$ and $\ket{1\cdots1}$: the first has parity $+1$, the second $-1$.
 Every term of the TFIM commutes with the parity ($Z_iZ_{i+1}$ anticommutes with it on two qubits, $X_i$ on none), and so do the $R_{ZZ}$ and $R_X$ rotations of all the TFIM circuits in this chapter.
 Starting from $\ket{+\cdots+}$, which has parity $+1$, these circuits never reach the states of parity $-1$, and the gap that matters is the one between the states of parity $+1$, which is $1.18$.
+-->
 
 ::: {#exr-variational}
 ## How close is a low energy to the ground state?
-A state $\ket{\psi}$ has the energy $E = \bra{\psi}H\ket{\psi}$ and the fidelity $F = |\langle E_0|\psi\rangle|^2$ with the ground state, which we assume to be unique, with gap $\Delta$ (or, if the state can only be a combination of states with a given symmetry, as for the parity of the TFIM, the gap among those states).
+A state $\ket{\psi}$ has the energy $E = \bra{\psi}H\ket{\psi}$ and the fidelity $F = |\langle E_0|\psi\rangle|^2$ with the ground state, which we assume to be unique, with gap $\Delta$ (or, if the state can only be a combination of states with a given symmetry, the gap among those states).
 
 (a) Show that $E - E_0 \ge (1 - F)\,\Delta$, so that the fidelity is at least $1 - (E - E_0)/\Delta$.
 
@@ -71,13 +73,16 @@ What would you check first?
 ## Adiabatic state preparation {#sec-adiabatic}
 
 Suppose we know a Hamiltonian $H_0$ whose ground state is easy to prepare.
-For the TFIM, a natural choice is the field term alone, $H_0 = -h\sum_i X_i$, with the ground state $\ket{+\cdots+}$, a Hadamard gate on every qubit.
 We then change the Hamiltonian slowly from $H_0$ to the target $H$, along
 $$
 H(s) = (1 - s)\,H_0 + s\,H, \qquad s = t/T ,
 $$ {#eq-adiabatic-path}
 over a total time $T$, with $s$ growing from 0 to 1.
-For the TFIM, this keeps the field fixed and switches on the bonds, $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$.
+
+::: {.example}
+For the [TFIM]{.gloss key="tfim"}, a natural choice is the field term alone, $H_0 = -h\sum_i X_i$, with the ground state $\ket{+\cdots+}$, a Hadamard gate on every qubit.
+The path then keeps the field fixed and switches on the bonds, $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$.
+:::
 
 The *adiabatic theorem*, first proved by @born1928, says that if $H(s)$ changes slowly enough and its gap stays open (nonzero), a state that starts in the ground state of $H(0)$ stays in the ground state of $H(s)$ at every moment, and so it ends in the ground state of $H$.
 Using this to solve problems is called [adiabatic state preparation]{.gloss key="adiabatic-preparation"}, or the adiabatic algorithm [@farhi2000].
@@ -89,12 +94,15 @@ $$
 where the numerator measures how much the Hamiltonian changes along the whole path; the precise conditions are in @albash2018.
 Intuitively, the state cannot follow a change that is fast compared with the rate $\Delta$ at which the relative phase between the ground state and the first excited state turns (@sec-energy-dynamics), and the closer the two levels, the more a given change of $H$ mixes them: each effect gives one factor of $\Delta$.
 
-@fig-adiabatic (a) shows this for our TFIM chain.
-It shows only the states of parity $+1$, the only ones the evolution can reach.
+::: {.example}
+@fig-adiabatic (a) shows this for a TFIM chain of $n = 8$ qubits with $J = 1$ and $h = 0.5$, which we use as the example for the rest of the chapter.
+Every term of the TFIM commutes with the *parity* $X_1X_2\cdots X_n$, which flips all qubits, and so does every gate of the TFIM circuits in this chapter: starting from $\ket{+\cdots+}$, of parity $+1$, the evolution only reaches states of parity $+1$, and the figure shows only those.
 The gap is smallest near $s = 0.6$, where the bond terms start to dominate the field, with $\Delta_{\min} \approx 0.69$.
 Along the path, $dH/ds = -J\sum_i Z_iZ_{i+1}$ has the norm $J(n-1) = 7$, so the rule of thumb asks for $T \gg 7/0.69^2 \approx 15$.
 An evolution with $T = 4$ is too fast for this gap: around the minimum, part of the state leaks into the first excited state, and the final fidelity with the ground state is only 0.58.
 Panel (b) shows how the fidelity grows with $T$: it exceeds 0.99 at $T = 20$.
+:::
+
 On a long chain, the smallest gap of this path shrinks in proportion to $1/n$, so the time needed grows only polynomially.
 For hard problems, the smallest gap can shrink exponentially with $n$, and so the time grows exponentially, as expected from the worst-case hardness of the previous section.
 
@@ -106,6 +114,7 @@ On a digital quantum computer, we apply the evolution under $H(s)$ with a Trotte
 Each step of length $\delta$ applies $e^{-iH(s)\delta}$, approximated by the circuit of @fig-trotter-step, with $s$ taken at the middle of the step: $R_{ZZ}(-2sJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit.
 Only the angles of the bond gates change from step to step, following the *schedule* $s = t/T$.
 
+::: {.example}
 The blue curves of @fig-adiabatic (b) show what the Trotter error does: with steps of 0.25, the fidelity levels off at 0.97, with steps of 0.5 at 0.87, and with steps of 1 at 0.35, however long the evolution.
 The Floquet picture of @sec-floquet explains why: each step evolves the state exactly, but under the Floquet Hamiltonian $H_F$ instead of $H(s)$, so a slow circuit prepares the ground state of $H_F$, not of $H$, and the fidelity of the two states is where the curves level off.
 
@@ -113,6 +122,7 @@ The circuits are long.
 Reaching a fidelity of 0.97 takes $T \approx 20$ with steps of 0.25, which is 80 steps.
 Each step has 7 bond gates, or 14 CZs (@sec-trotter-circuits), so the circuit has 1,120 CZs.
 With an error of 0.5% per CZ, @eq-circuit-fidelity gives a probability of $e^{-5.6} \approx 0.004$ that the circuit runs without an error: the noise destroys the state long before the end.
+:::
 
 ## Variational circuits {#sec-vqe}
 
@@ -142,7 +152,10 @@ These numbers come from an exact simulation, which shows what the ansatz can rea
 How many layers are needed?
 A circuit of few layers of local gates cannot correlate distant qubits, because of its light cone (@sec-dynamics-observables), so a ground state with correlations across the chain needs a number of layers that grows with $n$.
 For the TFIM on a ring of an even number $n$ of qubits, @ho2019 showed numerically that $n/2$ layers prepare the ground state exactly at $h = J$, and conjectured it, with numerical support, for every $h$.
+
+::: {.example}
 On our open chain, 4 layers are not enough (fidelity 0.75), and 7 give 0.99.
+:::
 
 ### The variational quantum eigensolver {#sec-vqe-loop}
 
@@ -195,7 +208,9 @@ They are as shallow as a circuit can be, and need no SWAPs.
 But they carry no information about $H$, they have many parameters ($2n$ per layer with two rotations per qubit), and they break most symmetries.
 They are also the most exposed to the barren plateaus of @sec-barren-plateaus.
 
-On 8 qubits, for example, 7 layers of the VHA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.
+::: {.example}
+On 8 qubits, 7 layers of the VHA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.
+:::
 
 ### Quantum annealing and QAOA {#sec-qaoa}
 
@@ -328,10 +343,12 @@ We do not prove this; it follows from the symmetry of the uniform distribution o
 A hardware-efficient circuit with random angles and enough layers prepares states that behave like random states for these averages, so the two energies of each parameter shift are both close to the same value, and the amplitudes $A$ of its sinusoids become exponentially small too.
 The energy landscape is then flat almost everywhere: a [barren plateau]{.gloss key="barren-plateau"}.
 
+::: {.example}
 @fig-barren-plateau shows this for our TFIM chain.
 For a hardware-efficient ansatz with $4n$ layers, the typical slope at random angles falls by about a factor 0.6 for every two added qubits.
 For the VHA with the same number of layers, it does not fall exponentially.
 It even grows, because its first angle is shared by all $n - 1$ bond gates of the first layer; per bond gate, it falls only slowly, roughly like $1/n$.
+:::
 
 ![The typical slope of the energy $E(\theta)$ along the first angle, at random angles (the standard deviation of $\partial E/\partial\theta_1$ over 150 random choices of all angles), for TFIM chains of $n$ qubits ($J = 1$, $h = 0.5$) and ansätze with $4n$ layers: a hardware-efficient ansatz ($R_Y$ and $R_Z$ on every qubit, then CZ on every bond; orange) and the VHA (blue), whose first angle sets all the bond gates of the first layer. Exact energies, no shots.](figures/barren-plateau){#fig-barren-plateau width=55%}
 
