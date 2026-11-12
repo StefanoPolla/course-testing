@@ -14,6 +14,11 @@ By the end of the chapter, you should be able to explain how adiabatic evolution
 
 Recall from @sec-energy-dynamics that the [ground state]{.gloss key="ground-state"} $\ket{E_0}$ of a Hamiltonian $H$ is its eigenvector with the lowest eigenvalue $E_0$.
 The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"} (also known as *spectral gap* or *ground state gap*).
+If $\Delta = 0$, the ground state is *degenerate*: several states share the lowest energy.
+A small gap is almost as hard, because a state can then have an energy close to $E_0$ and still be far from the ground state (@exr-variational).
+What often helps is a conserved quantity, such as the number of flipped qubits of the Heisenberg model (@sec-spin-models); we call it a [symmetry]{.gloss key="symmetry"} of $H$.
+A circuit that conserves it, started from a state with a given value, only reaches states with that value, and then only the gap among those states matters.
+<!-- L5-LINK: symmetry verification in L5 builds on this definition. -->
 
 A system in thermal equilibrium with an environment at a temperature $T$ much lower than the gap, $k_B T \ll \Delta$, is almost always found in its ground state.
 Many molecules and materials are in this regime.
@@ -53,7 +58,7 @@ Starting from $\ket{+\cdots+}$, which has parity $+1$, these circuits never reac
 
 ::: {#exr-variational}
 ## How close is a low energy to the ground state?
-A state $\ket{\psi}$ has the energy $E = \bra{\psi}H\ket{\psi}$ and the fidelity $F = |\langle E_0|\psi\rangle|^2$ with the ground state, which we assume to be unique, with gap $\Delta$ (or, if the state can only be a combination of states with a given symmetry, the gap among those states).
+A state $\ket{\psi}$ has the energy $E = \bra{\psi}H\ket{\psi}$ and the fidelity $F = |\langle E_0|\psi\rangle|^2$ with the ground state, which we assume to be unique, with gap $\Delta$.
 
 (a) Show that $E - E_0 \ge (1 - F)\,\Delta$, so that the fidelity is at least $1 - (E - E_0)/\Delta$.
 
@@ -92,8 +97,12 @@ Intuitively, the state cannot follow a change that is fast compared with the rat
 
 ::: {.example}
 @fig-adiabatic (a) shows this for a TFIM chain of $n = 8$ qubits with $J = 1$ and $h = 0.5$, which we use as the example for the rest of the chapter.
-Every term of the TFIM commutes with the *parity* $X_1X_2\cdots X_n$, which flips all qubits, and so does every gate of the TFIM circuits in this chapter: starting from $\ket{+\cdots+}$, of parity $+1$, the evolution only reaches states of parity $+1$, and the figure shows only those.
-The gap is smallest near $s = 0.6$, where the bond terms start to dominate the field, with $\Delta_{\min} \approx 0.69$.
+The TFIM looks the same if we flip all qubits: flipping both qubits of a bond leaves $Z_iZ_{i+1}$ unchanged, and $X_i$ does not care.
+The flip of all qubits, $X_1X_2\cdots X_n$, has eigenvalues $\pm 1$, the *parity*, which is conserved by the TFIM and by every gate of our circuits.
+The ground state has parity $+1$, like $\ket{+\cdots+}$, while the lowest state of parity $-1$ lies only $0.006$ above it: without the symmetry, this tiny gap would make the preparation very slow, but our circuits never reach that state, and among the states of parity $+1$ the gap never falls below $0.69$.
+The figure shows only the states of parity $+1$.
+<!-- L5-LINK: parity of the TFIM, a candidate for symmetry verification in L5. -->
+This smallest gap, $\Delta_{\min} \approx 0.69$, is reached near $s = 0.6$, where the bond terms start to dominate the field.
 Along the path, $dH/ds = -J\sum_i Z_iZ_{i+1}$ has the norm $J(n-1) = 7$, so the rule of thumb asks for $T \gg 7/0.69^2 \approx 15$.
 An evolution with $T = 4$ is too fast for this gap: around the minimum, part of the state leaks into the first excited state, and the final fidelity with the ground state is only 0.58.
 Panel (b) shows how the fidelity grows with $T$: it exceeds 0.99 at $T = 20$.

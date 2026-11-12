@@ -372,3 +372,6 @@ glossary:
   barren-plateau:
     term: barren plateau
     def: "A region of parameters, often almost all of them, where the cost of a variational circuit is nearly flat, with slopes that shrink exponentially with the number of qubits, so that estimating them takes exponentially many shots."
+  symmetry:
+    term: symmetry
+    def: "A quantity conserved by a Hamiltonian, or an operation that leaves it unchanged, such as flipping all qubits in the TFIM. Evolution under the Hamiltonian, or a circuit that respects the symmetry, keeps its value fixed."
