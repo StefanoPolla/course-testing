@@ -455,7 +455,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">12 November 2026</p>
+      <p class="date-modified">14 November 2026</p>
     </div>
   </div>
     
@@ -546,7 +546,7 @@ Figure&nbsp;4.1: Adiabatic preparation of the ground state of a TFIM chain of 8 
 </section>
 <section id="sec-vqe" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="sec-vqe"><span class="header-section-number">4.3</span> Variational circuits</h2>
-<p>The adiabatic circuit has a fixed structure: layers of <span class="math inline">\(R_{ZZ}\)</span> on all bonds and <span class="math inline">\(R_X\)</span> on all qubits, with angles that the schedule prescribes. With only a few layers, the schedule gives a poor state: either the steps are long, with a large Trotter error, or the total time is short, too fast for the gap. But the variational principle tells us how to judge any choice of angles: the lower the energy, the better. So we keep the structure, <em>free the angles</em>, and let an optimiser choose them.</p>
+<p>The adiabatic circuit has a fixed structure: for the TFIM, it alternates layers of <span class="math inline">\(R_{ZZ}\)</span> on all bonds and <span class="math inline">\(R_X\)</span> on all qubits, with angles that the schedule prescribes. With only a few layers, the schedule gives a poor state: either the steps are long, with a large Trotter error, or the total time is short, too fast for the gap. But the variational principle tells us how to judge any choice of angles: the lower the energy, the better. So we keep the structure, <em>free the angles</em>, and let an optimiser choose them.</p>
 <section id="sec-vha" class="level3" data-number="4.3.1">
 <h3 data-number="4.3.1" class="anchored" data-anchor-id="sec-vha"><span class="header-section-number">4.3.1</span> The variational Hamiltonian ansatz</h3>
 <p>For the TFIM, the circuit with <span class="math inline">\(p\)</span> layers starts from <span class="math inline">\(\ket{+\cdots+}\)</span> and applies, in layer <span class="math inline">\(k\)</span>, <span class="math inline">\(R_{ZZ}(\gamma_k)\)</span> on every bond and <span class="math inline">\(R_X(\beta_k)\)</span> on every qubit, as in <a href="L3-hamiltonians.html#fig-trotter-step" class="quarto-xref">Figure&nbsp;<span>3.4</span></a> but with free angles. Its <span class="math inline">\(2p\)</span> angles <span class="math inline">\(\theta = (\gamma_1, \beta_1, \dots, \gamma_p, \beta_p)\)</span> prepare the state <span class="math inline">\(\ket{\psi(\theta)}\)</span>, with energy <span class="math display">\[
