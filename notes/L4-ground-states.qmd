@@ -121,7 +121,9 @@ For hard problems, the smallest gap can shrink exponentially with $n$, and so th
 
 On a digital quantum computer, we apply the evolution under $H(s)$ with a Trotter circuit (@sec-trotter).
 Each step of length $\delta$ applies $e^{-iH(s)\delta}$, approximated by the circuit of @fig-trotter-step, with $s$ taken at the middle of the step: $R_{ZZ}(-2sJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit.
-Only the angles of the bond gates change from step to step, following the *schedule* $s = t/T$.
+Only the angles of the bond gates change from step to step, following the *schedule* $s = t/T$ (@fig-adiabatic-circuit).
+
+![The adiabatic circuit for a TFIM chain, drawn for 4 qubits with $J = 1$, $h = 0.5$ and a total time $T = 4$ in 4 steps of $\delta = 1$. The Hadamard gates prepare $\ket{+\cdots+}$; step $k$ then applies $R_{ZZ}(-2s_kJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit, with $s_k$ the middle of the step. The number in each gate is its angle, and the colour of the bond gates darkens as their angle grows. Below, on the same time axis, the coefficients of $H(s)$: the bond strength $sJ$ grows along the path (dashed) and each step uses its value in the middle of the step (blue, in the colour of its gates), while the field $h$ stays fixed (orange).](figures/adiabatic-circuit){#fig-adiabatic-circuit width=85%}
 
 ::: {.example}
 The blue curves of @fig-adiabatic (b) show what the Trotter error does: with steps of 0.25, the fidelity levels off at 0.97, with steps of 0.5 at 0.87, and with steps of 1 at 0.35, however long the evolution.
