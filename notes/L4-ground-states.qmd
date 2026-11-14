@@ -135,7 +135,7 @@ With an error of 0.5% per CZ, @eq-circuit-fidelity gives a probability of $e^{-5
 
 ## Variational circuits {#sec-vqe}
 
-The adiabatic circuit has a fixed structure: layers of $R_{ZZ}$ on all bonds and $R_X$ on all qubits, with angles that the schedule prescribes.
+The adiabatic circuit has a fixed structure: for the TFIM, it alternates layers of $R_{ZZ}$ on all bonds and $R_X$ on all qubits, with angles that the schedule prescribes.
 With only a few layers, the schedule gives a poor state: either the steps are long, with a large Trotter error, or the total time is short, too fast for the gap.
 But the variational principle tells us how to judge any choice of angles: the lower the energy, the better.
 So we keep the structure, *free the angles*, and let an optimiser choose them.
