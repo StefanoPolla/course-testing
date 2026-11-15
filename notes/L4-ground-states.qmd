@@ -276,26 +276,18 @@ Gradient descent is the workhorse of machine learning, so many variants exist, t
 These variants adapt the size of the step, and sometimes its direction, using more information (earlier gradients, estimates of the second derivatives, or tuning parameters of the method).
 Four common ones:
 
-- *Newton–Raphson* uses the matrix of second derivatives (Hessian) to jump to the minimum of a quadratic model of the energy; in a VQE, each of these derivatives must be estimated from shots, so a step is expensive.
-- *Quasi-Newton* methods (e.g. *BFGS*), build an estimate of the second derivatives from successive gradients; they are the standard choice with exact energies (the optimisations behind the figures of this chapter use BFGS), but sensitive to noise.
-- *Adam* [@kingma2015] gives each parameter its own step size, set from running averages of its derivative and of its square; it is the default in machine learning and copes well with noisy gradients.
-- The *quantum natural gradient* [@stokes2020] rescales the gradient by how much the state changes with each parameter, which the quantum computer can also estimate.
+- [Newton–Raphson]{.gloss key="newton-raphson"} uses the matrix of second derivatives (Hessian) to jump to the minimum of a quadratic model of the energy; in a VQE, each of these derivatives must be estimated from shots, so a step is expensive.
+- *Quasi-Newton* methods (e.g. [BFGS]{.gloss key="bfgs"}) build an estimate of the second derivatives from successive gradients; they are the standard choice with exact energies (the optimisations behind the figures of this chapter use BFGS), but sensitive to noise.
+- [Adam]{.gloss key="adam"} [@kingma2015] gives each parameter its own step size, set from running averages of its derivative and of its square; it is the default in machine learning and copes well with noisy gradients.
+- The [quantum natural gradient]{.gloss key="qng"} [@stokes2020] rescales the gradient by how much the state changes with each parameter, which the quantum computer can also estimate.
 
 How to estimate the gradient from shots is the subject of @sec-gradients.
 
 *Gradient-free* optimisers use only energy values.
 Two are widely used for VQE.
 
-- [COBYLA]{.gloss key="cobyla"}, constrained optimisation by linear approximation [@powell1994], fits a linear model of the energy through recent evaluations, and moves to the lowest point of the model within a region that it shrinks as the optimisation converges.
-With exact energies, it converges quickly for a few tens of parameters.
-With shot noise, the model fits the noise once its points are close together, so it tends to stop early.
-- [SPSA]{.gloss key="spsa"}, simultaneous perturbation stochastic approximation [@spall1992], estimates the slope along a single random direction $d$, with entries $\pm 1$, which changes all parameters at once.
-It estimates the energy at $\theta \pm \Delta\theta\,d$, for a small step $\Delta\theta$, and moves
-$$
-\theta \to \theta - \eta\,\frac{\bar E(\theta + \Delta\theta\,d) - \bar E(\theta - \Delta\theta\,d)}{2\,\Delta\theta}\,d .
-$$
-Each step costs two estimates, whatever the number of parameters, and $\eta$ and $\Delta\theta$ shrink slowly over the iterations, which averages out the noise.
-It was designed for noisy cost functions, and is popular for VQE on hardware.
+- [COBYLA]{.gloss key="cobyla"} (constrained optimisation by linear approximation) [@powell1994] fits a linear model of the energy through recent evaluations and moves to its lowest point within a shrinking region; it converges quickly with exact energies, but with shot noise it tends to stop early.
+- [SPSA]{.gloss key="spsa"} (simultaneous perturbation stochastic approximation) [@spall1992] estimates the slope along one random direction, which changes all parameters at once, from two energy estimates per step, whatever the number of parameters; designed for noisy costs, it is popular for VQE on hardware.
 
 Other gradient-free methods, such as *surrogate* models (Bayesian optimisation) and *evolutionary strategies*, use many evaluations per step to average out the noise.
 

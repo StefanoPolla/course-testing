@@ -369,6 +369,18 @@ glossary:
   gradient-descent:
     term: gradient descent
     def: "An optimiser that repeatedly moves the parameters a small step against the gradient of the cost, the direction in which it decreases fastest."
+  newton-raphson:
+    term: Newton–Raphson
+    def: "An optimiser that uses the first and second derivatives of the cost to fit a quadratic model around the current parameters and jumps to its minimum. Fast near a minimum, but every second derivative must be computed or estimated."
+  bfgs:
+    term: BFGS
+    def: "Broyden–Fletcher–Goldfarb–Shanno: a quasi-Newton optimiser that builds an estimate of the second derivatives from successive gradients instead of computing them. A standard choice for smooth costs without noise."
+  adam:
+    term: Adam
+    def: "Adaptive moment estimation: a gradient-based optimiser that gives each parameter its own step size, set from running averages of its derivative and of its square. The default optimiser in machine learning; it copes well with noisy gradients."
+  qng:
+    term: quantum natural gradient
+    def: "A gradient-based optimiser for parametrised quantum circuits that rescales the gradient by how much the prepared state changes with each parameter, so that steps are measured in the state rather than in the angles."
   parameter-shift-rule:
     term: parameter-shift rule
     def: "An exact formula for the derivative of an expectation value with respect to the angle of a Pauli rotation: half the difference of the values at the angle plus and minus a quarter turn."
