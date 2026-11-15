@@ -461,7 +461,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">1 November 2026</p>
+      <p class="date-modified">15 November 2026</p>
     </div>
   </div>
     
@@ -816,7 +816,7 @@ Figure&nbsp;1.6: <span class="math inline">\(R_{ZZ}(\theta)\)</span> built from 
 </figcaption>
 </figure>
 </div>
-<p><a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a> will come back several times in this course, in circuits for time evolution, which are built from Pauli rotations, and in the parameter-shift rule, which gives exact gradients of variational circuits.</p>
+<p><a href="#eq-pauli-rotation" class="quarto-xref">Equation&nbsp;<span>1.1</span></a> will come back several times in this course, in circuits for time evolution (<a href="L3-hamiltonians.html#sec-trotter" class="quarto-xref"><span>Section 3.5</span></a>), which are built from Pauli rotations, and in the parameter-shift rule (<a href="L4-ground-states.html#sec-parameter-shift" class="quarto-xref"><span>Section 4.5.2</span></a>), which gives exact gradients of variational circuits.</p>
 </section>
 <section id="sec-driving-gates" class="level3" data-number="1.3.2">
 <h3 data-number="1.3.2" class="anchored" data-anchor-id="sec-driving-gates"><span class="header-section-number">1.3.2</span> Physical implementation of gates</h3>
@@ -1254,7 +1254,7 @@ Figure&nbsp;1.11: SWAP as three CNOTs with alternating control.
 </figcaption>
 </figure>
 </div>
-<p>In practice, nobody inserts SWAPs by hand. <a href="glossary.html#gloss-transpilation" class="gloss" data-gloss="Compilation of a circuit into the native gates and coupling graph of a device, including inserting SWAPs and simplifying.">Transpilation</a> maps a circuit onto the native gates and coupling graph of a device. It chooses which physical qubit plays the role of each qubit in the circuit, inserts SWAPs where needed, and simplifies the result. We return to its cost in later chapters.</p>
+<p>In practice, nobody inserts SWAPs by hand. <a href="glossary.html#gloss-transpilation" class="gloss" data-gloss="Compilation of a circuit into the native gates and coupling graph of a device, including inserting SWAPs and simplifying.">Transpilation</a> maps a circuit onto the native gates and coupling graph of a device. It chooses which physical qubit plays the role of each qubit in the circuit, inserts SWAPs where needed, and simplifies the result. We return to its cost in later chapters (<a href="L3-hamiltonians.html#sec-trotter-circuits" class="quarto-xref"><span>Section 3.5.3</span></a> and <a href="L4-ground-states.html#sec-ansatz" class="quarto-xref"><span>Section 4.3.3</span></a>).</p>
 <div id="exr-swap" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 1.5 (The cost of distance)</strong></span> &nbsp;</p>
 <ol type="a">
