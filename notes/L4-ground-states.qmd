@@ -170,7 +170,7 @@ These numbers come from an exact simulation, which shows what the ansatz can rea
 
 How many layers are needed?
 A circuit of few layers of local gates cannot correlate distant qubits, because of its light cone (@sec-dynamics-observables), so a ground state with correlations across the chain needs a number of layers that grows with $n$.
-For the TFIM on a ring of an even number $n$ of qubits, @ho2019 showed numerically that $n/2$ layers prepare the ground state exactly at $h = J$, and conjectured it, with numerical support, for every $h$.
+For the TFIM on a ring (i.e. a chain with periodic boundary conditions) of an even number $n$ of qubits, @ho2019 showed numerically that $n/2$ layers prepare the ground state exactly at $h = J$, and conjectured it, with numerical support, for every $h$.
 
 ::: {.example}
 On our open chain, 4 layers are not enough (fidelity 0.75), and 7 give 0.99.
