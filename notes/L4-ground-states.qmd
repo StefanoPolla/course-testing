@@ -274,6 +274,13 @@ There are two families of optimisers: gradient-based and gradient-free.
 *Gradient-based* optimisers estimate the gradient $\nabla E(\theta)$, the vector of partial derivatives, and step downhill, $\theta \to \theta - \eta\,\nabla E(\theta)$, with a step size $\eta$ ([gradient descent]{.gloss key="gradient-descent"}).
 Its refinements adapt the size of the step, and sometimes its direction, using more information: earlier gradients, estimates of the second derivatives, or tuning parameters of the method.
 Gradient descent is the workhorse of machine learning, so many variants exist, tuned to different situations.
+Four common ones:
+
+- *Newton's method* (Newton–Raphson) uses the matrix of second derivatives to jump to the minimum of a quadratic model of the energy; in a VQE, each of these derivatives must be estimated from shots, so a step is expensive.
+- *Quasi-Newton* methods, such as BFGS, build an estimate of the second derivatives from successive gradients; they are the standard choice with exact energies (the optimisations behind the figures of this chapter use BFGS), but sensitive to noise.
+- *Adam* [@kingma2015] gives each parameter its own step size, set from running averages of its derivative and of its square; it is the default in machine learning and copes well with noisy gradients.
+- The *quantum natural gradient* [@stokes2020] rescales the gradient by how much the state changes with each parameter, which the quantum computer can also estimate.
+
 How to estimate the gradient from shots is the subject of @sec-gradients.
 
 *Gradient-free* optimisers use only energy values.
