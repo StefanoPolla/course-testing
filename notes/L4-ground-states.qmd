@@ -224,14 +224,11 @@ Why does the bound of @exr-variational not apply here?
 
 The ansatz determines which states the VQE can reach.
 A good ansatz must contain a good approximation of the ground state, be shallow enough to avoid too much noise from building up, and be easy to optimise (@sec-optimisers, @sec-barren-plateaus).
-There are two broad approaches, with many variations; we only introduce them here, and @tilly2022 review them.
+There are two broad approaches; @tilly2022 review them and their many variations.
 
-- *Physics-motivated ansätze* are built from the problem.
-The HVA uses the terms of $H$.
-For molecules, the *unitary coupled-cluster* ansatz, from quantum chemistry and proposed for VQE by @peruzzo2014, builds the circuit from the excitations of electrons between orbitals.
-Other ansätze keep a symmetry of $H$, such as the number of flipped qubits in the Heisenberg model (@sec-spin-models), so that the search stays among states with the right symmetry.
-*Adaptive* ansätze grow the circuit one gate at a time, choosing the gate along which the energy is steepest [@grimsley2019].
-These ansätze usually have few parameters, but their gates follow the interactions of $H$, which may not match the coupling graph of the device and then need SWAPs.
+- *Problem-inspired* (or *physics-inspired*) *ansätze* are built from $H$, like the HVA.
+They usually have few parameters, and they can keep the symmetries of $H$: every gate of the HVA conserves the parity of the TFIM (@sec-adiabatic), so the search stays among states with the right parity.
+But their gates follow the interactions of $H$, which may not match the coupling graph of the device, and then need SWAPs.
 - *Hardware-efficient ansätze* are built from the device [@kandala2017].
 Each layer applies native single-qubit rotations, each with its own angle, and native two-qubit gates on the coupled pairs of the device.
 They are as shallow as a circuit can be, and need no SWAPs.
@@ -436,7 +433,7 @@ What is now the largest cut, and how many bitstrings reach it?
 
 ## Further reading {#sec-L4-reading}
 
-@cerezo2021 review variational quantum algorithms, and @tilly2022 the VQE in particular, including ansätze, optimisers and measurement.
+@cerezo2021 review variational quantum algorithms, and @tilly2022 the VQE in particular, including ansätze (for example the unitary coupled-cluster ansatz used for molecules, and adaptive ansätze that grow the circuit gate by gate [@grimsley2019]), optimisers and measurement.
 @bharti2022 cover algorithms for noisy devices more broadly, and @albash2018 adiabatic quantum computation and quantum annealing.
 @larocca2025 review barren plateaus, including the connection to classical simulability.
 
