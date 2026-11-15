@@ -218,7 +218,7 @@ The optimiser kept the parameters whose estimates were lowest, and among many es
 For a chain of 20 qubits, a paper reports a VQE energy $0.03$ below $E_0$, with a standard error of $0.02$; the exact $E_0$ is known from a classical method.
 What could explain the result?
 What would you check first?
-Why does the bound of @exr-variational not apply here?
+Why does the bound of @eq-variational not apply here?
 :::
 
 ### Choosing an ansatz {#sec-ansatz}
@@ -271,10 +271,11 @@ However, existing annealers run at a temperature that is not small compared with
 Annealers are heuristics: they often find good solutions, without a guarantee.
 It is debated whether they outperform classical methods, including classical simulated annealing [@albash2018].
 
-The [QAOA]{.gloss key="qaoa"}, or *quantum approximate optimisation algorithm* [@farhi2014], is the corresponding variational circuit: from $\ket{+\cdots+}$, each layer applies $e^{-i\gamma_kH_C}$ and then $e^{-i\beta_k\sum_iX_i}$, with $2p$ angles optimised as in a VQE.
-It is the HVA of the annealing path: a Trotter step of length $\delta$ at $s_k$ is the layer with $\gamma_k = s_k\delta$ and $\beta_k = -(1-s_k)\delta$, so the annealing schedule is one point of the ansatz, and a natural starting point for the optimiser (@fig-qaoa-circuit).^[The same acronym also stands for the *quantum alternating operator ansatz* [@hadfield2019], which generalises these layers, for example to keep the state among the bitstrings that satisfy the constraints of a problem.]
+The [QAOA]{.gloss key="qaoa"}, or *quantum approximate optimisation algorithm* [@farhi2014], is the corresponding variational circuit: from $\ket{+\cdots+}$, each layer applies $e^{-i\gamma_kH_C/2}$, which is $R_{ZZ}(\gamma_k)$ on every edge, and then $R_X(\beta_k)$ on every qubit, with $2p$ angles optimised as in a VQE.
+It is the HVA of the annealing path: a Trotter step of length $\delta$ at $s_k$ is the layer with $\gamma_k = 2s_k\delta$ and $\beta_k = -2(1-s_k)\delta$, the angles of @sec-hva with $J = -1$ and a field $1 - s_k$, so the annealing schedule is one point of the ansatz, and a natural starting point for the optimiser (@fig-qaoa-circuit).
+Most papers, and the QAOA circuits of Qiskit, write the layers as $e^{-i\gamma_kH_C}$ and $e^{-i\beta_k\sum_iX_i}$ instead, with angles half as large as ours.^[The same acronym also stands for the *quantum alternating operator ansatz* [@hadfield2019], which generalises these layers, for example to keep the state among the bitstrings that satisfy the constraints of a problem.]
 
-![The QAOA circuit for the graph of @fig-maxcut, with the angles of the annealing schedule: $p = 4$ layers over a total time $T = 3$, so $\delta = 0.75$. After the Hadamard gates, layer $k$ applies $e^{-i\gamma_kH_C}$, with $\gamma_k = s_k\delta$, and $e^{-i\beta_kX}$ on every qubit, with $\beta_k = -(1-s_k)\delta$. The terms of $H_C$ commute, so the cost layer needs no Trotter approximation; it is drawn as one block. The number in each gate is its angle, and the colours are those of @fig-adiabatic-circuit: the cost layers darken while the mixing layers fade. Below, the coefficients of the annealing path (dashed) and the values that each layer uses. In an exact simulation, a shot of this circuit returns a maximum cut with probability 0.88, against 0.09 for a random bitstring.](figures/qaoa-circuit){#fig-qaoa-circuit width=90%}
+![The QAOA circuit for the graph of @fig-maxcut, with the angles of the annealing schedule: $p = 4$ layers over a total time $T = 3$, so $\delta = 0.75$. After the Hadamard gates, layer $k$ applies $e^{-i\gamma_kH_C/2}$, with $\gamma_k = 2s_k\delta$, and $R_X(\beta_k)$ on every qubit, with $\beta_k = -2(1-s_k)\delta$. The terms of $H_C$ commute, so the cost layer needs no Trotter approximation; it is drawn as one block. The number in each gate is its angle, and the colours are those of @fig-adiabatic-circuit: the cost layers darken while the mixing layers fade. Below, the coefficients of the annealing path (dashed) and the values that each layer uses. In an exact simulation, a shot of this circuit returns a maximum cut with probability 0.88, against 0.09 for a random bitstring.](figures/qaoa-circuit){#fig-qaoa-circuit width=90%}
 
 ## Optimising with shots {#sec-optimisers}
 
@@ -331,7 +332,7 @@ The step must balance the two errors.
 ### The parameter-shift rule {#sec-parameter-shift}
 
 For the rotation gates of our ansätze, the derivative can also be obtained exactly from the energies at two shifted angles.
-We focus on a single parameter $\theta_j$, and assume that it enters the circuit through a single gate, a rotation about a Pauli string $P$, $e^{-i\theta_j P/2}$, as all the rotations of the HVA and of hardware-efficient ansätze do; parameters shared by several gates are treated at the end of this section.
+We focus on a single parameter $\theta_j$, and assume that it enters the circuit through a single gate, a rotation about a Pauli string $P$, $e^{-i\theta_j P/2}$, as the $R_{ZZ}$ and $R_X$ gates of the HVA do; other rotations and parameters shared by several gates are treated at the end of this section.
 Write the circuit as a product $U(\theta) = U_m \cdots U_{j+1}\,e^{-i\theta_j P/2}\,U_{j-1} \cdots U_1$, where each $U_k$ contains the gate of parameter $\theta_k$, together with any fixed gates (@fig-parameter-shift-split).
 With all other parameters fixed, the gates before $\theta_j$ prepare a fixed state, and the gates after it can be absorbed into the measured observable:
 $$
@@ -364,6 +365,9 @@ What the rule adds is that it needs no step to tune and has no error beyond the 
 The rule costs two estimates per gate.
 A parameter shared by several gates, such as $\gamma_k$, which sets all the bond gates of layer $k$ of the HVA, needs a shift of each of its gates in turn: by the product rule, its derivative is the sum of their derivatives.
 A full gradient therefore costs two estimates for every parametrised gate of the circuit, against two per step for SPSA (@exr-gradient-cost).
+
+The derivation only uses $P^2 = I$, so it also holds for the angle $\theta$ of a PRX gate (@eq-prx), a rotation about the axis $\cos\varphi\,X + \sin\varphi\,Y$, whose square is also $I$.
+Its other angle $\varphi$ enters two gates, since $\gate{PRX}(\theta,\varphi) = R_Z(\varphi)\,R_X(\theta)\,R_Z(-\varphi)$, so it is a shared parameter, with a minus sign for the derivative of the gate $R_Z(-\varphi)$.
 
 Since three estimates fix the whole sinusoid, some optimisers move one angle at a time straight to the minimum of its sinusoid, for angles that each enter a single gate [@nakanishi2020; @ostaszewski2021] (@exr-parameter-shift).
 

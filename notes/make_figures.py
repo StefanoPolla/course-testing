@@ -11,6 +11,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 from matplotlib.patches import FancyArrowPatch, Rectangle
 from qiskit import QuantumCircuit
 from qiskit.circuit import Gate, Parameter
@@ -1287,22 +1288,25 @@ ax_g.set_title(f"a maximum cut: {n_cut} of {len(mc_edges)} edges", fontsize=9.5)
 
 save_fig(fig, "maxcut")
 # The QAOA circuit for this graph with the angles of the annealing schedule: p layers over a time
-# T, gamma_k = s_k delta, beta_k = -(1 - s_k) delta. Exact simulation of the probability of a best cut.
+# T, in the gate-angle convention of the HVA: layer k is exp(-i gamma_k H_C / 2) and R_X(beta_k) on every
+# qubit, with gamma_k = 2 s_k delta, beta_k = -2 (1 - s_k) delta (Stefano, 2026-11-15; most papers and
+# Qiskit's QAOAAnsatz use half these angles). Exact simulation of the probability of a best cut.
 mc_bits = np.array(list(itertools.product([0, 1], repeat=6)))     # qubit 0 is the leftmost bit
 mc_cut = np.array([sum(b[i] != b[j] for i, j in mc_edges) for b in mc_bits])
 mc_hc = len(mc_edges) - 2 * mc_cut                                  # H_C = sum Z_i Z_j on each bitstring
 p_mc, T_mc = 4, 3.0
 d_mc = T_mc / p_mc
-qaoa_angles = [((k + 0.5) / p_mc * d_mc, -(1 - (k + 0.5) / p_mc) * d_mc) for k in range(p_mc)]
+qaoa_angles = [(2 * (k + 0.5) / p_mc * d_mc, -2 * (1 - (k + 0.5) / p_mc) * d_mc) for k in range(p_mc)]
 mix1 = lambda b: np.array([[np.cos(b), -1j * np.sin(b)], [-1j * np.sin(b), np.cos(b)]])
 psi_mc = np.ones(64) / 8
 for g, b in qaoa_angles:
-    psi_mc = np.exp(-1j * g * mc_hc) * psi_mc
-    U = mix1(b)
+    psi_mc = np.exp(-1j * g / 2 * mc_hc) * psi_mc
+    U = mix1(b / 2)
     for _ in range(5):
-        U = np.kron(U, mix1(b))
+        U = np.kron(U, mix1(b / 2))
     psi_mc = U @ psi_mc
 pr_mc = np.abs(psi_mc) ** 2
+qaoa_shade = 0.75     # the gate angles reach 1.31: scale the colours so that the largest stay distinct
 p_best = pr_mc[mc_cut == mc_cut.max()].sum()
 p_random = np.mean(mc_cut == mc_cut.max())
 
@@ -1320,9 +1324,9 @@ for k, (g, b) in enumerate(qaoa_angles):
                            facecolor="0.96", edgecolor="none", zorder=0))
     ax.text(x0 + W / 2, 0.55, f"layer {k + 1}\n$s = {(k + 0.5) / p_mc:.3f}$", ha="center", va="bottom",
             fontsize=8.5, linespacing=1.4)
-    angle_box(ax, x0 + 0.7, bot_w / 2, 0.95, -bot_w + 0.5, f"$e^{{-i\\gamma_{k + 1} H_C}}$", g, bond_cmap(abs(g)))
+    angle_box(ax, x0 + 0.7, bot_w / 2, 0.95, -bot_w + 0.5, f"$e^{{-i\\gamma_{k + 1} H_C/2}}$", g, bond_cmap(qaoa_shade * abs(g)))
     for q in range(nq):
-        angle_box(ax, x0 + 1.78, -q * dy, 0.95, 0.56, f"$e^{{-i\\beta_{k + 1} X}}$", b, field_cmap(abs(b)))
+        angle_box(ax, x0 + 1.78, -q * dy, 0.95, 0.56, "$R_X$", b, field_cmap(qaoa_shade * abs(b)))
 base, scale = bot_w - 2.2, 1.2
 t_x = lambda t: x_start + t / T_mc * (x_end - x_start)
 ax.plot([x_start, x_end], [base, base], color="0.3", lw=0.8)
@@ -1337,7 +1341,7 @@ for v in (0, 0.5, 1):
 ax.plot([t_x(0), t_x(T_mc)], [base, base + scale], ls="--", color=ACCENT, lw=0.9, alpha=0.6)
 ax.plot([t_x(0), t_x(T_mc)], [base + scale, base], ls="--", color=ORANGE, lw=0.9, alpha=0.6)
 for k, (g, b) in enumerate(qaoa_angles):
-    for val, col in ((g / d_mc, bond_cmap(abs(g))), (-b / d_mc, field_cmap(abs(b)))):
+    for val, col in ((g / (2 * d_mc), bond_cmap(qaoa_shade * abs(g))), (-b / (2 * d_mc), field_cmap(qaoa_shade * abs(b)))):
         ax.plot([t_x(k * d_mc), t_x((k + 1) * d_mc)], [base + val * scale] * 2, color=col, lw=3.2,
                 solid_capstyle="butt")
 ax.text(t_x(T_mc) + 0.12, base + scale, "Ising $H_C$", color=ACCENT, va="center", fontsize=9)
@@ -1403,4 +1407,8 @@ for k in range(2):
         for i in range(first, 3, 2):
             hea.cz(i, i + 1)
         hea.barrier()
-save_fig(hea.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False), "hardware-efficient")
+fig = hea.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False)
+for text in fig.axes[0].texts:                  # qubit labels q1 -> q_1, as in the other L4 circuits
+    if re.fullmatch(r"\$?\{?q(\d)\}?\$?", text.get_text()):
+        text.set_text(re.sub(r"\D", "", text.get_text()).join(("$q_{", "}$")))
+save_fig(fig, "hardware-efficient")
