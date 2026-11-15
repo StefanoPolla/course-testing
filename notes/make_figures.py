@@ -1252,3 +1252,52 @@ ax.legend(frameon=False, fontsize=8.5, loc="lower left")
 clean_axes(ax)
 save_fig(fig, "barren-plateau")
 print("L4 barren plateau: hardware-efficient", np.round(spread_hea, 3), "HVA", np.round(spread_hva, 2))
+
+
+# ------------------------------------------- L4: MaxCut on a small graph, and the annealing schedule
+# A triangular prism (6 vertices, 9 edges): its triangles cannot have all three edges cut, so the
+# best cut leaves some edges uncut. Not the graphs of the MaxCut exercise.
+import itertools
+
+mc_pos = {0: (0.0, 1.0), 1: (-0.87, -0.5), 2: (0.87, -0.5),
+          3: (0.0, 2.1), 4: (-1.82, -1.05), 5: (1.82, -1.05)}
+mc_edges = [(0, 1), (1, 2), (2, 0), (3, 4), (4, 5), (5, 3), (0, 3), (1, 4), (2, 5)]
+best = max(itertools.product([0, 1], repeat=6),
+           key=lambda b: (sum(b[i] != b[j] for i, j in mc_edges), -int("".join(map(str, b)), 2)))
+n_cut = sum(best[i] != best[j] for i, j in mc_edges)
+
+fig, (ax_g, ax_s) = plt.subplots(1, 2, figsize=(7.6, 3.0), gridspec_kw={"width_ratios": [1, 1.25]})
+for i, j in mc_edges:
+    (x1, y1), (x2, y2) = mc_pos[i], mc_pos[j]
+    if best[i] != best[j]:
+        ax_g.plot([x1, x2], [y1, y2], color="black", lw=2.0, zorder=1)
+    else:
+        ax_g.plot([x1, x2], [y1, y2], color="0.6", lw=1.0, ls="--", zorder=1)
+for k, (x, y) in mc_pos.items():
+    one = best[k] == 1
+    ax_g.add_patch(plt.Circle((x, y), 0.25, facecolor="0.25" if one else "white", edgecolor="black",
+                              lw=1.0, zorder=2))
+    ax_g.text(x, y, f"{best[k]}", ha="center", va="center", fontsize=9, zorder=3,
+              color="white" if one else "black")
+ax_g.set_xlim(-2.2, 2.2)
+ax_g.set_ylim(-1.45, 2.45)
+ax_g.set_aspect("equal")
+ax_g.axis("off")
+ax_g.set_title(f"(a) a maximum cut: {n_cut} of {len(mc_edges)} edges", fontsize=9.5)
+
+s_mc = np.linspace(0, 1, 2)
+ax_s.plot(s_mc, s_mc, color=ACCENT, lw=2)
+ax_s.plot(s_mc, 1 - s_mc, color=ORANGE, lw=2)
+ax_s.text(0.99, 1.06, r"Ising cost $H_C$: $s$", color=ACCENT, ha="right", va="bottom", fontsize=9)
+ax_s.text(0.01, 1.06, r"field: $1 - s$", color=ORANGE, ha="left", va="bottom", fontsize=9)
+ax_s.set_xlim(0, 1)
+ax_s.set_ylim(0, 1.2)
+ax_s.set_xticks([0, 0.5, 1])
+ax_s.set_yticks([0, 0.5, 1])
+ax_s.set_xlabel("$s = t/T$")
+ax_s.set_ylabel("coefficient in $H(s)$")
+ax_s.set_title("(b) the annealing schedule", fontsize=9.5, pad=14)
+clean_axes(ax_s)
+fig.subplots_adjust(wspace=0.35)
+save_fig(fig, "maxcut")
+print(f"L4 MaxCut figure: best cut {n_cut} of {len(mc_edges)} edges, bitstring {best}")
