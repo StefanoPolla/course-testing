@@ -297,7 +297,12 @@ Two are widely used for VQE.
 
 Other gradient-free methods, such as *surrogate* models (Bayesian optimisation) and *evolutionary strategies*, use many evaluations per step to average out the noise.
 
-### Gradients from shots {#sec-gradients}
+## Gradients from shots {#sec-gradients}
+
+A gradient-based optimiser needs, at every step, the partial derivative $\partial E/\partial\theta_j$ for every parameter $j$, and it only has estimates of the energy.
+There are two common ways to obtain these derivatives from energy estimates.
+
+### Finite differences {#sec-finite-differences}
 
 The simplest estimate of a partial derivative is a *finite difference*,
 $$
@@ -306,12 +311,25 @@ $$
 where $e_j$ changes only the parameter $j$.
 With exact energies, its error is of order $\Delta\theta^2$, so a small step $\Delta\theta$ is better.
 With shots, each estimate has a standard error $\varepsilon$, and their difference is divided by $2\,\Delta\theta$, so the standard error of the derivative is $\varepsilon/(\sqrt{2}\,\Delta\theta)$: a small step amplifies the shot noise.
-@fig-parameter-shift (b) shows both effects: with 1,000 shots per setting for each estimate, the error of the derivative is 24 at $\Delta\theta = 0.003$, far larger than the derivative itself (0.83), and it only becomes acceptable at steps so large that the approximation fails.
+The step must balance the two errors.
+@fig-parameter-shift (b) shows this: with 1,000 shots per setting for each estimate, the error of the derivative is 24 at $\Delta\theta = 0.003$, far larger than the derivative itself (0.83), but it falls to 0.13 for steps around $\Delta\theta \approx 0.5$, where the shot noise and the error of the approximation are comparable.
 
-For the gates of our ansätze, there is a better way.
-Suppose that the parameter $\theta$ enters through a single gate, a rotation $e^{-i\theta P/2}$ about a Pauli string $P$, as all the rotations of the HVA and of hardware-efficient ansätze do.
-Write the circuit as $V_2\,e^{-i\theta P/2}\,V_1$, where $V_1$ and $V_2$ are the gates before and after it, and let $\ket{\phi} = V_1\ket{0\cdots0}$ and $O = V_2^\dagger HV_2$.
-By @eq-pauli-rotation,
+![The energy along one angle $\theta$ of an HVA circuit with two layers, for the TFIM chain of @fig-adiabatic: here one gate, the $R_X$ of qubit 5 in the second layer, gets its own angle $\theta$, added to $\beta_2$, and all other angles stay at the schedule. (a) The exact energy (orange) is a sinusoid. Three estimates with 1,000 shots per setting (blue, with their standard errors), at $\theta_0 = -0.9$ and $\theta_0 \pm \pi/2$, fix the dashed sinusoid. (b) The error of the derivative at $\theta_0$ (root mean square over 300 repetitions), from two estimates of 1,000 shots per setting each: finite differences against their step $\Delta\theta$ (blue), and the parameter-shift rule (orange). Dotted: the error of finite differences with exact energies.](figures/parameter-shift){#fig-parameter-shift width=100%}
+
+### The parameter-shift rule {#sec-parameter-shift}
+
+For the rotation gates of our ansätze, the derivative can also be obtained exactly from the energies at two shifted angles.
+We focus on a single parameter $\theta_j$, and assume that it enters the circuit through a single gate, a rotation about a Pauli string $P$, $e^{-i\theta_j P/2}$, as all the rotations of the HVA and of hardware-efficient ansätze do; parameters shared by several gates are treated at the end of this section.
+Write the circuit as a product $U(\theta) = U_m \cdots U_{j+1}\,e^{-i\theta_j P/2}\,U_{j-1} \cdots U_1$, where each $U_k$ contains the gate of parameter $\theta_k$, together with any fixed gates (@fig-parameter-shift-split).
+With all other parameters fixed, the gates before $\theta_j$ prepare a fixed state, and the gates after it can be absorbed into the measured observable:
+$$
+\ket{\phi} = U_{j-1} \cdots U_1\ket{0\cdots0} , \qquad O = (U_m \cdots U_{j+1})^\dagger\,H\,(U_m \cdots U_{j+1}) ,
+$$
+so that $E(\theta_j) = \bra{\phi}e^{i\theta_j P/2}\,O\,e^{-i\theta_j P/2}\ket{\phi}$.
+
+![The circuit seen from one parameter $\theta_j$. The gates before it prepare a state $\ket{\phi}$ that does not depend on $\theta_j$, and the gates after it, followed by the measurement of $H$, measure the observable $O$; only the Pauli rotation $e^{-i\theta_j P/2}$ (shaded) depends on $\theta_j$.](figures/parameter-shift-split){#fig-parameter-shift-split width=80%}
+
+By @eq-pauli-rotation, $e^{-i\theta_j P/2} = \cos\frac{\theta_j}{2}\,I - i\sin\frac{\theta_j}{2}\,P$, so, writing $\theta$ for $\theta_j$,
 $$
 E(\theta) = \bra{\phi}\Big(\cos\tfrac{\theta}{2}\,I + i\sin\tfrac{\theta}{2}\,P\Big)\,O\,\Big(\cos\tfrac{\theta}{2}\,I - i\sin\tfrac{\theta}{2}\,P\Big)\ket{\phi} .
 $$
@@ -328,8 +346,8 @@ $$
 \frac{\partial E}{\partial\theta} = \frac{E(\theta + \frac{\pi}{2}) - E(\theta - \frac{\pi}{2})}{2} .
 $$ {#eq-parameter-shift}
 Unlike a finite difference, it is exact, and its shift is large, so it does not amplify the shot noise: with estimates of standard error $\varepsilon$, the derivative has the standard error $\varepsilon/\sqrt{2}$, 0.06 in @fig-parameter-shift (b).
-
-![The energy along one angle $\theta$ of an HVA circuit with two layers, for the TFIM chain of @fig-adiabatic: here one gate, the $R_X$ of qubit 5 in the second layer, gets its own angle $\theta$, added to $\beta_2$, and all other angles stay at the schedule. (a) The exact energy (orange) is a sinusoid. Three estimates with 1,000 shots per setting (blue, with their standard errors), at $\theta_0 = -0.9$ and $\theta_0 \pm \pi/2$, fix the dashed sinusoid. (b) The error of the derivative at $\theta_0$ (root mean square over 300 repetitions), from two estimates of 1,000 shots per setting each: finite differences against their step $\Delta\theta$ (blue), and the parameter-shift rule (orange). Dotted: the error of finite differences with exact energies.](figures/parameter-shift){#fig-parameter-shift width=100%}
+In practice, a finite difference with a well-chosen step does nearly as well, 0.13 in the same figure: for a sinusoid, a finite difference with step $\Delta\theta$ gives $E'(\theta)\,\sin\Delta\theta/\Delta\theta$, so a large step only shrinks the derivative by a known factor, and the parameter-shift rule is the finite difference with step $\pi/2$, corrected by this factor.
+What the rule adds is that it needs no step to tune and has no error beyond the shot noise.
 
 The rule costs two estimates per gate.
 A parameter shared by several gates, such as $\gamma_k$, which sets all the bond gates of layer $k$ of the HVA, needs a shift of each of its gates in turn: by the product rule, its derivative is the sum of their derivatives.

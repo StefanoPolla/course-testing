@@ -1205,7 +1205,8 @@ for ax in (ax_c, ax_g):
 fig.subplots_adjust(wspace=0.35)
 save_fig(fig, "parameter-shift")
 print(f"L4 parameter shift: slope {slope:.3f}, one estimate +- {sigma:.3f}, shift error {err_shift:.3f},",
-      f"finite differences {err_fd[0]:.1f} (step {steps[0]:.3f}) to {err_fd[-1]:.2f} (step 1)")
+      f"finite differences {err_fd[0]:.1f} (step {steps[0]:.3f}) to {err_fd[-1]:.2f} (step 1),",
+      f"smallest {min(err_fd):.3f} at step {steps[int(np.argmin(err_fd))]:.2f}")
 
 
 # ------------------------------------------- L4: barren plateaus (about 40 s)
@@ -1301,3 +1302,40 @@ clean_axes(ax_s)
 fig.subplots_adjust(wspace=0.35)
 save_fig(fig, "maxcut")
 print(f"L4 MaxCut figure: best cut {n_cut} of {len(mc_edges)} edges, bitstring {best}")
+
+
+# ------------------------------------------- L4: the circuit split around one parametrised gate
+fig, ax = plt.subplots(figsize=(7.0, 2.4))
+n_w, dy = 4, 0.5
+ys = [-q * dy for q in range(n_w)]
+mid, top, bot = -(n_w - 1) * dy / 2, 0.32, -(n_w - 1) * dy - 0.32
+for y in ys:
+    ax.plot([0.55, 9.0], [y, y], color="0.35", lw=0.9, zorder=1)
+ax.text(0.45, mid, r"$|0\cdots0\rangle$", ha="right", va="center", fontsize=10)
+blocks = [(1.2, r"$U_1$", "white"), (2.05, r"$\cdots$", None), (2.9, r"$U_{j-1}$", "white"),
+          (4.35, r"$e^{-i\theta_j P/2}$", "#f6dcc8"),
+          (5.8, r"$U_{j+1}$", "white"), (6.65, r"$\cdots$", None), (7.5, r"$U_m$", "white")]
+for x, label, fill in blocks:
+    if fill is None:
+        ax.text(x, mid, label, ha="center", va="center", fontsize=11,
+                bbox=dict(facecolor="white", edgecolor="none", pad=1))
+        continue
+    w = 1.25 if "theta" in label else 0.62
+    ax.add_patch(Rectangle((x - w / 2, bot), w, top - bot, facecolor=fill, edgecolor="black", lw=0.9, zorder=3))
+    ax.text(x, mid, label, ha="center", va="center", fontsize=10, zorder=4)
+ax.add_patch(Rectangle((8.35, bot), 0.62, top - bot, facecolor="0.9", edgecolor="black", lw=0.9, zorder=3))
+ax.text(8.66, mid, r"$H$", ha="center", va="center", fontsize=10, zorder=4)
+
+
+def brace(x0, x1, y, text):
+    ax.plot([x0, x0, x1, x1], [y, y - 0.12, y - 0.12, y], color="0.3", lw=0.9)
+    ax.text((x0 + x1) / 2, y - 0.2, text, ha="center", va="top", fontsize=9.5)
+
+
+brace(0.85, 3.25, bot - 0.08, r"prepare $|\phi\rangle$")
+brace(5.45, 8.97, bot - 0.08, r"measure $O$")
+ax.set_xlim(-0.6, 9.1)
+ax.set_ylim(bot - 0.75, top + 0.1)
+ax.set_aspect("equal")
+ax.axis("off")
+save_fig(fig, "parameter-shift-split")
