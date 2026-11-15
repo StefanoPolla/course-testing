@@ -151,7 +151,8 @@ $$
 E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)} ,
 $$
 and we look for the angles that minimise it.
-A family of circuits like this one, fixed up to its parameters, is called an [ansatz]{.gloss key="ansatz"} (German, from *ansetzen*, "to set on" or "to start"; plural *Ansätze*), and this one, built from the terms of $H$, is the [Hamiltonian variational ansatz]{.gloss key="hva"} (HVA) [@wecker2015].
+A circuit whose gates depend on classical parameters, here the angles $\theta$, is called a [parametrised quantum circuit]{.gloss key="pqc"} (PQC); usually the parameters are the angles of rotation gates, and the rest of the circuit is fixed.
+The structure of a PQC, fixed up to its parameters, is called an [ansatz]{.gloss key="ansatz"} (German, from *ansetzen*, "to set on" or "to start"; plural *Ansätze*), and this one, built from the terms of $H$, is the [Hamiltonian variational ansatz]{.gloss key="hva"} (HVA) [@wecker2015].
 Each layer is one Trotter step of $H(s)$ with free angles: the schedule of @sec-adiabatic-circuits is the point $\gamma_k = -2s_kJ\delta$, $\beta_k = -2h\delta$ of the ansatz, with $s_k$ the middle of step $k$ (@fig-adiabatic-circuit), and the obvious starting point for the optimiser.
 
 ::: {.example}
@@ -391,7 +392,7 @@ The second is a *good starting point*: instead of random angles, start from a ci
 These remedies come with a caveat, and this is an active field of research.
 The ansätze that are proved to avoid barren plateaus often turn out to be simulable efficiently on a classical computer, sometimes after collecting some data on a quantum computer [@cerezo2025].
 The TFIM chain is an example: its HVA has no barren plateau, but the model is classically solvable at any size, which makes it a good test case, not a candidate for quantum advantage.
-Barren plateaus are also not the only obstacle: the landscape can have many local minima, and in the worst case, training a variational circuit is NP-hard [@bittel2021].
+Barren plateaus are also not the only obstacle: the landscape can have many local minima, and in the worst case, training a PQC is NP-hard [@bittel2021].
 
 A third way out brings us back to the start of the chapter: *continuation* along the adiabatic path.
 We minimise the energy of $H(s)$ for a small $s$, whose ground state is close to $\ket{+\cdots+}$, use the optimal angles as the starting point for a slightly larger $s$, and continue until $s = 1$.
