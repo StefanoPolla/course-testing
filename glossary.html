@@ -394,6 +394,10 @@ ul.task-list li input[type="checkbox"] {
 <dd>
 Noise in which slow fluctuations are much stronger than fast ones, in inverse proportion to their frequency. It typically comes from many defects, each switching at its own rate.
 </dd>
+<dt><span id="gloss-adam">Adam</span></dt>
+<dd>
+Adaptive moment estimation: a gradient-based optimiser that gives each parameter its own step size, set from running averages of its derivative and of its square. The default optimiser in machine learning; it copes well with noisy gradients.
+</dd>
 <dt><span id="gloss-adiabatic-preparation">adiabatic state preparation</span></dt>
 <dd>
 Preparing the ground state of a Hamiltonian by starting in the ground state of a simple one and changing the Hamiltonian slowly into the target. It works if the change is slow compared with the inverse square of the smallest gap along the way.
@@ -413,6 +417,10 @@ The state fidelity between the output of a noisy gate and the ideal output, aver
 <dt><span id="gloss-barren-plateau">barren plateau</span></dt>
 <dd>
 A region of parameters, often almost all of them, where the cost of a variational circuit is nearly flat, with slopes that shrink exponentially with the number of qubits, so that estimating them takes exponentially many shots.
+</dd>
+<dt><span id="gloss-bfgs">BFGS</span></dt>
+<dd>
+Broyden–Fletcher–Goldfarb–Shanno: a quasi-Newton optimiser that builds an estimate of the second derivatives from successive gradients instead of computing them. A standard choice for smooth costs without noise.
 </dd>
 <dt><span id="gloss-bias">bias</span></dt>
 <dd>
@@ -654,6 +662,10 @@ The standard two-qubit gate of trapped ions. Laser beams couple two ions to the 
 <dd>
 A gate the hardware implements directly with a calibrated control pulse. Every other gate must be compiled into native gates.
 </dd>
+<dt><span id="gloss-newton-raphson">Newton–Raphson</span></dt>
+<dd>
+An optimiser that uses the first and second derivatives of the cost to fit a quadratic model around the current parameters and jumps to its minimum. Fast near a minimum, but every second derivative must be computed or estimated.
+</dd>
 <dt><span id="gloss-nisq">NISQ</span></dt>
 <dd>
 Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.
@@ -745,6 +757,10 @@ A tiny region in a semiconductor that can trap single electrons.
 <dt><span id="gloss-qec">quantum error correction</span></dt>
 <dd>
 Encoding quantum information redundantly in many physical qubits, so that errors can be detected and corrected without disturbing the encoded information.
+</dd>
+<dt><span id="gloss-qng">quantum natural gradient</span></dt>
+<dd>
+A gradient-based optimiser for parametrised quantum circuits that rescales the gradient by how much the prepared state changes with each parameter, so that steps are measured in the state rather than in the angles.
 </dd>
 <dt><span id="gloss-qubit-wise-commuting">qubit-wise commuting</span></dt>
 <dd>
