@@ -252,9 +252,9 @@ $H_C$ is diagonal, so its eigenstates are bitstrings.
 For a variational method, this means that a single measurement setting, the $Z$ setting, measures all its terms, and that every shot gives a candidate solution, whose cut we can check classically: we keep the best bitstring seen, not only the average energy.
 
 [Quantum annealing]{.gloss key="quantum-annealing"} runs the adiabatic path of @eq-adiabatic-path to such a classical Ising model on an analog device, which applies $H(s)$ directly instead of a Trotter circuit [@kadowaki1998].
-Annealers with thousands of superconducting qubits have existed for much longer than comparable digital quantum computers, made popular by the company DWave.
+Annealers with thousands of superconducting qubits, made popular by the company D-Wave, have existed for much longer than comparable digital quantum computers.
 But they are used at a finite temperature, and the change of Hamiltonian is performed faster than the adiabatic theorem requires to give any guarantee.
-Thus, these devices rely on heuristics, and it is debated  whether they outperform classical methods [@albash2018].
+Thus, these devices rely on heuristics, and it is debated whether they outperform classical methods [@albash2018].
 The [QAOA]{.gloss key="qaoa"}, or *quantum approximate optimisation algorithm* [@farhi2014], is the corresponding variational circuit: from $\ket{+\cdots+}$, each layer applies $e^{-i\gamma_kH_C}$ and then $e^{-i\beta_k\sum_iX_i}$, with $2p$ angles optimised as in a VQE.^[The same acronym also stands for the *quantum alternating operator ansatz* [@hadfield2019], which generalises these layers, for example to keep the state among the bitstrings that satisfy the constraints of a problem.]
 
 ## Optimising with shots {#sec-optimisers}
