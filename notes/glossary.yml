@@ -340,10 +340,10 @@ glossary:
     def: "Preparing the ground state of a Hamiltonian by starting in the ground state of a simple one and changing the Hamiltonian slowly into the target. It works if the change is slow compared with the inverse square of the smallest gap along the way."
   pqc:
     term: parametrised quantum circuit
-    def: "PQC: a quantum circuit in which some gates, usually rotations, depend on classical parameters that can be changed from run to run. Variational algorithms such as VQE and QAOA optimise these parameters. The structure of the circuit is called its ansatz."
+    def: "PQC: a quantum circuit in which some gates, usually rotations, depend on classical parameters that can be changed from run to run. Variational algorithms such as VQE and QAOA optimise these parameters. The states it can prepare, and by extension the circuit itself, are called an ansatz."
   ansatz:
     term: ansatz
-    def: "A family of circuits with a fixed structure and free parameters, such as rotation angles, used to prepare trial states in a variational algorithm. Plural: ansätze."
+    def: "The family of trial states that a parametrised circuit can prepare in a variational algorithm, a guess for the form of the solution; by extension, also the circuit itself, with its fixed structure and free parameters such as rotation angles. Plural: ansätze."
   hva:
     term: Hamiltonian variational ansatz
     def: "An ansatz built from the terms of the Hamiltonian: layers that look like Trotter steps, with one free angle per group of terms in each layer. With the angles of a slow schedule, it reproduces adiabatic state preparation. Sometimes also called the variational Hamiltonian ansatz (VHA)."
