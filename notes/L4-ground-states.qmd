@@ -115,15 +115,16 @@ Panel (b) shows how the fidelity grows with $T$: it exceeds 0.99 at $T = 20$.
 On a long chain, the smallest gap of this path shrinks in proportion to $1/n$, so the time needed grows only polynomially.
 For hard problems, the smallest gap can shrink exponentially with $n$, and so the time grows exponentially, as expected from the worst-case hardness of @sec-hardness.
 
-![Adiabatic preparation of the ground state of a TFIM chain of 8 qubits ($J = 1$, $h = 0.5$), from $\ket{+\cdots+}$ along $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$. (a) The lowest energies of $H(s)$ above the ground-state energy (grey), and the occupation $|\langle E_k(s)|\psi(t)\rangle|^2$ of each eigenstate as the width of the blue band, for a total time $T = 4$ (dotted line in panel b). (b) The fidelity $|\langle E_0(1)|\psi(T)\rangle|^2$ of the final state $\ket{\psi(T)}$ with the ground state of $H = H(1)$, against the total time $T$: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).](figures/adiabatic){#fig-adiabatic width=100%}
-
 ### Adiabatic circuits {#sec-adiabatic-circuits}
 
-On a digital quantum computer, we apply the evolution under $H(s)$ with a Trotter circuit (@sec-trotter).
-Each step of length $\delta$ applies $e^{-iH(s)\delta}$, approximated by the circuit of @fig-trotter-step, with $s$ taken at the middle of the step: $R_{ZZ}(-2sJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit.
+On a digital quantum computer, we apply the evolution under $H(s)$ with a Trotter circuit.
+@sec-trotter treated a Hamiltonian that does not change in time, while $H(s)$ does; but within a short step it changes little, so we treat it as constant during each step, at its value in the middle of the step, and Trotterise each step as before.
+Each step of length $\delta$ then applies $e^{-iH(s)\delta}$, approximated by the circuit of @fig-trotter-step: $R_{ZZ}(-2sJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit.
 Only the angles of the bond gates change from step to step, following the *schedule* $s = t/T$ (@fig-adiabatic-circuit).
 
 ![The adiabatic circuit for a TFIM chain, drawn for 4 qubits with $J = 1$, $h = 0.5$ and a total time $T = 4$ in 4 steps of $\delta = 1$. The Hadamard gates prepare $\ket{+\cdots+}$; step $k$ then applies $R_{ZZ}(-2s_kJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit, with $s_k$ the middle of the step. The number in each gate is its angle, and its colour darkens as the angle grows, in blue for the bond gates and in orange for the field gates. Below, on the same time axis, the coefficients of $H(s)$: the bond strength $sJ$ grows along the path (dashed) and each step uses its value in the middle of the step (blue, in the colour of its gates), while the field $h$ stays fixed (orange).](figures/adiabatic-circuit){#fig-adiabatic-circuit width=85%}
+
+![Adiabatic preparation of the ground state of a TFIM chain of 8 qubits ($J = 1$, $h = 0.5$), from $\ket{+\cdots+}$ along $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$. (a) The lowest energies of $H(s)$ above the ground-state energy (grey), and the occupation $|\langle E_k(s)|\psi(t)\rangle|^2$ of each eigenstate as the width of the blue band, for a total time $T = 4$ (dotted line in panel b). (b) The fidelity $|\langle E_0(1)|\psi(T)\rangle|^2$ of the final state $\ket{\psi(T)}$ with the ground state of $H = H(1)$, against the total time $T$: exact evolution (orange) and Trotter circuits with steps of 0.25, 0.5 and 1 (blue, light to dark).](figures/adiabatic){#fig-adiabatic width=100%}
 
 ::: {.example}
 The blue curves of @fig-adiabatic (b) show what the Trotter error does: with steps of 0.25, the fidelity levels off at 0.97, with steps of 0.5 at 0.87, and with steps of 1 at 0.35, however long the evolution.
