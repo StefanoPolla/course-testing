@@ -1024,71 +1024,93 @@ for delta in [0.25, 0.5, 1.0]:
           f"{np.max(np.abs(np.linalg.eig(U)[1].conj().T @ ground) ** 2):.2f}")
 
 
-# ------------------------------------------- L4: the adiabatic circuit, with its angles in colour
+# ------------------------------------------- L4: the adiabatic circuit and the HVA, with their angles in colour
 # Drawn by hand (like tfim-settings) so that each gate can be filled with the colour of its
-# angle. Chain of 4 qubits for the drawing; J and h as in the chapter, T = 4 in steps of 1.
+# angle. Chain of 4 qubits for the drawing; J and h as in the chapter, 4 layers of length 1
+# (T = 4). The same colour scales in both figures, so that they can be compared.
 from matplotlib.colors import LinearSegmentedColormap, to_rgb
 
-n_d, J_d, h_d, T_d, steps_d = 4, 1.0, 0.5, 4.0, 4
-delta_d = T_d / steps_d
-s_mid = (np.arange(steps_d) + 0.5) / steps_d            # s at the middle of each step
+n_d, delta_d = 4, 1.0
 bond_cmap = LinearSegmentedColormap.from_list("bond", ["#e3ecf7", ACCENT, "#0b2a4f"])
-field_fill = "#f6dcc8"                                    # a light tint of ORANGE
+field_cmap = LinearSegmentedColormap.from_list("field", ["#fbeee4", ORANGE, "#5c2604"])
 
 
 def angle_box(ax, x, y, w, hgt, name, angle, fill):
     dark = np.dot(to_rgb(fill), [0.30, 0.59, 0.11]) < 0.5
     ax.add_patch(Rectangle((x - w / 2, y - hgt / 2), w, hgt, facecolor=fill, edgecolor="black",
                            lw=0.8, zorder=3))
-    ax.text(x, y, f"{name}\n${angle:g}$".replace("-", "−"), ha="center", va="center",
-            fontsize=7.5, linespacing=1.25, color="white" if dark else "black", zorder=4)
+    ax.text(x, y, f"{name}\n${angle:.2f}$".replace("-", "−"), ha="center", va="center",
+            fontsize=7.3, linespacing=1.25, color="white" if dark else "black", zorder=4)
 
 
-fig, ax = plt.subplots(figsize=(7.6, 4.6))
-dy, x_start, W = 0.9, 0.95, 2.45
-x_end = x_start + steps_d * W
-for q in range(n_d):
-    ax.plot([0, x_end + 0.15], [-q * dy, -q * dy], color="0.35", lw=0.9, zorder=1)
-    ax.text(-0.12, -q * dy, f"$q_{q + 1}$", ha="right", va="center", fontsize=9)
-    circuit_box(ax, 0.45, -q * dy, 0.46, 0.46, "$H$")
-for k, s in enumerate(s_mid):
-    x0 = x_start + k * W
-    zz = -2 * s * J_d * delta_d
-    ax.add_patch(Rectangle((x0 + 0.08, -(n_d - 1) * dy - 0.45), W - 0.16, (n_d - 1) * dy + 0.9,
-                           facecolor="0.96", edgecolor="none", zorder=0))
-    ax.text(x0 + W / 2, 0.6, f"step {k + 1}\n$s = {s:.3f}$", ha="center",
-            va="bottom", fontsize=8.5, linespacing=1.4)
-    fill = bond_cmap(abs(zz) / 2)
-    for xb, first in ((x0 + 0.52, 0), (x0 + 1.24, 1)):   # bonds (1,2), (3,4), then (2,3)
-        for i in range(first, n_d - 1, 2):
-            angle_box(ax, xb, -(i + 0.5) * dy, 0.66, dy + 0.46, "$R_{ZZ}$", zz, fill)
+def layered_figure(angles, headers, name):
+    # angles: (R_ZZ angle, R_X angle) per layer. Below the circuit, on the same time axis, the
+    # coefficients of the Hamiltonian -a ΣZZ - b ΣX whose Trotter step of length δ each layer
+    # applies (a = -γ/2δ, b = -β/2δ), against the adiabatic path (dashed).
+    p = len(angles)
+    fig, ax = plt.subplots(figsize=(7.6, 4.6))
+    dy, x_start, W = 0.9, 0.95, 2.55
+    x_end = x_start + p * W
     for q in range(n_d):
-        angle_box(ax, x0 + 1.93, -q * dy, 0.62, 0.62, "$R_X$", -2 * h_d * delta_d, field_fill)
+        ax.plot([0, x_end + 0.15], [-q * dy, -q * dy], color="0.35", lw=0.9, zorder=1)
+        ax.text(-0.12, -q * dy, f"$q_{q + 1}$", ha="right", va="center", fontsize=9)
+        circuit_box(ax, 0.45, -q * dy, 0.46, 0.46, "$H$")
+    for k, ((zz, xx), header) in enumerate(zip(angles, headers)):
+        x0 = x_start + k * W
+        ax.add_patch(Rectangle((x0 + 0.08, -(n_d - 1) * dy - 0.45), W - 0.16, (n_d - 1) * dy + 0.9,
+                               facecolor="0.96", edgecolor="none", zorder=0))
+        ax.text(x0 + W / 2, 0.6, header, ha="center", va="bottom", fontsize=8.5, linespacing=1.4)
+        for xb, first in ((x0 + 0.52, 0), (x0 + 1.24, 1)):   # bonds (1,2), (3,4), then (2,3)
+            for i in range(first, n_d - 1, 2):
+                angle_box(ax, xb, -(i + 0.5) * dy, 0.66, dy + 0.46, "$R_{ZZ}$", zz, bond_cmap(abs(zz) / 2))
+        for q in range(n_d):
+            angle_box(ax, x0 + 1.99, -q * dy, 0.74, 0.62, "$R_X$", xx, field_cmap(abs(xx) / 2))
 
-# below: the coefficients of H(s) = -sJ ΣZZ - h ΣX along the evolution, on the same time axis
-base, scale = -(n_d - 1) * dy - 2.3, 1.2
-t_x = lambda t: x_start + t / T_d * (x_end - x_start)
-ax.plot([x_start, x_end], [base, base], color="0.3", lw=0.8)
-for t in range(int(T_d) + 1):
-    ax.plot([t_x(t)] * 2, [base, base - 0.06], color="0.3", lw=0.8)
-    ax.text(t_x(t), base - 0.1, f"{t}", ha="center", va="top", fontsize=8)
-ax.text(t_x(T_d) + 0.2, base, "$t$", ha="left", va="center", fontsize=9)
-ax.plot([x_start, x_start], [base, base + 1.1 * scale], color="0.3", lw=0.8)
-for v in (0, 0.5, 1):
-    ax.plot([x_start - 0.06, x_start], [base + v * scale] * 2, color="0.3", lw=0.8)
-    ax.text(x_start - 0.1, base + v * scale, f"{v:g}", ha="right", va="center", fontsize=8)
-ax.plot([t_x(0), t_x(T_d)], [base, base + J_d * scale], ls="--", color="0.55", lw=1.0)
-for k, s in enumerate(s_mid):
-    ax.plot([t_x(k * delta_d), t_x((k + 1) * delta_d)], [base + s * J_d * scale] * 2,
-            color=bond_cmap(2 * s * J_d * delta_d / 2), lw=3.2, solid_capstyle="butt")
-ax.plot([t_x(0), t_x(T_d)], [base + h_d * scale] * 2, color=ORANGE, lw=2.0)
-ax.text(t_x(T_d) + 0.12, base + J_d * scale, "bonds $sJ$", color=ACCENT, va="center", fontsize=9)
-ax.text(t_x(T_d) + 0.12, base + h_d * scale, "field $h$", color=ORANGE, va="center", fontsize=9)
-ax.set_xlim(-0.5, x_end + 1.3)
-ax.set_ylim(base - 0.45, 1.35)
-ax.set_aspect("equal")
-ax.axis("off")
-save_fig(fig, "adiabatic-circuit")
+    base, scale = -(n_d - 1) * dy - 2.3, 1.2
+    T_d = p * delta_d
+    t_x = lambda t: x_start + t / T_d * (x_end - x_start)
+    ax.plot([x_start, x_end], [base, base], color="0.3", lw=0.8)
+    for t in range(int(T_d) + 1):
+        ax.plot([t_x(t)] * 2, [base, base - 0.06], color="0.3", lw=0.8)
+        ax.text(t_x(t), base - 0.1, f"{t}", ha="center", va="top", fontsize=8)
+    ax.text(t_x(T_d) + 0.2, base, "$t$", ha="left", va="center", fontsize=9)
+    ax.plot([x_start, x_start], [base, base + 1.1 * scale], color="0.3", lw=0.8)
+    for v in (0, 0.5, 1):
+        ax.plot([x_start - 0.06, x_start], [base + v * scale] * 2, color="0.3", lw=0.8)
+        ax.text(x_start - 0.1, base + v * scale, f"{v:g}", ha="right", va="center", fontsize=8)
+    ax.plot([t_x(0), t_x(T_d)], [base, base + J * scale], ls="--", color=ACCENT, lw=0.9, alpha=0.6)
+    ax.plot([t_x(0), t_x(T_d)], [base + h * scale] * 2, ls="--", color=ORANGE, lw=0.9, alpha=0.6)
+    for k, (zz, xx) in enumerate(angles):
+        for angle, cmap in ((zz, bond_cmap), (xx, field_cmap)):
+            ax.plot([t_x(k * delta_d), t_x((k + 1) * delta_d)], [base - angle / (2 * delta_d) * scale] * 2,
+                    color=cmap(abs(angle) / 2), lw=3.2, solid_capstyle="butt")
+    ax.text(t_x(T_d) + 0.12, base + J * scale, "bonds", color=ACCENT, va="center", fontsize=9)
+    ax.text(t_x(T_d) + 0.12, base + h * scale, "field", color=ORANGE, va="center", fontsize=9)
+    ax.set_xlim(-0.5, x_end + 1.1)
+    ax.set_ylim(base - 0.45, 1.35)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    save_fig(fig, name)
+
+
+# (a) the adiabatic schedule, T = 4 in 4 steps; (b) the HVA with the same 4 layers, its angles
+# optimised from the schedule (exact energies)
+sched_d = schedule(4, 4.0)
+layered_figure(sched_d, [f"step {k + 1}\n$s = {(k + 0.5) / 4:.3f}$" for k in range(4)], "adiabatic-circuit")
+H_d = tfim(n_d, J, h)
+ground_d = np.linalg.eigh(H_d.to_matrix())[1][:, 0]
+
+
+def energy_d(x):
+    return Statevector(layers_circuit(n_d, x.reshape(-1, 2))).expectation_value(H_d).real
+
+
+opt_d = minimize(energy_d, np.ravel(sched_d), method="BFGS").x.reshape(-1, 2)
+layered_figure(opt_d, [f"layer {k + 1}\n" for k in range(4)], "hva-circuit")
+for label, a in (("schedule", np.array(sched_d)), ("optimised", opt_d)):
+    f = abs(ground_d.conj() @ Statevector(layers_circuit(n_d, a)).data) ** 2
+    print(f"L4 HVA figure, 4 qubits: {label} fidelity {f:.4f}, energy error",
+          f"{energy_d(a.ravel()) - np.linalg.eigvalsh(H_d.to_matrix())[0]:.4f}")
 
 
 # ------------------------------------------- L4: numbers for the HVA example (exact simulation)

@@ -123,7 +123,7 @@ On a digital quantum computer, we apply the evolution under $H(s)$ with a Trotte
 Each step of length $\delta$ applies $e^{-iH(s)\delta}$, approximated by the circuit of @fig-trotter-step, with $s$ taken at the middle of the step: $R_{ZZ}(-2sJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit.
 Only the angles of the bond gates change from step to step, following the *schedule* $s = t/T$ (@fig-adiabatic-circuit).
 
-![The adiabatic circuit for a TFIM chain, drawn for 4 qubits with $J = 1$, $h = 0.5$ and a total time $T = 4$ in 4 steps of $\delta = 1$. The Hadamard gates prepare $\ket{+\cdots+}$; step $k$ then applies $R_{ZZ}(-2s_kJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit, with $s_k$ the middle of the step. The number in each gate is its angle, and the colour of the bond gates darkens as their angle grows. Below, on the same time axis, the coefficients of $H(s)$: the bond strength $sJ$ grows along the path (dashed) and each step uses its value in the middle of the step (blue, in the colour of its gates), while the field $h$ stays fixed (orange).](figures/adiabatic-circuit){#fig-adiabatic-circuit width=85%}
+![The adiabatic circuit for a TFIM chain, drawn for 4 qubits with $J = 1$, $h = 0.5$ and a total time $T = 4$ in 4 steps of $\delta = 1$. The Hadamard gates prepare $\ket{+\cdots+}$; step $k$ then applies $R_{ZZ}(-2s_kJ\delta)$ on every bond and $R_X(-2h\delta)$ on every qubit, with $s_k$ the middle of the step. The number in each gate is its angle, and its colour darkens as the angle grows, in blue for the bond gates and in orange for the field gates. Below, on the same time axis, the coefficients of $H(s)$: the bond strength $sJ$ grows along the path (dashed) and each step uses its value in the middle of the step (blue, in the colour of its gates), while the field $h$ stays fixed (orange).](figures/adiabatic-circuit){#fig-adiabatic-circuit width=85%}
 
 ::: {.example}
 The blue curves of @fig-adiabatic (b) show what the Trotter error does: with steps of 0.25, the fidelity levels off at 0.97, with steps of 0.5 at 0.87, and with steps of 1 at 0.35, however long the evolution.
@@ -151,14 +151,21 @@ E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)} ,
 $$
 and we look for the angles that minimise it.
 A family of circuits like this one, fixed up to its parameters, is called an [ansatz]{.gloss key="ansatz"} (German, from *ansetzen*, "to set on" or "to start"; plural *Ansätze*), and this one, built from the terms of $H$, is the [Hamiltonian variational ansatz]{.gloss key="hva"} (HVA) [@wecker2015].
-Each layer is one Trotter step of $H(s)$ with free angles: the schedule of @sec-adiabatic-circuits is the point $\gamma_k = -2s_kJ\delta$, $\beta_k = -2h\delta$ of the ansatz, with $s_k$ the middle of step $k$, and the obvious starting point for the optimiser.
+Each layer is one Trotter step of $H(s)$ with free angles: the schedule of @sec-adiabatic-circuits is the point $\gamma_k = -2s_kJ\delta$, $\beta_k = -2h\delta$ of the ansatz, with $s_k$ the middle of step $k$ (@fig-adiabatic-circuit), and the obvious starting point for the optimiser.
 
 ::: {.example}
+@fig-hva-circuit shows what the optimiser makes of the small circuit of @fig-adiabatic-circuit.
+On the chain of 4 qubits, the schedule reaches a fidelity of 0.70 with the ground state; starting from it and minimising the energy gives angles with a fidelity of 0.9999.
+The optimised angles follow no slow path: the field angles fall from layer to layer, and the bond angles are largest in the second layer.
+Read as Trotter steps, they leave the adiabatic path: the field is turned down instead of kept fixed, and the bonds never reach their final strength.
+
 For our chain of 8 qubits, the schedule with 7 layers, at the total time $T \approx 4$ that minimises its energy, reaches a fidelity of 0.55 with the ground state.
 Starting from these angles and minimising the energy gives a fidelity of 0.991 with the same 7 layers, and an energy 0.018 above $E_0$.
 The circuit has 98 CZs instead of 1,120.
 These numbers come from an exact simulation, which shows what the ansatz can reach; with shots, the optimiser only sees estimates of the energy, as discussed in @sec-optimisers.
 :::
+
+![The HVA circuit with the 4 layers of @fig-adiabatic-circuit, on the same chain of 4 qubits, with the angles that minimise the energy, found by an optimiser that started from the schedule (exact energies, no shots). The colours are those of @fig-adiabatic-circuit. Below, each layer read as a Trotter step of length $\delta = 1$: the coefficient of the bonds, $-\gamma_k/2\delta$ (blue), and of the field, $-\beta_k/2\delta$ (orange), against the adiabatic path of @fig-adiabatic-circuit (dashed). The fidelity with the ground state rises from 0.70 for the schedule to 0.9999.](figures/hva-circuit){#fig-hva-circuit width=85%}
 
 How many layers are needed?
 A circuit of few layers of local gates cannot correlate distant qubits, because of its light cone (@sec-dynamics-observables), so a ground state with correlations across the chain needs a number of layers that grows with $n$.
