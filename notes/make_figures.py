@@ -1267,7 +1267,7 @@ best = max(itertools.product([0, 1], repeat=6),
            key=lambda b: (sum(b[i] != b[j] for i, j in mc_edges), -int("".join(map(str, b)), 2)))
 n_cut = sum(best[i] != best[j] for i, j in mc_edges)
 
-fig, (ax_g, ax_s) = plt.subplots(1, 2, figsize=(7.6, 3.0), gridspec_kw={"width_ratios": [1, 1.25]})
+fig, ax_g = plt.subplots(figsize=(3.2, 2.9))
 for i, j in mc_edges:
     (x1, y1), (x2, y2) = mc_pos[i], mc_pos[j]
     if best[i] != best[j]:
@@ -1284,23 +1284,72 @@ ax_g.set_xlim(-2.2, 2.2)
 ax_g.set_ylim(-1.45, 2.45)
 ax_g.set_aspect("equal")
 ax_g.axis("off")
-ax_g.set_title(f"(a) a maximum cut: {n_cut} of {len(mc_edges)} edges", fontsize=9.5)
+ax_g.set_title(f"a maximum cut: {n_cut} of {len(mc_edges)} edges", fontsize=9.5)
 
-s_mc = np.linspace(0, 1, 2)
-ax_s.plot(s_mc, s_mc, color=ACCENT, lw=2)
-ax_s.plot(s_mc, 1 - s_mc, color=ORANGE, lw=2)
-ax_s.text(0.99, 1.06, r"Ising cost $H_C$: $s$", color=ACCENT, ha="right", va="bottom", fontsize=9)
-ax_s.text(0.01, 1.06, r"field: $1 - s$", color=ORANGE, ha="left", va="bottom", fontsize=9)
-ax_s.set_xlim(0, 1)
-ax_s.set_ylim(0, 1.2)
-ax_s.set_xticks([0, 0.5, 1])
-ax_s.set_yticks([0, 0.5, 1])
-ax_s.set_xlabel("$s = t/T$")
-ax_s.set_ylabel("coefficient in $H(s)$")
-ax_s.set_title("(b) the annealing schedule", fontsize=9.5, pad=14)
-clean_axes(ax_s)
-fig.subplots_adjust(wspace=0.35)
 save_fig(fig, "maxcut")
+# The QAOA circuit for this graph with the angles of the annealing schedule: p layers over a time
+# T, gamma_k = s_k delta, beta_k = -(1 - s_k) delta. Exact simulation of the probability of a best cut.
+mc_bits = np.array(list(itertools.product([0, 1], repeat=6)))     # qubit 0 is the leftmost bit
+mc_cut = np.array([sum(b[i] != b[j] for i, j in mc_edges) for b in mc_bits])
+mc_hc = len(mc_edges) - 2 * mc_cut                                  # H_C = sum Z_i Z_j on each bitstring
+p_mc, T_mc = 4, 3.0
+d_mc = T_mc / p_mc
+qaoa_angles = [((k + 0.5) / p_mc * d_mc, -(1 - (k + 0.5) / p_mc) * d_mc) for k in range(p_mc)]
+mix1 = lambda b: np.array([[np.cos(b), -1j * np.sin(b)], [-1j * np.sin(b), np.cos(b)]])
+psi_mc = np.ones(64) / 8
+for g, b in qaoa_angles:
+    psi_mc = np.exp(-1j * g * mc_hc) * psi_mc
+    U = mix1(b)
+    for _ in range(5):
+        U = np.kron(U, mix1(b))
+    psi_mc = U @ psi_mc
+pr_mc = np.abs(psi_mc) ** 2
+p_best = pr_mc[mc_cut == mc_cut.max()].sum()
+p_random = np.mean(mc_cut == mc_cut.max())
+
+fig, ax = plt.subplots(figsize=(7.8, 5.2))
+dy, x_start, W, nq = 0.75, 0.95, 2.45, 6
+x_end = x_start + p_mc * W
+bot_w = -(nq - 1) * dy
+for q in range(nq):
+    ax.plot([0, x_end + 0.15], [-q * dy, -q * dy], color="0.35", lw=0.9, zorder=1)
+    ax.text(-0.12, -q * dy, f"$q_{q + 1}$", ha="right", va="center", fontsize=9)
+    circuit_box(ax, 0.45, -q * dy, 0.42, 0.42, "$H$")
+for k, (g, b) in enumerate(qaoa_angles):
+    x0 = x_start + k * W
+    ax.add_patch(Rectangle((x0 + 0.08, bot_w - 0.42), W - 0.16, -bot_w + 0.84,
+                           facecolor="0.96", edgecolor="none", zorder=0))
+    ax.text(x0 + W / 2, 0.55, f"layer {k + 1}\n$s = {(k + 0.5) / p_mc:.3f}$", ha="center", va="bottom",
+            fontsize=8.5, linespacing=1.4)
+    angle_box(ax, x0 + 0.7, bot_w / 2, 0.95, -bot_w + 0.5, f"$e^{{-i\\gamma_{k + 1} H_C}}$", g, bond_cmap(abs(g)))
+    for q in range(nq):
+        angle_box(ax, x0 + 1.78, -q * dy, 0.95, 0.56, f"$e^{{-i\\beta_{k + 1} X}}$", b, field_cmap(abs(b)))
+base, scale = bot_w - 2.2, 1.2
+t_x = lambda t: x_start + t / T_mc * (x_end - x_start)
+ax.plot([x_start, x_end], [base, base], color="0.3", lw=0.8)
+for t in np.arange(0, T_mc + 0.01, 0.75):
+    ax.plot([t_x(t)] * 2, [base, base - 0.06], color="0.3", lw=0.8)
+    ax.text(t_x(t), base - 0.1, f"{t:g}", ha="center", va="top", fontsize=8)
+ax.text(t_x(T_mc) + 0.25, base - 0.1, "$t$", ha="left", va="top", fontsize=9)
+ax.plot([x_start, x_start], [base, base + 1.1 * scale], color="0.3", lw=0.8)
+for v in (0, 0.5, 1):
+    ax.plot([x_start - 0.06, x_start], [base + v * scale] * 2, color="0.3", lw=0.8)
+    ax.text(x_start - 0.1, base + v * scale, f"{v:g}", ha="right", va="center", fontsize=8)
+ax.plot([t_x(0), t_x(T_mc)], [base, base + scale], ls="--", color=ACCENT, lw=0.9, alpha=0.6)
+ax.plot([t_x(0), t_x(T_mc)], [base + scale, base], ls="--", color=ORANGE, lw=0.9, alpha=0.6)
+for k, (g, b) in enumerate(qaoa_angles):
+    for val, col in ((g / d_mc, bond_cmap(abs(g))), (-b / d_mc, field_cmap(abs(b)))):
+        ax.plot([t_x(k * d_mc), t_x((k + 1) * d_mc)], [base + val * scale] * 2, color=col, lw=3.2,
+                solid_capstyle="butt")
+ax.text(t_x(T_mc) + 0.12, base + scale, "Ising $H_C$", color=ACCENT, va="center", fontsize=9)
+ax.text(t_x(T_mc) + 0.12, base + 0.05, "field", color=ORANGE, va="bottom", fontsize=9)
+ax.set_xlim(-0.5, x_end + 1.3)
+ax.set_ylim(base - 0.45, 1.3)
+ax.set_aspect("equal")
+ax.axis("off")
+save_fig(fig, "qaoa-circuit")
+print(f"L4 QAOA figure: p = {p_mc}, T = {T_mc}: probability of a best cut {p_best:.3f}, random {p_random:.3f},",
+      f"mean cut {pr_mc @ mc_cut:.2f} of {len(mc_edges)}")
 print(f"L4 MaxCut figure: best cut {n_cut} of {len(mc_edges)} edges, bitstring {best}")
 
 

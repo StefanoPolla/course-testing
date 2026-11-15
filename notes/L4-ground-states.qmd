@@ -243,7 +243,7 @@ On 8 qubits, 7 layers of the HVA have 14 parameters and 98 CZs, while 7 hardware
 
 The adiabatic idea and the layered circuits also apply to classical optimisation problems.
 A standard example is [MaxCut]{.gloss key="maxcut"}: given a graph, split its vertices into two groups so that as many edges as possible join vertices in different groups.
-@fig-maxcut (a) shows an example: on a graph with triangles, not every edge can be cut.
+@fig-maxcut shows an example: on a graph with triangles, not every edge can be cut.
 With one qubit per vertex, whose bit marks its group, $Z_iZ_j = -1$ exactly when the edge $(i,j)$ is cut, so maximising the number of cut edges means minimising
 $$
 H_C = \sum_{(i,j)\in\text{edges}} Z_iZ_j ,
@@ -252,17 +252,19 @@ the TFIM with $h = 0$ on the graph, with $J = -1$ (outside the range of @def-tfi
 $H_C$ is diagonal, so its eigenstates are bitstrings.
 For a variational method, this means that a single measurement setting, the $Z$ setting, measures all its terms, and that every shot gives a candidate solution, whose cut we can check classically: we keep the best bitstring seen, not only the average energy.
 
+![MaxCut on a graph of 6 vertices and 9 edges (a triangular prism). The bit of each vertex marks its group. Seven edges join vertices in different groups and are cut (solid), the most possible: each of the two triangles keeps at least one uncut edge (dashed).](figures/maxcut){#fig-maxcut width=40%}
+
 [Quantum annealing]{.gloss key="quantum-annealing"} runs the adiabatic path of @eq-adiabatic-path to such a classical Ising model on an analog device, which applies $H(s)$ directly instead of a Trotter circuit [@kadowaki1998].
-Since $H_C$ has no field, the path switches the field off while it switches the Ising terms on: from $H_0 = -\sum_i X_i$, with the ground state $\ket{+\cdots+}$, it follows $H(s) = -(1-s)\sum_i X_i + s\,H_C$ (@fig-maxcut b), whereas for the TFIM we kept the field and only switched on the bonds.
+Since $H_C$ has no field, the path switches the field off while it switches the Ising terms on: from $H_0 = -\sum_i X_i$, with the ground state $\ket{+\cdots+}$, it follows $H(s) = -(1-s)\sum_i X_i + s\,H_C$ (@fig-qaoa-circuit, bottom), whereas for the TFIM we kept the field and only switched on the bonds.
 Annealers with thousands of superconducting qubits, made popular by the company D-Wave, have existed since 2011, long before gate-based devices of similar size, although their qubits can only run the annealing.
 However, existing annealers run at a temperature that is not small compared with the energy gaps, where the environment can excite the state out of the ground state, and they change the Hamiltonian faster than the adiabatic theorem requires, so its guarantee does not apply.
 Annealers are heuristics: they often find good solutions, without a guarantee.
 It is debated whether they outperform classical methods, including classical simulated annealing [@albash2018].
 
-![(a) MaxCut on a graph of 6 vertices and 9 edges (a triangular prism). The bit of each vertex marks its group. Seven edges join vertices in different groups and are cut (solid), the most possible: each of the two triangles keeps at least one uncut edge (dashed). (b) The annealing path $H(s) = -(1-s)\sum_iX_i + s\,H_C$, which switches the transverse field off while it switches the Ising cost on.](figures/maxcut){#fig-maxcut width=85%}
-
 The [QAOA]{.gloss key="qaoa"}, or *quantum approximate optimisation algorithm* [@farhi2014], is the corresponding variational circuit: from $\ket{+\cdots+}$, each layer applies $e^{-i\gamma_kH_C}$ and then $e^{-i\beta_k\sum_iX_i}$, with $2p$ angles optimised as in a VQE.
-It is the HVA of the annealing path: a Trotter step of length $\delta$ at $s_k$ is the layer with $\gamma_k = s_k\delta$ and $\beta_k = -(1-s_k)\delta$, so the annealing schedule is one point of the ansatz, and a natural starting point for the optimiser.^[The same acronym also stands for the *quantum alternating operator ansatz* [@hadfield2019], which generalises these layers, for example to keep the state among the bitstrings that satisfy the constraints of a problem.]
+It is the HVA of the annealing path: a Trotter step of length $\delta$ at $s_k$ is the layer with $\gamma_k = s_k\delta$ and $\beta_k = -(1-s_k)\delta$, so the annealing schedule is one point of the ansatz, and a natural starting point for the optimiser (@fig-qaoa-circuit).^[The same acronym also stands for the *quantum alternating operator ansatz* [@hadfield2019], which generalises these layers, for example to keep the state among the bitstrings that satisfy the constraints of a problem.]
+
+![The QAOA circuit for the graph of @fig-maxcut, with the angles of the annealing schedule: $p = 4$ layers over a total time $T = 3$, so $\delta = 0.75$. After the Hadamard gates, layer $k$ applies $e^{-i\gamma_kH_C}$, with $\gamma_k = s_k\delta$, and $e^{-i\beta_kX}$ on every qubit, with $\beta_k = -(1-s_k)\delta$. The terms of $H_C$ commute, so the cost layer needs no Trotter approximation; it is drawn as one block. The number in each gate is its angle, and the colours are those of @fig-adiabatic-circuit: the cost layers darken while the mixing layers fade. Below, the coefficients of the annealing path (dashed) and the values that each layer uses. In an exact simulation, a shot of this circuit returns a maximum cut with probability 0.88, against 0.09 for a random bitstring.](figures/qaoa-circuit){#fig-qaoa-circuit width=90%}
 
 ## Optimising with shots {#sec-optimisers}
 
