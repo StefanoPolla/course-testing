@@ -13,7 +13,7 @@ By the end of the chapter, you should be able to explain how adiabatic evolution
 ## Ground states and the variational principle {#sec-variational-principle}
 
 Recall from @sec-energy-dynamics that the [ground state]{.gloss key="ground-state"} $\ket{E_0}$ of a Hamiltonian $H$ is its eigenvector with the lowest eigenvalue $E_0$.
-The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"} (also known as *spectral gap* or *ground state gap*).
+The difference $\Delta = E_1 - E_0$ between the two lowest energies is the [gap]{.gloss key="gap"} (also known as *spectral gap* or *ground-state gap*).
 
 A system in thermal equilibrium with an environment at a temperature $T$ much lower than the gap, $k_B T \ll \Delta$, is almost always found in its ground state.
 Many molecules and materials are in this regime.
@@ -70,9 +70,10 @@ A circuit that conserves it, started from a state with a given value, only reach
 <!-- L5-LINK: symmetry verification in L5 builds on this definition. -->
 
 A small gap can make a single Hamiltonian hard.
-Complexity theory adds a general limit: finding the ground-state energy of a local Hamiltonian is believed to be hard even for a quantum computer: the problem is QMA-complete, the quantum analogue of NP-complete, already for 2-local Hamiltonians [@kempe2006].
+Complexity theory adds a general limit.
+Finding the ground-state energy of a local Hamiltonian is believed to be hard even for a quantum computer: the problem is QMA-complete, the quantum analogue of NP-complete, already for 2-local Hamiltonians [@kempe2006].
 This is a worst-case statement, and many Hamiltonians that describe real materials and molecules are believed to be easier.
-Most of the methods of this chapter are heuristics: they come with no general guarantee of performance. 
+Most of the methods of this chapter are heuristics: they come with no general guarantee of performance.
 We judge them by testing them on problems whose answer we know, examining experimentally how they perform with changing system size, and extrapolating to larger systems.
 
 ## Adiabatic state preparation {#sec-adiabatic}
@@ -85,7 +86,7 @@ $$ {#eq-adiabatic-path}
 over a total time $T$, with $s$ growing from 0 to 1.
 
 ::: {.example}
-For the [TFIM]{.gloss key="tfim"}, a natural choice is the field term alone, $H_0 = -h\sum_i X_i$, with the ground state $\ket{+\cdots+}$, a Hadamard gate on every qubit.
+For the [TFIM]{.gloss key="tfim"}, a natural choice is the field term alone, $H_0 = -h\sum_i X_i$, with the ground state $\ket{+\cdots+}$, prepared by a Hadamard gate on every qubit.
 The path then keeps the field fixed and switches on the bonds, $H(s) = -sJ\sum_i Z_iZ_{i+1} - h\sum_i X_i$.
 :::
 
@@ -159,7 +160,7 @@ Each layer is one Trotter step of $H(s)$ with free angles: the schedule of @sec-
 ::: {.example}
 @fig-hva-circuit shows what the optimiser makes of the small circuit of @fig-adiabatic-circuit.
 On the chain of 4 qubits, the schedule reaches a fidelity of 0.70 with the ground state; starting from it and minimising the energy gives angles with a fidelity of 0.9999.
-The optimised angles follow no slow path: the field angles fall from layer to layer, and the bond angles are largest in the second layer.
+The optimised angles follow no slow path: the field angles shrink in size from layer to layer, and the bond angles are largest in size in the second layer.
 Read as Trotter steps, they leave the adiabatic path: the field is turned down instead of kept fixed, and the bonds never reach their final strength.
 
 For our chain of 8 qubits, the schedule with 7 layers, at the total time $T \approx 4$ that minimises its energy, reaches a fidelity of 0.55 with the ground state.
@@ -223,7 +224,7 @@ Why does the bound of @exr-variational not apply here?
 ### Choosing an ansatz {#sec-ansatz}
 
 The ansatz determines which states the VQE can reach.
-A good ansatz must contain a good approximation of the ground state, be shallow enough to avoid too much noise from building up, and be easy to optimise (@sec-optimisers, @sec-barren-plateaus).
+A good ansatz must contain a good approximation of the ground state, be shallow enough that noise does not build up too much, and be easy to optimise (@sec-optimisers, @sec-barren-plateaus).
 There are two broad approaches; @tilly2022 review them and their many variations.
 
 *Problem-inspired* (or *physics-inspired*) *ansätze* are built from $H$, like the HVA.
@@ -265,7 +266,7 @@ For a variational method, this means that a single measurement setting, the $Z$ 
 
 [Quantum annealing]{.gloss key="quantum-annealing"} runs the adiabatic path of @eq-adiabatic-path to such a classical Ising model on an analog device, which applies $H(s)$ directly instead of a Trotter circuit [@kadowaki1998].
 Since $H_C$ has no field, the path switches the field off while it switches the Ising terms on: from $H_0 = -\sum_i X_i$, with the ground state $\ket{+\cdots+}$, it follows $H(s) = -(1-s)\sum_i X_i + s\,H_C$ (@fig-qaoa-circuit, bottom), whereas for the TFIM we kept the field and only switched on the bonds.
-Annealers with thousands of superconducting qubits, made popular by the company D-Wave, have existed since 2011, long before gate-based devices of similar size, although their qubits can only run the annealing.
+Commercial annealers, made popular by the company D-Wave, have existed since 2011 and reached thousands of superconducting qubits long before gate-based devices of similar size, although their qubits can only run the annealing.
 However, existing annealers run at a temperature that is not small compared with the energy gaps, where the environment can excite the state out of the ground state, and they change the Hamiltonian faster than the adiabatic theorem requires, so its guarantee does not apply.
 Annealers are heuristics: they often find good solutions, without a guarantee.
 It is debated whether they outperform classical methods, including classical simulated annealing [@albash2018].
@@ -350,7 +351,7 @@ $$
 E(\theta) = a_0 + a\cos\theta + b\sin\theta ,
 $$ {#eq-sinusoid}
 where $a_0$, $a$ and $b$ depend on the other parameters (@exr-parameter-shift).
-It is fixed by three numbers, and so by the energies at three angles (@fig-parameter-shift a).
+It is fixed by three numbers, and so by the energies at three angles (@fig-parameter-shift, panel a).
 In particular, its derivative $E'(\theta) = -a\sin\theta + b\cos\theta$ follows from two of them.
 Since $\cos(\theta \pm \frac{\pi}{2}) = \mp\sin\theta$ and $\sin(\theta \pm \frac{\pi}{2}) = \pm\cos\theta$, we have $E(\theta + \frac{\pi}{2}) - E(\theta - \frac{\pi}{2}) = 2(-a\sin\theta + b\cos\theta)$, which is the [parameter-shift rule]{.gloss key="parameter-shift-rule"} [@mitarai2018; @schuld2019]:
 $$
