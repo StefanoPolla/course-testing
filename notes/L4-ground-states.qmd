@@ -226,18 +226,27 @@ The ansatz determines which states the VQE can reach.
 A good ansatz must contain a good approximation of the ground state, be shallow enough to avoid too much noise from building up, and be easy to optimise (@sec-optimisers, @sec-barren-plateaus).
 There are two broad approaches; @tilly2022 review them and their many variations.
 
-- *Problem-inspired* (or *physics-inspired*) *ansätze* are built from $H$, like the HVA.
+*Problem-inspired* (or *physics-inspired*) *ansätze* are built from $H$, like the HVA.
 They usually have few parameters, and they can keep the symmetries of $H$: every gate of the HVA conserves the parity of the TFIM (@sec-adiabatic), so the search stays among states with the right parity.
 But their gates follow the interactions of $H$, which may not match the coupling graph of the device, and then need SWAPs.
-- *Hardware-efficient ansätze* are built from the device [@kandala2017].
-Each layer applies native single-qubit rotations, each with its own angle, and native two-qubit gates on the coupled pairs of the device.
-They are as shallow as a circuit can be, and need no SWAPs.
-But they carry no information about $H$, they have many parameters ($2n$ per layer with two rotations per qubit), and they break most symmetries.
+
+*Hardware-efficient ansätze* are built from the device [@kandala2017].
+Each layer applies a native single-qubit gate to every qubit, each with its own angles, and native two-qubit gates on the coupled pairs of the device.
+On a chain of qubits with PRX and CZ as native gates (@sec-native-gates), a layer is a PRX on every qubit, followed by a brick wall of CZs (@fig-hardware-efficient).
+These circuits are as shallow as a circuit can be, and need no SWAPs.
+But they carry no information about $H$, they have many parameters ($2n$ per layer, the two angles of each PRX), and they break most symmetries.
 They are also the most exposed to the barren plateaus of @sec-barren-plateaus.
+
+![Two layers of a hardware-efficient ansatz on a chain of 4 qubits: in each layer, a PRX gate (@eq-prx) with its own angles $\theta_j$ and $\varphi_j$ on every qubit, then CZ gates on the bonds $(1,2)$ and $(3,4)$, and then on $(2,3)$.](figures/hardware-efficient){#fig-hardware-efficient width=60%}
 
 ::: {.example}
 On 8 qubits, 7 layers of the HVA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.
 :::
+
+Every ansatz also needs starting angles for the optimiser.
+For a problem-inspired ansatz, the problem often suggests them, as the adiabatic schedule does for the HVA (@sec-hva).
+A hardware-efficient ansatz has no such natural point.
+Its angles are often drawn at random, which works on small circuits but leads to the barren plateaus of @sec-barren-plateaus on large ones, or set close to zero: then every PRX is close to the identity, the CZs leave $\ket{0\cdots0}$ unchanged, and the circuit starts from a simple state.
 
 ### Quantum annealing and QAOA {#sec-qaoa}
 
@@ -410,7 +419,7 @@ For the HVA with the same number of layers, it does not fall exponentially.
 It even grows, because its first angle is shared by all $n - 1$ bond gates of the first layer; per bond gate, it falls only slowly, roughly like $1/n$.
 :::
 
-![The typical slope of the energy $E(\theta)$ along the first angle, at random angles (the standard deviation of $\partial E/\partial\theta_1$ over 150 random choices of all angles), for TFIM chains of $n$ qubits ($J = 1$, $h = 0.5$) and ansätze with $4n$ layers: a hardware-efficient ansatz ($R_Y$ and $R_Z$ on every qubit, then CZ on every bond; orange) and the HVA (blue), whose first angle sets all the bond gates of the first layer. Exact energies, no shots.](figures/barren-plateau){#fig-barren-plateau width=55%}
+![The typical slope of the energy $E(\theta)$ along the first angle, at random angles (the standard deviation of $\partial E/\partial\theta_1$ over 150 random choices of all angles), for TFIM chains of $n$ qubits ($J = 1$, $h = 0.5$) and ansätze with $4n$ layers: the hardware-efficient ansatz of @fig-hardware-efficient (orange) and the HVA (blue), whose first angle sets all the bond gates of the first layer. Exact energies, no shots.](figures/barren-plateau){#fig-barren-plateau width=55%}
 
 A flat landscape is a problem because the energies are estimated.
 This is the flatness near a minimum of @sec-optimisers, but now almost everywhere.
@@ -419,7 +428,7 @@ Gradient-free optimisers do not escape: they compare energy differences, which a
 
 The ways out of barren plateaus keep the states away from random ones [@larocca2025].
 The first is a *structured ansatz*: an ansatz built from $H$ with few parameters, such as the HVA, does not explore all states, and for the TFIM its slopes stay large (@fig-barren-plateau).
-The second is a *good starting point*: instead of random angles, start from a circuit known to prepare a reasonable state, such as the adiabatic schedule of @sec-hva, or from angles that make the circuit close to the identity, so that it starts from a simple state, far from random ones.
+The second is a *good starting point*: instead of random angles, start from a circuit known to prepare a reasonable state, such as the adiabatic schedule of @sec-hva, or from angles close to zero, so that it starts from a simple state, far from random ones (@sec-ansatz).
 
 These remedies come with a caveat, and this is an active field of research.
 The ansätze that are proved to avoid barren plateaus often turn out to be simulable efficiently on a classical computer, sometimes after collecting some data on a quantum computer [@cerezo2025].

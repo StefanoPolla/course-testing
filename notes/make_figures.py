@@ -1211,13 +1211,12 @@ print(f"L4 parameter shift: slope {slope:.3f}, one estimate +- {sigma:.3f}, shif
 
 # ------------------------------------------- L4: barren plateaus (about 40 s)
 def hardware_efficient(n, n_layers, params):
-    # layers of R_Y and R_Z on every qubit, then CZ on every bond (two brick layers)
+    # layers of PRX on every qubit (Qiskit's RGate is PRX), then CZ on every bond (two brick layers)
     qc = QuantumCircuit(n)
     it = iter(params)
     for _ in range(n_layers):
         for i in range(n):
-            qc.ry(next(it), i)
-            qc.rz(next(it), i)
+            qc.r(next(it), next(it), i)
         for first in (0, 1):
             for i in range(first, n - 1, 2):
                 qc.cz(i, i + 1)
@@ -1388,3 +1387,20 @@ ax.set_ylim(bot - 0.75, top + 0.1)
 ax.set_aspect("equal")
 ax.axis("off")
 save_fig(fig, "parameter-shift-split")
+
+
+# ------------------------------------------- L4: two layers of a hardware-efficient ansatz
+# PRX on every qubit, each with its own two angles, then CZ on every bond in two brick layers.
+# The same ansatz as in the barren-plateau figure (simulated there with Qiskit's RGate, which is PRX).
+regs = [QuantumRegister(1, f"q{i + 1}") for i in range(4)]
+hea = QuantumCircuit(*regs)
+for k in range(2):
+    for i in range(4):
+        j = "".join("₀₁₂₃₄₅₆₇₈₉"[int(c)] for c in str(4 * k + i + 1))
+        hea.append(prx(Parameter(f"θ{j}"), Parameter(f"φ{j}")), [i])
+    hea.barrier()
+    for first in (0, 1):
+        for i in range(first, 3, 2):
+            hea.cz(i, i + 1)
+        hea.barrier()
+save_fig(hea.draw("mpl", style=STYLE, scale=0.85, plot_barriers=False), "hardware-efficient")
