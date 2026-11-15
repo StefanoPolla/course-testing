@@ -223,7 +223,7 @@ Why does the bound of @exr-variational not apply here?
 ### Choosing an ansatz {#sec-ansatz}
 
 The ansatz determines which states the VQE can reach.
-A good ansatz must contain a good approximation of the ground state, be shallow enough for the noise of the device, and have an energy landscape that the optimiser can navigate.
+A good ansatz must contain a good approximation of the ground state, be shallow enough for the noise of the device, and be easy to optimise: the energy $E(\theta)$, seen as a landscape over the parameters, should be neither so flat nor so rugged that the optimiser gets lost in it (@sec-optimisers, @sec-barren-plateaus).
 There are two broad approaches, with many variations; we only introduce them here, and @tilly2022 review them.
 
 - *Physics-motivated ansätze* are built from the problem.
