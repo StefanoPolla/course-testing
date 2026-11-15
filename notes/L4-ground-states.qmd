@@ -139,10 +139,10 @@ With an error of 0.5% per CZ, @eq-circuit-fidelity gives a probability of $e^{-5
 
 The adiabatic circuit has a fixed structure: for the TFIM, it alternates layers of $R_{ZZ}$ on all bonds and $R_X$ on all qubits, with angles that the schedule prescribes.
 With only a few layers, the schedule gives a poor state: either the steps are long, with a large Trotter error, or the total time is short, too fast for the gap.
-But the variational principle tells us how to judge any choice of angles: the lower the energy, the better.
-So we keep the structure, *free the angles*, and let an optimiser choose them.
+The variational principle gives us a way to compare any choice of angles without knowing what the correct ground state is: the lower the energy, the better.
+So, we can improve the final state by changing the angles in the circuit: instead of being fixed by the adiabatic schedule, the angles become free parameters, optimised to minimise the final energy of the prepared state.
 
-### The variational Hamiltonian ansatz {#sec-vha}
+### The Hamiltonian variational ansatz {#sec-hva}
 
 For the TFIM, the circuit with $p$ layers starts from $\ket{+\cdots+}$ and applies, in layer $k$, $R_{ZZ}(\gamma_k)$ on every bond and $R_X(\beta_k)$ on every qubit, as in @fig-trotter-step but with free angles.
 Its $2p$ angles $\theta = (\gamma_1, \beta_1, \dots, \gamma_p, \beta_p)$ prepare the state $\ket{\psi(\theta)}$, with energy
@@ -150,7 +150,7 @@ $$
 E(\theta) = \bra{\psi(\theta)}H\ket{\psi(\theta)} ,
 $$
 and we look for the angles that minimise it.
-A family of circuits like this one, fixed up to its parameters, is called an [ansatz]{.gloss key="ansatz"} (German for "approach", plural *ansätze*), and this one, built from the terms of $H$, is the [variational Hamiltonian ansatz]{.gloss key="vha"} (VHA) [@wecker2015].
+A family of circuits like this one, fixed up to its parameters, is called an [ansatz]{.gloss key="ansatz"} (German, from *ansetzen*, "to set on" or "to start"; plural *Ansätze*), and this one, built from the terms of $H$, is the [Hamiltonian variational ansatz]{.gloss key="hva"} (HVA) [@wecker2015].
 Each layer is one Trotter step of $H(s)$ with free angles: the schedule of @sec-adiabatic-circuits is the point $\gamma_k = -2s_kJ\delta$, $\beta_k = -2h\delta$ of the ansatz, with $s_k$ the middle of step $k$, and the obvious starting point for the optimiser.
 
 ::: {.example}
@@ -216,7 +216,7 @@ It must contain a good approximation of the ground state, be shallow enough for 
 There are two broad approaches, with many variations; we only introduce them here, and @tilly2022 review them.
 
 - *Physics-motivated ansätze* are built from the problem.
-The VHA uses the terms of $H$.
+The HVA uses the terms of $H$.
 For molecules, the *unitary coupled-cluster* ansatz, from quantum chemistry and proposed for VQE by @peruzzo2014, builds the circuit from the excitations of electrons between orbitals.
 Other ansätze keep a symmetry of $H$, such as the number of flipped qubits in the Heisenberg model (@sec-spin-models), so that the search stays among states with the right symmetry.
 *Adaptive* ansätze grow the circuit one gate at a time, choosing the gate along which the energy is steepest [@grimsley2019].
@@ -228,7 +228,7 @@ But they carry no information about $H$, they have many parameters ($2n$ per lay
 They are also the most exposed to the barren plateaus of @sec-barren-plateaus.
 
 ::: {.example}
-On 8 qubits, 7 layers of the VHA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.
+On 8 qubits, 7 layers of the HVA have 14 parameters and 98 CZs, while 7 hardware-efficient layers have 112 parameters and 49 CZs.
 :::
 
 ### Quantum annealing and QAOA {#sec-qaoa}
@@ -288,7 +288,7 @@ With shots, each estimate has a standard error $\varepsilon$, and their differen
 @fig-parameter-shift (b) shows both effects: with 1,000 shots per setting for each estimate, the error of the derivative is 24 at $\Delta\theta = 0.003$, far larger than the derivative itself (0.83), and it only becomes acceptable at steps so large that the approximation fails.
 
 For the gates of our ansätze, there is a better way.
-Suppose that the parameter $\theta$ enters through a single gate, a rotation $e^{-i\theta P/2}$ about a Pauli string $P$, as all the rotations of the VHA and of hardware-efficient ansätze do.
+Suppose that the parameter $\theta$ enters through a single gate, a rotation $e^{-i\theta P/2}$ about a Pauli string $P$, as all the rotations of the HVA and of hardware-efficient ansätze do.
 Write the circuit as $V_2\,e^{-i\theta P/2}\,V_1$, where $V_1$ and $V_2$ are the gates before and after it, and let $\ket{\phi} = V_1\ket{0\cdots0}$ and $O = V_2^\dagger HV_2$.
 By @eq-pauli-rotation,
 $$
@@ -308,10 +308,10 @@ $$
 $$ {#eq-parameter-shift}
 Unlike a finite difference, it is exact, and its shift is large, so it does not amplify the shot noise: with estimates of standard error $\varepsilon$, the derivative has the standard error $\varepsilon/\sqrt{2}$, 0.06 in @fig-parameter-shift (b).
 
-![The energy along one angle $\theta$ of a VHA circuit with two layers, for the TFIM chain of @fig-adiabatic: here one gate, the $R_X$ of qubit 5 in the second layer, gets its own angle $\theta$, added to $\beta_2$, and all other angles stay at the schedule. (a) The exact energy (orange) is a sinusoid. Three estimates with 1,000 shots per setting (blue, with their standard errors), at $\theta_0 = -0.9$ and $\theta_0 \pm \pi/2$, fix the dashed sinusoid. (b) The error of the derivative at $\theta_0$ (root mean square over 300 repetitions), from two estimates of 1,000 shots per setting each: finite differences against their step $\Delta\theta$ (blue), and the parameter-shift rule (orange). Dotted: the error of finite differences with exact energies.](figures/parameter-shift){#fig-parameter-shift width=100%}
+![The energy along one angle $\theta$ of an HVA circuit with two layers, for the TFIM chain of @fig-adiabatic: here one gate, the $R_X$ of qubit 5 in the second layer, gets its own angle $\theta$, added to $\beta_2$, and all other angles stay at the schedule. (a) The exact energy (orange) is a sinusoid. Three estimates with 1,000 shots per setting (blue, with their standard errors), at $\theta_0 = -0.9$ and $\theta_0 \pm \pi/2$, fix the dashed sinusoid. (b) The error of the derivative at $\theta_0$ (root mean square over 300 repetitions), from two estimates of 1,000 shots per setting each: finite differences against their step $\Delta\theta$ (blue), and the parameter-shift rule (orange). Dotted: the error of finite differences with exact energies.](figures/parameter-shift){#fig-parameter-shift width=100%}
 
 The rule costs two estimates per gate.
-A parameter shared by several gates, such as $\gamma_k$, which sets all the bond gates of layer $k$ of the VHA, needs a shift of each of its gates in turn: by the product rule, its derivative is the sum of their derivatives.
+A parameter shared by several gates, such as $\gamma_k$, which sets all the bond gates of layer $k$ of the HVA, needs a shift of each of its gates in turn: by the product rule, its derivative is the sum of their derivatives.
 A full gradient therefore costs two estimates for every parametrised gate of the circuit, against two per step for SPSA (@exr-gradient-cost).
 
 Since three estimates fix the whole sinusoid, some optimisers move one angle at a time straight to the minimum of its sinusoid, for angles that each enter a single gate [@nakanishi2020; @ostaszewski2021] (@exr-parameter-shift).
@@ -340,7 +340,7 @@ Why does this only work if each parameter enters a single gate?
 
 ::: {#exr-gradient-cost}
 ## The cost of a gradient
-We run a VQE with the VHA of @sec-vha, with $p$ layers, for the [TFIM]{.gloss key="tfim"} chain of $n$ qubits, using 1,000 shots per measurement setting for each energy estimate.
+We run a VQE with the HVA of @sec-hva, with $p$ layers, for the [TFIM]{.gloss key="tfim"} chain of $n$ qubits, using 1,000 shots per measurement setting for each energy estimate.
 
 (a) How many parametrised gates does the circuit have?
 How many circuits, counting each measurement setting separately, does one gradient by the parameter-shift rule need, and how many shots?
@@ -365,11 +365,11 @@ The energy landscape is then flat almost everywhere: a [barren plateau]{.gloss k
 ::: {.example}
 @fig-barren-plateau shows this for our TFIM chain.
 For a hardware-efficient ansatz with $4n$ layers, the typical slope at random angles falls by about a factor 0.6 for every two added qubits.
-For the VHA with the same number of layers, it does not fall exponentially.
+For the HVA with the same number of layers, it does not fall exponentially.
 It even grows, because its first angle is shared by all $n - 1$ bond gates of the first layer; per bond gate, it falls only slowly, roughly like $1/n$.
 :::
 
-![The typical slope of the energy $E(\theta)$ along the first angle, at random angles (the standard deviation of $\partial E/\partial\theta_1$ over 150 random choices of all angles), for TFIM chains of $n$ qubits ($J = 1$, $h = 0.5$) and ansätze with $4n$ layers: a hardware-efficient ansatz ($R_Y$ and $R_Z$ on every qubit, then CZ on every bond; orange) and the VHA (blue), whose first angle sets all the bond gates of the first layer. Exact energies, no shots.](figures/barren-plateau){#fig-barren-plateau width=55%}
+![The typical slope of the energy $E(\theta)$ along the first angle, at random angles (the standard deviation of $\partial E/\partial\theta_1$ over 150 random choices of all angles), for TFIM chains of $n$ qubits ($J = 1$, $h = 0.5$) and ansätze with $4n$ layers: a hardware-efficient ansatz ($R_Y$ and $R_Z$ on every qubit, then CZ on every bond; orange) and the HVA (blue), whose first angle sets all the bond gates of the first layer. Exact energies, no shots.](figures/barren-plateau){#fig-barren-plateau width=55%}
 
 A flat landscape is a problem because the energies are estimated.
 This is the flatness near a minimum of @sec-optimisers, but now almost everywhere.
@@ -377,12 +377,12 @@ To tell the sign of a slope of size $g$, the standard error of its estimate must
 Gradient-free optimisers do not escape: they compare energy differences, which are just as small [@arrasmith2021].
 
 The ways out of barren plateaus keep the states away from random ones [@larocca2025].
-The first is a *structured ansatz*: an ansatz built from $H$ with few parameters, such as the VHA, does not explore all states, and for the TFIM its slopes stay large (@fig-barren-plateau).
-The second is a *good starting point*: instead of random angles, start from a circuit known to prepare a reasonable state, such as the adiabatic schedule of @sec-vha, or from angles that make the circuit close to the identity, so that it starts from a simple state, far from random ones.
+The first is a *structured ansatz*: an ansatz built from $H$ with few parameters, such as the HVA, does not explore all states, and for the TFIM its slopes stay large (@fig-barren-plateau).
+The second is a *good starting point*: instead of random angles, start from a circuit known to prepare a reasonable state, such as the adiabatic schedule of @sec-hva, or from angles that make the circuit close to the identity, so that it starts from a simple state, far from random ones.
 
 These remedies come with a caveat, and this is an active field of research.
 The ansätze that are proved to avoid barren plateaus often turn out to be simulable efficiently on a classical computer, sometimes after collecting some data on a quantum computer [@cerezo2025].
-The TFIM chain is an example: its VHA has no barren plateau, but the model is classically solvable at any size, which makes it a good test case, not a candidate for quantum advantage.
+The TFIM chain is an example: its HVA has no barren plateau, but the model is classically solvable at any size, which makes it a good test case, not a candidate for quantum advantage.
 Barren plateaus are also not the only obstacle: the landscape can have many local minima, and in the worst case, training a variational circuit is NP-hard [@bittel2021].
 
 A third way out brings us back to the start of the chapter: *continuation* along the adiabatic path.

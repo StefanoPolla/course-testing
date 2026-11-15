@@ -929,7 +929,7 @@ def fields(n, h):
 
 def layers_circuit(n, angles, extra=0.0):
     # |+...+>, then one layer per pair (a, b): R_ZZ(a) on all bonds (two brick layers), R_X(b) on all
-    # qubits. The Trotterised adiabatic schedule and the variational Hamiltonian ansatz are both of
+    # qubits. The Trotterised adiabatic schedule and the Hamiltonian variational ansatz are both of
     # this form. `extra` is added to the R_X of the middle qubit in the second layer (the one gate
     # angle varied in the parameter-shift figure).
     qc = QuantumCircuit(n)
@@ -1091,7 +1091,7 @@ ax.axis("off")
 save_fig(fig, "adiabatic-circuit")
 
 
-# ------------------------------------------- L4: numbers for the VHA example (exact simulation)
+# ------------------------------------------- L4: numbers for the HVA example (exact simulation)
 def energy(angles):
     return Statevector(layers_circuit(n, angles)).expectation_value(H_target).real
 
@@ -1103,8 +1103,8 @@ for p in (2, 4, 7):
     start = np.array(schedule(p, T_best)).ravel()
     res = minimize(lambda x: energy(x.reshape(-1, 2)), start, method="BFGS")
     f_sched = abs(ground.conj() @ Statevector(layers_circuit(n, schedule(p, T_best))).data) ** 2
-    f_vha = abs(ground.conj() @ Statevector(layers_circuit(n, res.x.reshape(-1, 2))).data) ** 2
-    print(f"L4 VHA p={p}: schedule (T={T_best:.1f}) fidelity {f_sched:.2f}, optimised {f_vha:.3f}",
+    f_hva = abs(ground.conj() @ Statevector(layers_circuit(n, res.x.reshape(-1, 2))).data) ** 2
+    print(f"L4 HVA p={p}: schedule (T={T_best:.1f}) fidelity {f_sched:.2f}, optimised {f_hva:.3f}",
           f"(energy error {res.fun - E0:.3f})")
 
 
@@ -1203,7 +1203,7 @@ def hardware_efficient(n, n_layers, params):
 
 def slope_spread(build, n_params, n, samples=150, d=1e-4):
     # standard deviation, over random angles, of the slope of the energy along the first angle
-    # (exact energies; a small difference, since in the VHA the first angle is shared by several gates)
+    # (exact energies; a small difference, since in the HVA the first angle is shared by several gates)
     Hn = tfim(n, J, h)
     slopes = []
     for _ in range(samples):
@@ -1219,9 +1219,9 @@ def slope_spread(build, n_params, n, samples=150, d=1e-4):
 
 sizes = [2, 4, 6, 8, 10, 12]
 spread_hea = [slope_spread(lambda x, n=n: hardware_efficient(n, 4 * n, x), 8 * n * n, n) for n in sizes]
-spread_vha = [slope_spread(lambda x, n=n: layers_circuit(n, x.reshape(-1, 2)), 8 * n, n) for n in sizes]
+spread_hva = [slope_spread(lambda x, n=n: layers_circuit(n, x.reshape(-1, 2)), 8 * n, n) for n in sizes]
 fig, ax = plt.subplots(figsize=(4.6, 2.9))
-ax.semilogy(sizes, spread_vha, "o-", color=ACCENT, ms=5, lw=1.4, label="VHA")
+ax.semilogy(sizes, spread_hva, "o-", color=ACCENT, ms=5, lw=1.4, label="HVA")
 ax.semilogy(sizes, spread_hea, "s-", color=ORANGE, ms=5, lw=1.4, label="hardware-efficient")
 ax.set_xlabel("number of qubits $n$")
 ax.set_ylabel("typical slope of $E(\\theta)$")
@@ -1229,4 +1229,4 @@ ax.set_xticks(sizes)
 ax.legend(frameon=False, fontsize=8.5, loc="lower left")
 clean_axes(ax)
 save_fig(fig, "barren-plateau")
-print("L4 barren plateau: hardware-efficient", np.round(spread_hea, 3), "VHA", np.round(spread_vha, 2))
+print("L4 barren plateau: hardware-efficient", np.round(spread_hea, 3), "HVA", np.round(spread_hva, 2))

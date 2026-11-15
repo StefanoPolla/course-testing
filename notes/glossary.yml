@@ -341,9 +341,9 @@ glossary:
   ansatz:
     term: ansatz
     def: "A family of circuits with a fixed structure and free parameters, such as rotation angles, used to prepare trial states in a variational algorithm. Plural: ansätze."
-  vha:
-    term: variational Hamiltonian ansatz
-    def: "An ansatz built from the terms of the Hamiltonian: layers that look like Trotter steps, with one free angle per group of terms in each layer. With the angles of a slow schedule, it reproduces adiabatic state preparation."
+  hva:
+    term: Hamiltonian variational ansatz
+    def: "An ansatz built from the terms of the Hamiltonian: layers that look like Trotter steps, with one free angle per group of terms in each layer. With the angles of a slow schedule, it reproduces adiabatic state preparation. Sometimes also called the variational Hamiltonian ansatz (VHA)."
   vqe:
     term: variational quantum eigensolver
     def: "VQE: a loop in which a quantum computer prepares a state with a parametrised circuit and estimates its energy from shots, and a classical optimiser changes the parameters to lower the energy."
