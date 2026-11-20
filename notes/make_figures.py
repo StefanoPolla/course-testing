@@ -1412,3 +1412,291 @@ for text in fig.axes[0].texts:                  # qubit labels q1 -> q_1, as in 
     if re.fullmatch(r"\$?\{?q(\d)\}?\$?", text.get_text()):
         text.set_text(re.sub(r"\D", "", text.get_text()).join(("$q_{", "}$")))
 save_fig(fig, "hardware-efficient")
+
+
+# ================================================================== L5 (about 1 minute)
+# Self-contained, in the style of the tutorials (T2-T4), so that the code can be read next to them.
+from qiskit.circuit import ParameterVector  # noqa: E402
+from qiskit_aer.noise import ReadoutError  # noqa: E402
+from qiskit.quantum_info import Operator  # noqa: E402
+
+J, h = 1.0, 0.5   # the TFIM of L4 and T4
+
+
+def native_noise_model(p1, p2):
+    # T2-T4: depolarising errors after every r gate (p1) and every cz gate (p2)
+    noise_model = NoiseModel()
+    noise_model.add_all_qubit_quantum_error(depolarizing_error(p1, 1), ["r"])
+    noise_model.add_all_qubit_quantum_error(depolarizing_error(p2, 2), ["cz"])
+    return noise_model
+
+
+def signs(bitstring):
+    # T3: the outcomes of one shot as signs; Qiskit writes qubit 0 last
+    return [1 - 2 * int(b) for b in bitstring[::-1]]
+
+
+# ------------------------------------------- L5: zero-noise extrapolation of the T4 energy
+
+def hva_ansatz(n_qubits, n_layers):
+    # T4: |+...+>, then in layer k R_ZZ(gamma_k) on every bond and R_X(beta_k) on every qubit
+    theta = ParameterVector("theta", 2 * n_layers)
+    circuit = QuantumCircuit(n_qubits)
+    circuit.h(range(n_qubits))
+    for k in range(n_layers):
+        for first in (0, 1):
+            for i in range(first, n_qubits - 1, 2):
+                circuit.rzz(theta[2 * k], i, i + 1)
+        for i in range(n_qubits):
+            circuit.rx(theta[2 * k + 1], i)
+    return circuit
+
+
+def t4_schedule(n_layers, total_time):
+    # T4: the angles of the adiabatic schedule
+    dt = total_time / n_layers
+    angles = []
+    for k in range(n_layers):
+        angles += [-2 * (k + 0.5) / n_layers * J * dt, -2 * h * dt]
+    return np.array(angles)
+
+
+def fold(circuit, scale_factor):
+    # Global folding: U -> U (U^dagger U)^k, with scale factor c = 2k + 1
+    folded = circuit.copy()
+    for _ in range((scale_factor - 1) // 2):
+        folded = folded.compose(circuit.inverse()).compose(circuit)
+    return folded
+
+
+def group_values(counts, setting, n_qubits):
+    # T3/T4: one value of the bond group (setting "Z") or the field group ("X") per shot
+    values = []
+    for bitstring, count in counts.items():
+        s = signs(bitstring)
+        if setting == "Z":
+            value = -J * sum(s[i] * s[i + 1] for i in range(n_qubits - 1))
+        else:
+            value = -h * sum(s)
+        values += [value] * count
+    return np.array(values)
+
+
+seeds = np.random.default_rng(2026)   # a new simulator seed for every run, reproducible
+
+
+def measure_energy(state_circuit, shots, simulator):
+    # T3/T4: estimate of <H> from `shots` shots in each of the two settings, and its standard error
+    n_qubits = state_circuit.num_qubits
+    energy, variance = 0, 0
+    for setting in ["Z", "X"]:
+        circuit = state_circuit.copy()
+        if setting == "X":
+            circuit.h(range(n_qubits))
+        circuit.measure_all()
+        seed = int(seeds.integers(2**31))
+        counts = simulator.run(circuit, shots=shots, seed_simulator=seed).result().get_counts()
+        values = group_values(counts, setting, n_qubits)
+        energy += values.mean()
+        variance += values.var() / shots
+    return energy, np.sqrt(variance)
+
+
+n_qubits, n_layers = 4, 3
+hamiltonian = tfim(n_qubits, J, h)
+E0 = np.linalg.eigvalsh(hamiltonian.to_matrix())[0]
+ansatz = hva_ansatz(n_qubits, n_layers)
+
+
+def energy_exact(angles):
+    return Statevector(ansatz.assign_parameters(angles)).expectation_value(hamiltonian).real
+
+
+result = minimize(energy_exact, t4_schedule(n_layers, 3.0), method="COBYLA")   # as in T4, A2
+native = transpile(ansatz.assign_parameters(result.x), basis_gates=["r", "cz"], optimization_level=1)
+noise_model = native_noise_model(0.001, 0.005)
+density_simulator = AerSimulator(method="density_matrix", noise_model=noise_model)
+scale_factors = [1, 3, 5]
+noisy_energy = {}
+for c in scale_factors:
+    circuit = fold(native, c)
+    circuit.save_density_matrix()
+    rho = density_simulator.run(circuit).result().data()["density_matrix"]
+    noisy_energy[c] = rho.expectation_value(hamiltonian).real
+E1, E3, E5 = noisy_energy[1], noisy_energy[3], noisy_energy[5]
+linear = (3 * E1 - E3) / 2
+richardson = (15 * E1 - 10 * E3 + 3 * E5) / 8
+exponential = E1 * np.sqrt(E1 / E3)
+print("L5 ZNE: gates", dict(native.count_ops()), " E_ideal - E0 =", round(result.fun - E0, 4))
+print("  noisy E - E0 at c = 1, 3, 5:", [round(noisy_energy[c] - E0, 4) for c in scale_factors])
+print("  extrapolated E - E0: linear", round(linear - E0, 4), " Richardson", round(richardson - E0, 4),
+      " exponential", round(exponential - E0, 4))
+
+# 1000 repetitions of the whole experiment, with 1000 shots per setting at each scale factor
+shot_simulator = AerSimulator(noise_model=noise_model)
+repetitions, shots = 1000, 1000
+estimates = {c: [] for c in scale_factors}
+for _ in range(repetitions):
+    for c in scale_factors:
+        estimates[c].append(measure_energy(fold(native, c), shots, shot_simulator)[0])
+e1, e3, e5 = (np.array(estimates[c]) for c in scale_factors)
+spreads = {"none": e1, "linear": (3 * e1 - e3) / 2, "Richardson": (15 * e1 - 10 * e3 + 3 * e5) / 8,
+           "exponential": e1 * np.sqrt(np.abs(e1 / e3))}
+for name, values in spreads.items():
+    print(f"  {name}: mean - E0 = {values.mean() - E0:.4f}, std = {values.std():.4f},"
+          f" rmse = {np.sqrt(((values - E0) ** 2).mean()):.4f}, below E0: {(values < E0).mean():.2f}")
+
+GREY = "0.25"
+styles = {"linear": (ORANGE, "--"), "Richardson": (ACCENT, "-"), "exponential": (GREY, ":")}
+fig, (ax_fit, ax_spread) = plt.subplots(1, 2, figsize=(8.2, 3.0), gridspec_kw=dict(width_ratios=[1.15, 1]))
+c_axis = np.linspace(0, 5.4, 200)
+b = np.log(E1 / E3) / 2                       # E(c) = A exp(-b c) through c = 1, 3
+fits = {"linear": linear + (E1 - linear) * c_axis,
+        "Richardson": np.polyval(np.polyfit(scale_factors, [E1, E3, E5], 2), c_axis),
+        "exponential": exponential * np.exp(-b * c_axis)}
+zoom = ax_fit.inset_axes([0.6, 0.1, 0.37, 0.4])   # the intercepts at c = 0, enlarged
+for ax in (ax_fit, zoom):
+    for name, curve in fits.items():
+        colour, dash = styles[name]
+        ax.plot(c_axis, curve - E0, dash, color=colour, lw=1.6 if name == "exponential" else 1.4,
+                label=name, zorder=4 if name == "exponential" else 3)
+    ax.plot(scale_factors, [noisy_energy[c] - E0 for c in scale_factors], "o", color="black", ms=5,
+            zorder=5, label="noisy, folded")
+    ax.axhline(0, color="0.6", lw=0.8)
+zoom.plot([0], [result.fun - E0], "*", color="black", ms=7, zorder=6)
+zoom.set_xlim(-0.03, 0.5)
+zoom.set_ylim(-0.01, 0.16)
+zoom.set_xticks([0, 0.5])
+zoom.set_yticks([0, 0.05, 0.1, 0.15])
+zoom.tick_params(labelsize=7)
+ax_fit.indicate_inset_zoom(zoom, edgecolor="0.5")
+ax_fit.set_xlabel("noise scale factor $c$")
+ax_fit.set_ylabel("$E - E_0$")
+ax_fit.set_xlim(-0.15, 5.4)
+ax_fit.set_xticks([0, 1, 3, 5])
+ax_fit.legend(frameon=False, fontsize=8.5, loc="upper left")
+ax_fit.set_title("(a)", loc="left", fontsize=9.5)
+rng_jitter = np.random.default_rng(3)
+for k, (name, values) in enumerate(spreads.items()):
+    colour = "black" if name == "none" else styles[name][0]
+    x = k + rng_jitter.uniform(-0.18, 0.18, len(values))
+    ax_spread.plot(x, values - E0, ".", color=colour, ms=1.6, alpha=0.3)
+    ax_spread.plot([k - 0.28, k + 0.28], [values.mean() - E0] * 2, "-", color=colour, lw=2)
+ax_spread.axhline(0, color="0.6", lw=0.8)
+ax_spread.set_xticks(range(len(spreads)))
+ax_spread.set_xticklabels(["no\nmitigation", "linear", "Richardson", "expo-\nnential"], fontsize=8.5)
+ax_spread.set_ylabel("$E - E_0$ (estimates)")
+ax_spread.set_title("(b)", loc="left", fontsize=9.5)
+for ax in (ax_fit, ax_spread):
+    clean_axes(ax)
+fig.subplots_adjust(wspace=0.32)
+save_fig(fig, "zne")
+
+
+# ------------------------------------------- L5: symmetry sectors (block-diagonal Hamiltonians)
+
+def sector_panel(ax, matrix, order, sizes, labels, title):
+    # Nonzero entries of `matrix`, with rows and columns in the order `order`, and one box per sector
+    m = np.abs(matrix[np.ix_(order, order)]) > 1e-12
+    ax.imshow(m, cmap="Greys", vmin=0, vmax=1.6, interpolation="nearest")
+    start = 0
+    for size, label in zip(sizes, labels):
+        ax.add_patch(Rectangle((start - 0.5, start - 0.5), size, size, fill=False, edgecolor=ACCENT, lw=1.6))
+        ax.text(len(order) + 0.2, start + size / 2 - 0.5, label, va="center", fontsize=8.5, color=ACCENT)
+        start += size
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_title(title, loc="left", fontsize=9.5)
+
+
+n4 = 4
+heis = SparsePauliOp.from_sparse_list([(p, [i, i + 1], 1.0) for i in range(n4 - 1) for p in ("XX", "YY", "ZZ")],
+                                      num_qubits=n4).to_matrix()
+flips = [bin(x).count("1") for x in range(2 ** n4)]
+order = sorted(range(2 ** n4), key=lambda x: (flips[x], x))
+# TFIM in the X basis (a Hadamard on every qubit): there, the parity X...X is diagonal
+had = QuantumCircuit(n4)
+had.h(range(n4))
+had_matrix = Operator(had).data
+tfim_x = had_matrix @ tfim(n4, 1.0, 0.5).to_matrix() @ had_matrix
+parity = [(-1) ** bin(x).count("1") for x in range(2 ** n4)]
+order_p = sorted(range(2 ** n4), key=lambda x: (-parity[x], x))
+fig, (ax_h, ax_t) = plt.subplots(1, 2, figsize=(6.6, 3.0))
+sector_panel(ax_h, heis, order, [1, 4, 6, 4, 1], ["$k=0$", "$k=1$", "$k=2$", "$k=3$", "$k=4$"],
+             "(a) Heisenberg chain, $Z$ basis")
+sector_panel(ax_t, tfim_x, order_p, [8, 8], ["parity $+1$", "parity $-1$"], "(b) TFIM, $X$ basis")
+fig.subplots_adjust(wspace=0.45)
+save_fig(fig, "sectors")
+
+
+# ------------------------------------------- L5: the light cone with noise and post-selection (about 30 s)
+
+def light_cone_circuit(n_qubits, J, dt, steps):
+    # L3/T3: the middle qubit flipped, then `steps` Trotter steps of the Heisenberg chain
+    circuit = QuantumCircuit(n_qubits)
+    circuit.x(n_qubits // 2)
+    for _ in range(steps):
+        circuit.compose(heisenberg_step(n_qubits, J, dt), inplace=True)
+    return circuit
+
+
+cone_noise = native_noise_model(0.001, 0.005)
+cone_noise.add_all_qubit_readout_error(ReadoutError([[0.99, 0.01], [0.02, 0.98]]))   # e0 = 1%, e1 = 2%
+cone_simulator = AerSimulator(noise_model=cone_noise)
+n_qubits, dt, n_steps, shots = 11, 0.2, 10, 4000
+ideal, noisy, post_selected, kept_fraction, fault_rate = [], [], [], [], []
+for k in range(n_steps + 1):
+    circuit = light_cone_circuit(n_qubits, 1.0, dt, k)
+    state = Statevector(circuit)
+    ideal.append([state.probabilities([i])[1] for i in range(n_qubits)])
+    native = transpile(circuit, basis_gates=["r", "cz"], optimization_level=2)   # 3 CZs per bond gate
+    ops = native.count_ops()
+    fault_rate.append(0.75 * 0.001 * ops.get("r", 0) + 15 / 16 * 0.005 * ops.get("cz", 0) + 0.01 * 10 + 0.02)
+    native.measure_all()
+    counts = cone_simulator.run(native, shots=shots, seed_simulator=100 + k).result().get_counts()
+    all_flips = np.zeros(n_qubits)   # number of shots that read 1 on each qubit
+    kept_flips = np.zeros(n_qubits)  # the same, among the shots with exactly one 1
+    kept = 0
+    for bitstring, count in counts.items():
+        bits = np.array([int(b) for b in bitstring[::-1]])
+        all_flips += count * bits
+        if bits.sum() == 1:          # post-selection on one flipped qubit
+            kept_flips += count * bits
+            kept += count
+    noisy.append(all_flips / shots)
+    post_selected.append(kept_flips / kept)
+    kept_fraction.append(kept / shots)
+ideal, noisy, post_selected = np.array(ideal), np.array(noisy), np.array(post_selected)
+print("L5 light cone: CZ at the end", ops.get("cz"), " fault rate", np.round(fault_rate, 2))
+print("  kept fraction", np.round(kept_fraction, 3))
+print("  flips per noisy shot", np.round(noisy.sum(axis=1), 2))
+print("  mean |error| noisy", np.round(np.abs(noisy - ideal).mean(axis=1), 3))
+print("  mean |error| post-selected", np.round(np.abs(post_selected - ideal).mean(axis=1), 3))
+times = dt * np.arange(n_steps + 1)
+fig = plt.figure(figsize=(8.6, 2.75))
+grid = fig.add_gridspec(1, 6, width_ratios=[1, 1, 1, 0.07, 0.62, 1.3], wspace=0.22)   # column 4: a gap
+panels = [fig.add_subplot(grid[0, k]) for k in range(3)]
+ax_kept = fig.add_subplot(grid[0, 5])
+for ax, data, title in zip(panels, [ideal, noisy, post_selected], ["(a) no noise", "(b) noise", "(c) post-selected"]):
+    mesh = ax.pcolormesh(times, np.arange(1, n_qubits + 1), np.maximum(data, 1e-3).T, shading="nearest",
+                         cmap="Blues", norm=LogNorm(vmin=1e-3, vmax=1), rasterized=True)
+    ax.set_ylim(n_qubits + 0.5, 0.5)
+    ax.set_xticks([0, 1, 2])
+    ax.set_xlabel("time $t$")
+    ax.set_title(title, loc="left", fontsize=9.5)
+panels[0].set_yticks([1, 6, 11])
+panels[0].set_ylabel("qubit $i$")
+for ax in panels[1:]:
+    ax.set_yticks([1, 6, 11])
+    ax.set_yticklabels([])
+fig.colorbar(mesh, cax=fig.add_subplot(grid[0, 3]), label="probability of a flip")
+ax_kept.plot(times, kept_fraction, "o-", color=ACCENT, ms=4, lw=1.4, label="shots kept")
+ax_kept.plot(times, np.exp(-np.array(fault_rate)), "s--", color=ORANGE, ms=3.5, lw=1.2,
+             label=r"no error, $e^{-\lambda}$")
+ax_kept.set_ylim(0, 1.02)
+ax_kept.set_xticks([0, 1, 2])
+ax_kept.set_xlabel("time $t$")
+ax_kept.set_title("(d)", loc="left", fontsize=9.5)
+ax_kept.legend(frameon=False, fontsize=8)
+clean_axes(ax_kept)
+save_fig(fig, "light-cone-noise")

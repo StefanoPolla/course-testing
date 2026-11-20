@@ -20,6 +20,7 @@ book:
     - L2-noise.qmd
     - L3-hamiltonians.qmd
     - L4-ground-states.qmd
+    - L5-mitigation.qmd
   appendices:
     - exercises.qmd
     - glossary.qmd
