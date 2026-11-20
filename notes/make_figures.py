@@ -1568,7 +1568,7 @@ zoom.set_xlim(-0.03, 0.5)
 zoom.set_ylim(-0.01, 0.16)
 zoom.set_xticks([0, 0.5])
 zoom.set_yticks([0, 0.05, 0.1, 0.15])
-zoom.tick_params(labelsize=7)
+zoom.tick_params(labelsize=8)
 ax_fit.indicate_inset_zoom(zoom, edgecolor="0.5")
 ax_fit.set_xlabel("noise scale factor $c$")
 ax_fit.set_ylabel("$E - E_0$")
@@ -1578,7 +1578,7 @@ ax_fit.legend(frameon=False, fontsize=8.5, loc="upper left")
 ax_fit.set_title("(a)", loc="left", fontsize=9.5)
 rng_jitter = np.random.default_rng(3)
 for k, (name, values) in enumerate(spreads.items()):
-    colour = "black" if name == "none" else styles[name][0]
+    colour = "0.6" if name == "none" else styles[name][0]   # no mitigation in light grey
     x = k + rng_jitter.uniform(-0.18, 0.18, len(values))
     ax_spread.plot(x, values - E0, ".", color=colour, ms=1.6, alpha=0.3)
     ax_spread.plot([k - 0.28, k + 0.28], [values.mean() - E0] * 2, "-", color=colour, lw=2)

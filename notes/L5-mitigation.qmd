@@ -47,7 +47,7 @@ The same holds for any initial state (@exr-echo).
 
 [Dynamical decoupling]{.gloss key="dynamical-decoupling"} applies this idea to the idle periods of a circuit, when a qubit waits while gates act on other qubits.
 Each idle period is filled with a sequence of pulses whose product is the identity, up to a global phase, such as $X$, $X$, or $X$, $Y$, $X$, $Y$, spaced so that the phases picked up between pulses cancel [@viola1999].
-The same pulses also cancel the small, always-on $R_{ZZ}$ coupling between neighbouring superconducting qubits (@sec-multi-qubit-noise), since an $X$ on one of the two qubits flips the sign of $Z\otimes Z$.
+The same pulses also cancel the small, always-on $R_{ZZ}$ coupling between neighbouring superconducting qubits (@sec-multi-qubit-noise), since an $X$ on one of the two qubits flips the sign of $Z\otimes Z$; the pulses on neighbouring qubits are therefore staggered, so that they do not flip both at once.
 
 Dynamical decoupling is suppression: the circuit computes the same thing, and each shot suffers fewer errors, with no extra shots and no post-processing.
 It only removes noise that changes slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better.
@@ -75,7 +75,7 @@ $$
 $$
 is the sum of the error probabilities of all operations of the circuit, gates, waits and readouts: the average number of errors per shot, called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023].
 The overhead of rescaling is $e^{2\lambda}$: about 7 for $\lambda = 1$, 400 for $\lambda = 3$ and 22,000 for $\lambda = 5$.
-Other methods have other overheads, but for general circuits all of them grow exponentially with $\lambda$, and it has been proved that, in the worst case, no mitigation method can avoid this [@quek2024].
+Other methods have other overheads, but for general circuits all of them grow exponentially with $\lambda$, and it has been proved that, in the worst case, no method of a broad class, which includes those of this chapter, can avoid this [@quek2024].
 Mitigation therefore works for circuits whose fault rate is at most of order 1 [@cai2023]: it extends what a noisy device can do, but it does not remove the limit set by noise.
 
 Readout errors (@sec-readout-errors) are the easiest case, because they act only at the end of the circuit and their rates can be measured: prepare $\ket{0}$ and $\ket{1}$ and read them out many times, as in Tutorial 2.
@@ -85,19 +85,19 @@ $$
 $$
 a rescaling with an offset.
 For independent readouts on many qubits, the inverse of each qubit's [confusion matrix]{.gloss key="confusion-matrix"} is applied to the measured probabilities of the bit strings, one qubit at a time.
-This readout correction is usually the first step of any mitigation.
+Each qubit's correction multiplies the standard error by about $1/(1 - e_0 - e_1)$.
+This readout correction is the first step of rescaling and of ZNE; symmetry verification instead discards most readout errors with the other errors (@exr-post-selection).
 
 ::: {.example}
 In [Tutorial 4]({{< var colab >}}/tutorials/tutorial-04/T4-vqe_qiskit.ipynb), the optimised [HVA]{.gloss key="hva"} circuit for a [TFIM]{.gloss key="tfim"} chain of 4 qubits ($J = 1$, $h = 0.5$, 3 layers) reaches an energy only 0.003 above $E_0 = -3.427$ without noise.
 Compiled into 58 single-qubit gates and 18 CZs, under depolarising noise of 0.1% after each single-qubit gate and 0.5% after each CZ, its energy is 0.277 above $E_0$, almost all of it bias.
-The error budget gives $\lambda \approx 0.13$ and $f \approx 0.88$.
+The error budget, with the Pauli errors $3p/4$ and $15p/16$ of these channels (@def-depolarising and @def-global-depolarising), gives $\lambda \approx 0.13$ and $f \approx 0.88$.
 Dividing the noisy energy by this $f$ gives an energy 0.15 *below* $E_0$: rescaling over-corrects, and the result breaks the variational bound (@eq-variational).
 The noise is not global depolarising: not every error changes every term of $H$, each term shrinks by its own factor, and the energy as a whole shrinks by 0.92, not 0.88.
 Only a simulation of the noisy circuit could have predicted this.
 :::
 
-Knowing $f$ is the hard part.
-The two methods of this chapter avoid it in different ways.
+As in @sec-rescaling, the difficulty of rescaling lies in knowing $f$, and the two methods of this chapter avoid it in different ways.
 Zero-noise extrapolation measures how the estimate changes when the noise grows, instead of predicting it.
 Symmetry verification recognises the shots that suffered an error, instead of correcting all shots on average.
 
@@ -117,21 +117,22 @@ Which estimate is better in each case?
 
 ## Zero-noise extrapolation {#sec-zne}
 
-We cannot reduce the noise of a device, but we can increase it in a controlled way.
-[Zero-noise extrapolation]{.gloss key="zne"} (ZNE) estimates an expectation value at several noise levels, all at least as large as the device's own, fits a curve through these estimates, and evaluates it at zero noise [@temme2017; @li2017].
+[Zero-noise extrapolation]{.gloss key="zne"} (ZNE) does the opposite of suppression: it increases the noise of the circuit, in a controlled way.
+It estimates an expectation value at several noise levels, all at least as large as the device's own, fits a curve through these estimates, and evaluates it at zero noise [@temme2017; @li2017].
 It needs no model of the noise, only a way to scale it.
 
 ### Scaling the noise by folding {#sec-folding}
 
-Write $E(c)$ for the expectation value measured when every error of the circuit is made $c$ times more likely, so that $E(1)$ is the noisy value that we can measure and $E(0)$ the noiseless one that we want; $c$ is called the *noise scale factor*.
+Write $E(c)$ for the expectation value of the observable, for example the energy, measured when every error of the circuit is made $c$ times more likely, so that $E(1)$ is the noisy value that we can measure and $E(0)$ the noiseless one that we want; $c$ is called the *noise scale factor*.
 On a digital device, the simplest way to scale the noise is [gate folding]{.gloss key="gate-folding"}: replace a gate $G$ by $G G^\dagger G$ [@giurgica-tiron2020].
 In the ideal circuit, $G^\dagger G = I$, so nothing changes; on the device, the gate runs three times, with three times the errors, if $G^\dagger$ is as noisy as $G$.
-Folding the whole circuit $U$ into $U(U^\dagger U)^k$ scales the noise by $c = 2k+1$, that is, by 1, 3, 5, …; folding only some of the gates, chosen at random, gives the factors in between.
+Folding the whole circuit $U$ into $U(U^\dagger U)^k$ scales the noise by $c = 2k+1$, that is, by 1, 3, 5, ….
+Folding only $m$ of its $G$ gates, chosen at random, gives the factors in between, $c = 1 + 2m/G$ if all gates are equally noisy; in practice, one often folds only the two-qubit gates, which dominate the error budget, and counts $G$ among them.
 
 Three points matter when implementing folding.
 
-1. Fold the circuit after compiling it into native gates, and make sure that nothing simplifies it afterwards: a compiler that sees $U^\dagger U$ removes it. In Qiskit, the folded circuit is `native.compose(native.inverse()).compose(native)`, run without compiling again, or with barriers between its parts.
-2. Folding scales only the errors of the gates. Readout errors are the same at every $c$, so they should be corrected first, or they remain in the extrapolated value.
+1. Fold the circuit that prepares the state, after compiling it into native gates, and only then add the basis changes of the measurement settings and the measurements, as in Tutorial 4. Make sure that nothing simplifies the folded circuit afterwards: a compiler that sees $U^\dagger U$ removes it. In Qiskit, the folded circuit is `native.compose(native.inverse()).compose(native)`, built before adding measurements and run without compiling again. With `r` and `cz`, the inverse of each gate is a gate of the same kind, so the noise model acts on it too; if the inverse contains gates that are not native, compile again with barriers between the three parts, which keep the compiler from cancelling them.
+2. Folding scales only the errors of the gates. Readout errors are the same at every $c$, so they should be corrected first (@sec-mitigation-price), or they remain in the extrapolated value.
 3. Folding assumes that errors add up, like the incoherent errors of @sec-gate-errors. Coherent errors can instead cancel: if every pulse over-rotates by a fixed fraction of its angle, $G^\dagger = R_X(-\theta)$ over-rotates in the opposite direction to $G = R_X(\theta)$, and $GG^\dagger G$ has the error of a single $G$. [Twirling]{.gloss key="twirling"} (@sec-gate-errors) turns coherent errors into Pauli channels, which do add up [@cai2023].
 
 ### Extrapolating to zero noise {#sec-extrapolation}
@@ -150,14 +151,14 @@ $$
 \gamma_j = \prod_{k\ne j}\frac{c_k}{c_k - c_j} ,
 $$ {#eq-richardson}
 for example $\gamma = (\tfrac{15}{8}, -\tfrac{5}{4}, \tfrac{3}{8})$ for $c = 1, 3, 5$.
-3. *Exponential*, $E(c) = Ae^{-bc}$, the form that global depolarising noise gives, $E(c) = f^cE(0)$ by @eq-global-factor. From two points,
+3. *Exponential*, $E(c) = Ae^{-bc}$, the form that global depolarising noise gives, $E(c) = f^cE(0)$ by @eq-global-factor. From two estimates with the same sign,
 $$
 \hat E_{\text{exp}} = \hat E_1\Big(\frac{\hat E_1}{\hat E_2}\Big)^{c_1/(c_2 - c_1)} ,
 $$
-which for $c = 1, 3$ is $\hat E_1(\hat E_1/\hat E_3)^{1/2}$ [@endo2018]. This model assumes that noise pulls the value towards zero. Depolarising noise pulls it towards its value in the maximally mixed state, $\Tr[O]/2^n$, which must be subtracted first if it is not zero; for the TFIM, $\Tr[H] = 0$.
+which for $c = 1, 3$ is $\hat E_1(\hat E_1/\hat E_3)^{1/2}$ [@endo2018]. This model assumes that noise pulls the value towards zero, and it fails when an estimate is within its standard error of zero. Depolarising noise pulls an observable $O$ towards its value in the maximally mixed state, $\Tr[O]/2^n$, which must be subtracted first if it is not zero; for the TFIM, $\Tr[H] = 0$. Since this model is not linear, it matters what we extrapolate: here, always the total energy.
 
 With more points than parameters, a least-squares fit replaces these formulas.
-No model is exact for every noise.
+Which model fits best depends on the noise.
 Under global depolarising noise, the exponential model is exact, while the linear one leaves a bias of order $\lambda^2$ (@exr-zne-two-points) and Richardson extrapolation with $m$ points one of order $\lambda^m$.
 
 ### The price: amplified shot noise {#sec-zne-variance}
@@ -166,7 +167,7 @@ The estimates at different scale factors come from different shots, so they are 
 $$
 \mathrm{Var}(\hat E_{\text{R}}) = \sum_j \gamma_j^2\,\mathrm{Var}(\hat E_j) .
 $$ {#eq-zne-variance}
-The coefficients sum to 1, since a constant $E(c)$ must extrapolate to itself, but some are negative, so $\sum_j\gamma_j^2 > 1$: the extrapolation amplifies the shot noise.
+The coefficients sum to 1, since a constant $E(c)$ must extrapolate to itself, but the coefficient of the smallest scale factor, $\gamma_1 = \prod_{k\ne 1} c_k/(c_k - c_1)$, is larger than 1, so $\sum_j\gamma_j^2 > 1$: the extrapolation amplifies the shot noise.
 For $c = 1, 3$, $\sum_j\gamma_j^2 = 9/4 + 1/4 = 2.5$, and for $c = 1, 3, 5$ it is about 5.2.
 With the same number of shots at every point, the standard error therefore grows by a factor of 1.6 and 2.3.
 Spreading the scale factors further apart makes the $\gamma_j$ smaller, but then the model must hold over a longer range, and the signal at large $c$ is smaller.
@@ -176,20 +177,21 @@ $$
 \mathrm{Var}(\hat E_{\text{exp}}) \approx \frac{9}{4}\,\frac{\hat E_1}{\hat E_3}\,\mathrm{Var}(\hat E_1) + \frac{1}{4}\Big(\frac{\hat E_1}{\hat E_3}\Big)^3\mathrm{Var}(\hat E_3) ,
 $$
 and under global depolarising noise $\hat E_1/\hat E_3 \approx e^{2\lambda}$, so the overhead grows exponentially with $\lambda$, as for rescaling.
+For any other fit, the standard error can be found by resampling: repeat the extrapolation many times on values drawn at random from Gaussians with the measured estimates as means and their standard errors as standard deviations, and take the standard deviation of the results.
 
 ::: {.example}
 @fig-zne shows ZNE for the energy of the Tutorial 4 circuit, folded as a whole into circuits with 18, 54 and 90 CZs ($c = 1, 3, 5$).
 Panel (a) shows the exact noisy energies, without shots: 0.277, 0.759 and 1.164 above $E_0$, on a curve that is nearly straight.
-Linear extrapolation from $c = 1, 3$ gives 0.036 above $E_0$, Richardson extrapolation from all three points 0.008, and exponential extrapolation from $c = 1, 3$ gives 0.004, close to the 0.003 of the noiseless circuit: the noise of the simulation is depolarising, so the exponential model is nearly right.
+Linear extrapolation from $c = 1, 3$ gives 0.036 above $E_0$, Richardson extrapolation from all three points 0.008, and exponential extrapolation from $c = 1, 3$ gives 0.004, close to the 0.003 of the noiseless circuit: the simulation has depolarising noise after every gate, so each term of the energy decays nearly exponentially with $c$.
 
-Panel (b) repeats the experiment 1000 times, with 1000 shots per setting at each scale factor.
-Without mitigation, the estimates scatter with a standard deviation of 0.05, around 0.28 above $E_0$.
-With mitigation, the bias almost disappears, but the scatter grows to 0.08 (linear), 0.12 (Richardson) and 0.09 (exponential), as @eq-zne-variance predicts, and a third to a half of the mitigated estimates fall below $E_0$.
+Panel (b) repeats the experiment 1000 times, with 1000 shots per setting at each scale factor: 2,000 shots in total without mitigation, 4,000 for the linear and exponential extrapolations, and 6,000 for Richardson's.
+Without mitigation, the estimates scatter with a standard deviation of 0.05 around the exact 0.277 above $E_0$.
+With mitigation, the bias almost disappears, but the scatter grows to 0.08 (linear), 0.12 (Richardson) and 0.09 (exponential), as @eq-zne-variance and the propagation of errors predict, and a third to a half of the mitigated estimates fall below $E_0$.
 All three are two to three times closer to $E_0$ than the unmitigated estimate, in root-mean-square error.
 With ten times more shots, the remaining bias of the linear fit would be about as large as its standard error.
 :::
 
-![Zero-noise extrapolation of the energy of the optimised Tutorial 4 circuit (TFIM chain of 4 qubits, $J = 1$, $h = 0.5$, 3 layers), with depolarising noise of 0.1% per single-qubit gate and 0.5% per CZ. (a) The exact noisy energies of the circuit folded to $c = 1, 3, 5$ (dots), and the linear (through $c = 1, 3$), Richardson (through all three) and exponential (through $c = 1, 3$) extrapolations to $c = 0$; the inset enlarges $c$ near 0, where the star is the energy of the noiseless circuit. (b) Estimates of 1000 repetitions of the experiment, with 1000 shots per setting at each scale factor; the bars are their averages.](figures/zne){#fig-zne width=100%}
+![Zero-noise extrapolation of the energy of the optimised Tutorial 4 circuit (TFIM chain of 4 qubits, $J = 1$, $h = 0.5$, 3 layers), with depolarising noise of 0.1% per single-qubit gate and 0.5% per CZ. (a) The exact noisy energies of the circuit folded to $c = 1, 3, 5$ (dots), and the linear (through $c = 1, 3$), Richardson (through all three) and exponential (through $c = 1, 3$) extrapolations to $c = 0$; the inset enlarges $c$ near 0, where the star is the energy of the noiseless circuit. (b) Estimates of 1000 repetitions of the experiment, with 1000 shots per setting at each scale factor (2,000 shots at $c = 1$ only, 4,000 for linear and exponential, 6,000 for Richardson); the bars are their averages. The exponential curve nearly coincides with Richardson's.](figures/zne){#fig-zne width=100%}
 
 In practice, ZNE takes the following steps.
 
@@ -198,12 +200,14 @@ In practice, ZNE takes the following steps.
 3. Extrapolate with one or more models, and propagate the standard errors (@eq-zne-variance).
 4. Check the result: if the models disagree by more than their standard errors, the extrapolation is not reliable. Where possible, test the procedure on a small instance with a known answer and the same noise.
 
+In a VQE, ZNE is usually applied only to the final angles: inside the optimisation loop, it would multiply the cost of every step, while the optimiser only needs to compare energies.
+
 ::: {#exr-zne-two-points}
 ## Two-point extrapolation
 We estimate an expectation value at the noise scale factors 1 and 3, with $N$ shots each and the single-shot variance $\sigma^2$ at both.
 
 (a) Show that the linear extrapolation to $c = 0$ is $(3\hat E_1 - \hat E_3)/2$, and that its standard error is $\sqrt{5/2}\,\sigma/\sqrt N$.
-How many shots in total does it need for the standard error of an unmitigated estimate with $N$ shots?
+How many shots in total does it need to reach the standard error $\sigma/\sqrt N$ of an unmitigated estimate with $N$ shots?
 
 (b) Suppose that the noise is global depolarising, so that $E(c) = e^{-c\lambda}E(0)$.
 Show that, to second order in $\lambda$, the linear extrapolation has the bias $-\tfrac32\lambda^2E(0)$, against $-\lambda E(0)$ without mitigation.
@@ -224,7 +228,7 @@ Symmetry verification instead uses a property of the problem, a symmetry, to rec
 
 ### Symmetries and quantum numbers {#sec-quantum-numbers}
 
-We met two conserved quantities in earlier chapters: the number of flipped qubits of the [Heisenberg model]{.gloss key="heisenberg-model"} (@sec-spin-models), and the parity of the [TFIM]{.gloss key="tfim"}, the flip of all qubits $X_1X_2\cdots X_n$ (@sec-adiabatic).
+We met two conserved quantities in earlier chapters, and called them symmetries in @sec-hardness: the number of flipped qubits of the [Heisenberg model]{.gloss key="heisenberg-model"} (@sec-spin-models), and the parity of the [TFIM]{.gloss key="tfim"}, the flip of all qubits $X_1X_2\cdots X_n$ (@sec-adiabatic).
 Both are observables that commute with the Hamiltonian.
 
 ::: {#def-symmetry}
@@ -263,12 +267,12 @@ Keeping only the shots that pass a test is called [post-selection]{.gloss key="p
 
 Symmetry verification needs three conditions:
 
-1. the Hamiltonian, and every gate of the circuit, conserve $S$;
+1. the Hamiltonian, and every gate of the circuit before compiling, conserve $S$ (the native gates of the compiled circuit need not, one by one). A Pauli rotation $e^{-i\theta P/2}$ conserves a Pauli string $S$ if $P$ and $S$ commute, that is, if they anticommute on an even number of qubits;
 2. the initial state has a definite quantum number $s_0$;
-3. the measurement reveals $S$: in the measured basis, $S$ is diagonal, so that the bits of each shot give its value. For $K$, measured in the $Z$ basis, it is the number of 1s; for a Pauli string such as the parity, it is the product of the signs of its qubits, in a [measurement setting]{.gloss key="measurement-setting"} that agrees with it on every qubit (@def-qwc).
+3. the measurement reveals $S$: in the measured basis, $S$ is diagonal, so that the bits of each shot give its value. For $K$, measured in the $Z$ basis, it is the number of 1s; for a Pauli string such as the parity, it is the product of the signs of its qubits, in a [measurement setting]{.gloss key="measurement-setting"} that agrees with it on every qubit (@def-qwc). For the parity in the $X$ setting, a shot passes if it has an even number of 1s.
 
-What does this gain, and at which price?
-As in @sec-signal-left, a shot runs without errors with probability $f \approx e^{-\lambda}$.
+We now quantify the gain and the price.
+As in @eq-circuit-fidelity, a shot runs without errors with probability $f \approx e^{-\lambda}$; this $f$ equals the shrinking factor of expectation values only for scrambling noise (@sec-signal-left), which is why the two differed in the example of @sec-mitigation-price.
 Of the shots with errors, suppose that a fraction $d$ is detected.
 The fraction of shots kept is then
 $$
@@ -287,7 +291,7 @@ The fraction of discarded shots, $(1-f)d$, is also a measured lower bound on the
 
 ::: {.example}
 @fig-light-cone-noise repeats the [light cone]{.gloss key="light-cone"} of @fig-light-cone for a Heisenberg chain of 11 qubits ($J = 1$, Trotter steps of 0.2), now with noise: the depolarising noise of Tutorial 4, 0.1% per single-qubit gate and 0.5% per CZ, and readout errors $e_0 = 1\%$ and $e_1 = 2\%$.
-Each bond gate compiles into 3 CZs, so after 10 steps the circuit has 300 CZs, and $\lambda \approx 2.3$.
+Each bond gate compiles into 3 CZs (with `optimization_level=2`; level 1, as in Tutorial 3, gives 6), so after 10 steps the circuit has 300 CZs, and $\lambda \approx 2.3$.
 We measure only in the $Z$ basis, and estimate the probability of finding the flip on each qubit from 4000 shots at each time.
 Without mitigation (panel b), errors create flips everywhere: at $t = 2$, a shot shows 2.5 flipped qubits on average instead of one, and the probabilities on the qubits are off by 0.14 on average.
 Each shot also gives $K$ for free, as the number of 1s in its bit string, and we keep the shots with exactly one.
@@ -300,15 +304,17 @@ Rescaling, if $f$ were known, would cost $e^{2\lambda} \approx 100$.
 The gap between the two curves of panel (d) is the fraction of shots with undetected errors.
 :::
 
-![The light cone of @fig-light-cone with noise, for a Heisenberg chain of 11 qubits ($J = 1$, Trotter steps of 0.2) that starts with qubit 6 flipped. (a) Without noise; (b) with depolarising noise of 0.1% per single-qubit gate and 0.5% per CZ, and readout errors of 1% for 0 and 2% for 1, from 4000 shots at each time; (c) the same shots, post-selected on exactly one flipped qubit. (d) The fraction of shots kept, and the probability $e^{-\lambda}$ of a shot without errors from the error budget.](figures/light-cone-noise){#fig-light-cone-noise width=100%}
+![The light cone of @fig-light-cone with noise, for a Heisenberg chain of 11 qubits ($J = 1$, Trotter steps of 0.2) that starts with qubit 6 flipped. (a) Without noise, exact; (b) with depolarising noise of 0.1% per single-qubit gate and 0.5% per CZ, and readout errors of 1% for 0 and 2% for 1, from 4000 shots at each time; (c) the same shots, post-selected on exactly one flipped qubit. (d) The fraction of shots kept, and the probability $e^{-\lambda}$ of a shot without errors from the error budget.](figures/light-cone-noise){#fig-light-cone-noise width=100%}
 
 In practice, symmetry verification takes the following steps.
 
 1. Find a symmetry $S$ of the problem that every gate of the circuit conserves, and the quantum number $s_0$ of the initial state.
-2. For each measurement setting, check whether $S$ can be read from its outcomes.
+2. For each measurement setting, check whether $S$ can be read from its outcomes. The settings in which it cannot are used with all their shots.
 3. For each shot of such a setting, compute the quantum number from its bits, and keep the shot if it equals $s_0$.
 4. Estimate the observable from the kept shots, with the standard error for their number, $N_{\text{kept}}$ instead of $N$ (@eq-standard-error).
 5. Report the fraction of shots kept. Other methods can be applied on top: ZNE, for example, extrapolates post-selected estimates as well as plain ones.
+
+Post-selection needs no extra circuits, so in a VQE it can also be used inside the optimisation loop.
 
 ::: {#exr-post-selection}
 ## Post-selection against readout errors
@@ -320,8 +326,8 @@ Which shots with two readout errors are kept, and what do they report?
 
 (b) Show that the fraction of shots kept is $(1-e)^n + (n-1)e^2(1-e)^{n-2}$.
 
-(c) For $n = 11$ and $e = 1\%$, compute the fraction of shots kept and the fraction of kept shots that report the flip on a wrong qubit.
-Compare with the fraction of all shots that have at least one readout error.
+(c) For $n = 11$ and $e = 1\%$, compute the fraction of shots kept, and compare it with panel (d) of @fig-light-cone-noise at $t = 0$.
+Which fraction of the kept shots report the flip on a wrong qubit, and which fraction of all shots have at least one readout error?
 :::
 
 ### Verifying the energy of the TFIM {#sec-tfim-verification}
@@ -339,17 +345,17 @@ The bond terms keep their bias of 0.20, so the bias of the energy only falls fro
 :::
 
 Settings with an entangling circuit before the measurement can do better (@sec-settings).
-On two neighbouring qubits, $Z_iZ_{i+1}$ and $X_iX_{i+1}$ commute, and a CNOT from qubit $i$ to $i+1$ followed by a Hadamard on qubit $i$ turns them into $Z_{i+1}$ and $Z_i$, so one shot gives both signs.
+On two neighbouring qubits, $Z_iZ_{i+1}$ and $X_iX_{i+1}$ commute, and a CNOT from qubit $i$ to $i+1$ followed by a Hadamard on qubit $i$ turns them into $Z_{i+1}$ and $Z_i$, respectively, so one shot gives both signs.
 Measuring the pairs $(1,2)$, $(3,4)$, … in this way gives their bond terms and, as the product of all $X_iX_{i+1}$, the parity; a second setting does the same for the pairs $(2,3)$, $(4,5)$, …, with the qubits left without a pair measured in the $X$ basis.
 With these two settings and the $X$ setting, every term is verified, at the cost of a third setting and one noisy CNOT per pair; for the circuit of Tutorial 4, the bias falls to 0.17.
+It does not fall further because $X$ errors still escape the check, while they flip the signs of the bond terms.
 
 Symmetry verification is therefore not always available.
 It needs a symmetry that the circuit conserves, which many circuits do not have: a hardware-efficient ansatz (@sec-ansatz), for example, breaks the parity of the TFIM.
 And it needs a measurement that reveals the symmetry, which may hold for some settings only.
 Symmetries also differ in how many errors they catch.
 The number of flipped qubits keeps the state in one sector of $n$ states out of $2^n$, 11 out of 2048 for our chain, while the parity only splits the states into two halves.
-Two errors that each flip the parity cancel each other, while two errors that each change the number of flipped qubits rarely bring it back to one.
-After many errors, a shot passes the check about as often as a random state lies in the right sector: with probability $n/2^n$ for the number of flipped qubits, and $1/2$ for the parity (@exr-strong-weak).
+Two errors that each flip the parity cancel each other, while two errors that each change the number of flipped qubits rarely bring it back to one (@exr-strong-weak).
 
 ::: {#exr-strong-weak}
 ## Strong and weak symmetries
@@ -374,7 +380,7 @@ Five questions help.
 1. Does it come with a standard error that includes the amplified shot noise (@eq-zne-variance, or the shots kept)? Without one, it cannot be judged.
 2. Which model does it assume: which fit and scale factors, and do other fits agree? For rescaling, where does $f$ come from?
 3. For post-selection, which fraction of the shots was kept?
-4. Does it break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy satisfies the variational bound (@eq-variational). A mitigated energy is a rescaled estimate or a combination of estimates with negative coefficients, and need not satisfy it: an energy below $E_0$ after mitigation (@exr-below-E0) is amplified shot noise, as in @fig-zne, or an over-correction, as in the rescaling example of @sec-mitigation-price.
+4. Does it break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy satisfies the variational bound (@eq-variational). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below $E_0$ after mitigation (@exr-below-E0) is amplified shot noise, as in @fig-zne, or an over-correction, as in the rescaling example of @sec-mitigation-price.
 5. Was the method tested on an instance with a known answer and the same noise?
 
 ## Other methods {#sec-other-methods}
@@ -382,8 +388,8 @@ Five questions help.
 Many other methods exist; @cai2023 review them, and we may return to some later in the course.
 
 - [Probabilistic error cancellation]{.gloss key="pec"} (PEC) undoes the noise of each gate on average, by inserting random operations with positive and negative weights [@temme2017]; it needs an accurate noise model, learned from the device.
-- *Twirling* (@sec-gate-errors) turns coherent errors into Pauli channels with random Pauli gates. It does not remove errors, but it makes them simpler to model, which PEC needs and which helps ZNE.
-- *Purification methods*, such as virtual distillation [@huggins2021; @koczor2021] and echo verification, use several copies of the state, or a circuit run forwards and backwards, to suppress the contribution of errors.
+- *Twirling* (@sec-gate-errors) does not remove errors, but makes them simpler to model, which PEC needs and which helps ZNE (@sec-folding).
+- *Purification methods*, such as virtual distillation [@huggins2021; @koczor2021], use several copies of the state to suppress the contribution of errors.
 - *Learning-based methods* learn the relation between noisy and noiseless values on circuits that can be simulated classically [@czarnik2021].
 
 ## Further reading {#sec-L5-reading}
