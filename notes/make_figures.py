@@ -1807,38 +1807,43 @@ for label, chain, value in (("best", best, lambdas.min()), ("worst", worst, lamb
 first_four = transpile(t4_circuit, garnet, initial_layout=[0, 1, 2, 3], optimization_level=1)
 print("  QB1-QB2-QB3-QB4 (not a chain):", dict(first_four.count_ops()), " lambda", round(fault_rate(first_four), 3))
 
-# the coupling graph of Garnet is a square lattice with these rows (IQM's qubit names QB1-QB20)
-garnet_rows = [[None, 1, 2, None, None], [3, 4, 5, 6, 7], [8, 9, 10, 11, 12], [13, 14, 15, 16, 17],
-               [None, 18, 19, 20, None]]
-position = {qubit_index(f"QB{k}"): (col, -row) for row, ks in enumerate(garnet_rows) for col, k in enumerate(ks) if k}
-assert all(abs(position[a][0] - position[b][0]) + abs(position[a][1] - position[b][1]) == 1 for a, b in couplers)
+# Garnet's coupling graph is a square lattice; it is drawn turned by 45 degrees, as on IQM Resonance,
+# with (column, row) of each qubit QB1-QB20 and the couplers as diamonds between them
+garnet_grid = {1: (4, 6), 2: (5, 5), 3: (2, 6), 4: (3, 5), 5: (4, 4), 6: (5, 3), 7: (6, 2), 8: (1, 5),
+               9: (2, 4), 10: (3, 3), 11: (4, 2), 12: (5, 1), 13: (0, 4), 14: (1, 3), 15: (2, 2), 16: (3, 1),
+               17: (4, 0), 18: (0, 2), 19: (1, 1), 20: (2, 0)}
+position = {qubit_index(f"QB{k}"): (col, -row) for k, (col, row) in garnet_grid.items()}
+assert all(abs(position[a][0] - position[b][0]) == abs(position[a][1] - position[b][1]) == 1 for a, b in couplers)
 
-fig = plt.figure(figsize=(8.0, 3.2))
-grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.25], height_ratios=[1, 0.05], wspace=0.3, hspace=0.25)
+fig = plt.figure(figsize=(8.0, 3.6))
+grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.2], height_ratios=[1, 0.045], wspace=0.25, hspace=0.12)
 ax_graph = fig.add_subplot(grid[0, 0])
 ax_bar = fig.add_subplot(grid[1, 0])
 ax_hist = fig.add_subplot(grid[:, 1])
-greys = ListedColormap(plt.get_cmap("Greys")(np.linspace(0.25, 1, 256)))   # the lightest still visible
-norm = Normalize(vmin=0.6, vmax=1.8)                                         # CZ error in %
+coupler_colours = plt.get_cmap("viridis_r")   # as on Resonance: light for good couplers, dark for bad ones
+norm = Normalize(vmin=0.6, vmax=1.8)          # CZ error in %
 for chain, colour in ((best, ACCENT), (worst, ORANGE)):
     xs, ys = zip(*(position[q] for q in chain))
-    ax_graph.plot(xs, ys, color=colour, lw=13, alpha=0.35, solid_capstyle="round", solid_joinstyle="round",
+    ax_graph.plot(xs, ys, color=colour, lw=16, alpha=0.3, solid_capstyle="round", solid_joinstyle="round",
                   zorder=1)
 for a, b in couplers:
     (xa, ya), (xb, yb) = position[a], position[b]
-    ax_graph.plot([xa, xb], [ya, yb], color=greys(norm(100 * errors["cz", (a, b)])), lw=3.2, zorder=2,
-                  solid_capstyle="butt")
+    ax_graph.plot([(xa + xb) / 2], [(ya + yb) / 2], "D", ms=11, mec="white", mew=0.8,
+                  color=coupler_colours(norm(100 * errors["cz", (a, b)])), zorder=2)
+ring = {q: ACCENT for q in best} | {q: ORANGE for q in worst}
 for q, (x, y) in position.items():
-    ax_graph.add_patch(plt.Circle((x, y), 0.22, facecolor="white", edgecolor="0.35", lw=0.8, zorder=3))
-    ax_graph.text(x, y, garnet.index_to_qubit_name(q)[2:], ha="center", va="center", fontsize=7, zorder=4)
-ax_graph.text(0.55, -4.0, "best", ha="right", va="center", fontsize=8.5)
-ax_graph.text(3.5, -0.5, "worst", ha="center", va="bottom", fontsize=8.5)
-ax_graph.set_xlim(-0.45, 4.45)
-ax_graph.set_ylim(-4.45, 0.45)
+    ax_graph.add_patch(plt.Circle((x, y), 0.36, facecolor="white", edgecolor=ring.get(q, "0.45"),
+                                  lw=2.0 if q in ring else 0.8, zorder=3))
+    ax_graph.text(x, y, garnet.index_to_qubit_name(q), ha="center", va="center", fontsize=6, zorder=4)
+ax_graph.text(0.15, -0.3, "best", ha="center", va="center", fontsize=8.5)
+ax_graph.text(6.0, -1.25, "worst", ha="center", va="center", fontsize=8.5)
+ax_graph.set_xlim(-0.5, 6.5)
+ax_graph.set_ylim(-6.5, 0.5)
 ax_graph.set_aspect("equal")
 ax_graph.axis("off")
 ax_graph.set_title("(a) IQM Garnet", loc="left", fontsize=9.5)
-colorbar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=greys), cax=ax_bar, orientation="horizontal")
+colorbar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=coupler_colours), cax=ax_bar,
+                        orientation="horizontal")
 colorbar.set_label("CZ error probability (%)", fontsize=8.5)
 colorbar.set_ticks([0.6, 1.0, 1.4, 1.8])
 colorbar.ax.tick_params(labelsize=8)
