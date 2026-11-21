@@ -15,15 +15,15 @@ We group the software methods to reduce error in three categories:
 
 ::: {#def-three-ways}
 ## Error suppression, mitigation and correction
-- [Error suppression]{.gloss key="error-suppression"} changes how the device runs a circuit (e.g. in gate implementation or compilation), so that each shot suffers fewer errors.
-- [Error mitigation]{.gloss key="error-mitigation"} leaves the errors of each shot as they are. It runs many shots, often of several modified circuits, and combines their outcomes in classical post-processing into an estimate of the noiseless expectation value.
+- [Quantum Error suppression]{.gloss key="error-suppression"} changes how the device runs a circuit (e.g. in gate implementation or compilation), so that each shot suffers fewer errors.
+- [Quantum Error mitigation]{.gloss key="error-mitigation"} leaves the errors of each shot as they are. It runs many shots, often of several modified circuits, and combines their outcomes in classical post-processing into an estimate of the noiseless expectation value.
 - [Quantum error correction]{.gloss key="qec"} encodes each logical qubit in many physical qubits, and detects and corrects errors during the computation (@sec-nisq).
 :::
 
 Suppression includes better calibrated pulses, compiling into fewer two-qubit gates, choosing the best qubits of a device, and dynamical decoupling (below); it costs no extra shots, but it cannot remove all errors.
 Mitigation includes the readout correction and the rescaling of @sec-rescaling, and the two methods of this chapter; it needs no extra qubits, but it improves only estimates of expectation values, not the state on the device, and its cost in shots grows exponentially with the amount of noise (@sec-mitigation-price).
 Correction can make a computation as reliable as needed, but it needs many more qubits, with error rates below the threshold (@sec-nisq); in order to avoid all errors, error correction must be combined with fault-tolerant gate implementation, which is typically very expensive.
-Error suppression techniques can be applied to any quantum circuit, so they combine naturally with both mitigation and correction.
+Error suppression techniques can be applied to any quantum circuit, so they combine naturally with both mitigation and correction [@google2023].
 Combining error correction with mitigation is an active area of research, which may find applications on the first fault-tolerant devices [@dutkiewicz2025; @jeon2026].
 
 ### Dynamical decoupling {#sec-dynamical-decoupling}
