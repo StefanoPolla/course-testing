@@ -37,7 +37,7 @@ Error suppression changes how a device runs a circuit, but not what the circuit 
 When running a circuit on cloud hardware, some error suppression happens automatically in every run: providers calibrate the pulses of the gates regularly (@sec-superconducting).
 Compilers, in turn, can turn a circuit into as few native gates as possible, above all as few two-qubit gates, which cause most errors (@sec-compiling).
 How hard they try is usually up to us: in Qiskit, the `optimization_level` of `transpile` sets it, as in [Tutorial 3]({{< var colab >}}/tutorials/tutorial-03/T3-hamiltonians_qiskit.ipynb), where level 1 merges neighbouring single-qubit gates and level 0 does not.
-In this section, we look at two techniques that we control ourselves: choosing the qubits on which a circuit runs, and protecting [idle qubits]{.gloss key="idle-qubit"} with dynamical decoupling.
+In this section, we look at two techniques that we control ourselves: choosing the qubits on which a circuit runs, and dynamical decoupling.
 
 ### Choosing the qubits {#sec-qubit-selection}
 
@@ -84,7 +84,7 @@ What is the ratio now?
 
 ### Dynamical decoupling {#sec-dynamical-decoupling}
 
-In most circuits, some qubits are idle while gates act on others, and meanwhile they relax and dephase (@sec-t1-t2): this also increases the fault rate of the circuit.
+In most circuits, some qubits are [idle]{.gloss key="idle-qubit"} while gates act on others, and meanwhile they relax and dephase (@sec-t1-t2): this also increases the fault rate of the circuit.
 Much of the dephasing comes from *slow* noise: the qubit frequency is off by a small amount $\delta$ that we do not know and that changes from shot to shot, but hardly changes during one shot.
 The qubit then picks up its unknown phase $\delta t$ at a steady rate, and a steady drift can be reversed.
 [Dynamical decoupling]{.gloss key="dynamical-decoupling"} fills the idle time with the [echo]{.gloss key="echo"} of @sec-slow-noise (@fig-dynamical-decoupling).
