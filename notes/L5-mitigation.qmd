@@ -2,29 +2,29 @@
 
 {{< include _macros.qmd >}}
 
-In the previous chapters, noise was what made our estimates wrong: it shrinks expectation values (@sec-bias-variance), it limits the number of Trotter steps (@sec-trotter-noise), and in Tutorial 4 it left the energy of the variational state far above what the ansatz could reach.
-In this chapter, we reduce the effect of noise on estimates without correcting the errors themselves: this is called error mitigation.
-We first separate mitigation from the other ways of dealing with noise, and recall its price: the bias falls, and the variance grows.
-Then we study two methods in detail, zero-noise extrapolation and symmetry verification, on two examples from the previous chapters: the VQE energy of the TFIM and the light cone of the Heisenberg chain.
+In the previous chapters, noise was what made our estimates wrong: it shrinks expectation values (@sec-bias-variance), it limits the number of Trotter steps (@sec-trotter-noise), and in [Tutorial 4]({{< var colab >}}/tutorials/tutorial-04/T4-vqe_qiskit.ipynb) it left the energy of the variational state far above what the ansatz could reach.
+In this chapter, we discuss a family of techniques developed to reduce the effect of noise in [NISQ]{.gloss key="nisq"} computation: error mitigation.
 
-By the end of the chapter, you should be able to tell error suppression, mitigation and correction apart; implement zero-noise extrapolation and symmetry verification, and estimate how much each reduces the bias and how much it adds to the standard error; decide whether a problem allows symmetry verification; and judge whether a mitigated result is plausible.
+By the end of the chapter, you should be able to tell error suppression, mitigation and correction apart; explain how zero-noise extrapolation and symmetry verification work, and how they trade bias for standard error; and judge whether a mitigated result is plausible.
 
 ## Suppression, mitigation and correction {#sec-three-ways}
 
-Noise can be dealt with while a circuit runs, after it has run, or by encoding the computation so that errors can be found and undone.
-These are three different approaches, with different costs.
+Dealing with noise is central to quantum computing.
+One natural way to reduce noise is to build better hardware, with fewer errors per gate; but much can also be done on the *software* side, i.e. in the way we design algorithms and run them on a given device.
+We group the software methods to reduce error in three categories:
 
 ::: {#def-three-ways}
 ## Error suppression, mitigation and correction
-- [Error suppression]{.gloss key="error-suppression"} changes how the device runs a circuit, so that each shot suffers fewer errors.
+- [Error suppression]{.gloss key="error-suppression"} changes how the device runs a circuit (e.g. in gate implementation or compilation), so that each shot suffers fewer errors.
 - [Error mitigation]{.gloss key="error-mitigation"} leaves the errors of each shot as they are. It runs many shots, often of several modified circuits, and combines their outcomes in classical post-processing into an estimate of the noiseless expectation value.
 - [Quantum error correction]{.gloss key="qec"} encodes each logical qubit in many physical qubits, and detects and corrects errors during the computation (@sec-nisq).
 :::
 
 Suppression includes better calibrated pulses, compiling into fewer two-qubit gates, choosing the best qubits of a device, and dynamical decoupling (below); it costs no extra shots, but it cannot remove all errors.
 Mitigation includes the readout correction and the rescaling of @sec-rescaling, and the two methods of this chapter; it needs no extra qubits, but it improves only estimates of expectation values, not the state on the device, and its cost in shots grows exponentially with the amount of noise (@sec-mitigation-price).
-Correction can make a computation as reliable as needed, but it needs many more qubits, with error rates below the threshold (@sec-nisq).
-The three combine: mitigation is applied on top of suppression, and it can also reduce the errors left on the first error-corrected devices [@cai2023].
+Correction can make a computation as reliable as needed, but it needs many more qubits, with error rates below the threshold (@sec-nisq); in order to avoid all errors, error correction must be combined with fault-tolerant gate implementation, which is typically very expensive.
+Error suppression techniques can be applied to any quantum circuit, so they combine naturally with both mitigation and correction.
+Combining error correction with mitigation is an active area of research, which may find applications on the first fault-tolerant devices [@dutkiewicz2025; @jeon2026].
 
 ### Dynamical decoupling {#sec-dynamical-decoupling}
 
