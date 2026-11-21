@@ -190,6 +190,9 @@ glossary:
   pure-dephasing:
     term: pure dephasing
     def: "The part of dephasing that does not come from relaxation, described by a dephasing channel whose strength grows with time, with characteristic time Tφ. It cannot be measured on its own, since relaxation also reduces the coherence."
+  idle-qubit:
+    term: idle qubit
+    def: "A qubit on which no gate acts for a while, for example while gates act on other qubits. While idle, it still relaxes and dephases."
   ramsey:
     term: Ramsey experiment
     def: "A measurement of dephasing: a pulse puts the qubit in a superposition, the qubit waits, and a second pulse turns the remaining coherence into a measurable population. It measures T2*."

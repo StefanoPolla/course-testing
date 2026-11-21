@@ -384,7 +384,8 @@ correct such values.
 
 ![The Bloch sphere (grey) and its image (blue) under (a) amplitude damping, which shrinks the ball and pulls it towards $\ket{0}$, and (b) an idle qubit, with relaxation and pure dephasing together, after a wait $t = T_1/2$ with $T_2^* = T_1/2$. The dots mark where $\ket{0}$ and $\ket{1}$ go.](figures/bloch-relaxation-dephasing){#fig-bloch-t1t2 width=70%}
 
-An idle qubit undergoes this combined channel while it waits. For a short wait $t$, its
+A qubit is [idle]{.gloss key="idle-qubit"} when no gate acts on it, for example while gates act
+on other qubits. An idle qubit undergoes this combined channel. For a short wait $t$, its
 factors are $1 - t/T_2^*$ on the $x$ and $y$ axes and $1 - t/T_1$ on the $z$ axis, so
 its error is of order $t/T_2^*$ (@sec-budgets makes this precise). A wait of 100 ns
 with $T_2^* = 100$ µs therefore costs as much as a single-qubit gate, or more. @tbl-channels
