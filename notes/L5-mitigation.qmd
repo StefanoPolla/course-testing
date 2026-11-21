@@ -41,12 +41,11 @@ In this section, we look at two techniques that we control ourselves: choosing t
 
 ### Choosing the qubits {#sec-qubit-selection}
 
-On a superconducting chip, no two qubits of a chip are identical. 
+On a superconducting chip, no two qubits are identical.
 Their T1 and T2, their readout errors, and the error rates of their gates differ.
-Furthermore these values drift between calibrations, so they will likely be different on differend days, and sometimes change over a few hours period
-(@sec-superconducting).
+Furthermore these values drift between calibrations, so they will likely be different on different days, and sometimes change over a period of a few hours (@sec-superconducting).
 
-@fig-qubit-selection (a) shows the two-qubit gate error rates on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs). 
+@fig-qubit-selection (a) shows the two-qubit gate error rates on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs).
 In the particular moment when these calibration data were taken, the error probability of a CZ ranges from 0.7% to 1.8%.
 
 We summarize the noise that a circuit suffers on a device with the sum of the error probabilities of all the operations it uses (gates, waits and readouts):
@@ -56,7 +55,7 @@ $$ {#eq-fault-rate}
 This quantity is called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
 It is the total of the error budgets of @sec-budgets: $\lambda \approx 0.25$ for the brick-wall circuit of @tbl-budget on a superconducting device.
 Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
-The layout must follow the coupling graph: qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler adds SWAPs, of 3 CZs each (@sec-connectivity).
+The layout must follow the coupling graph: where possible qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler must add expensive SWAP gates (@sec-connectivity).
 
 ![Choosing the qubits on IQM's Garnet, with the calibration data shipped with IQM's software (the fake backend `IQMFakeGarnet` of `iqm-client` 36.0.0, an undated snapshot). (a) The coupling graph, drawn as on IQM's Resonance platform, with the error probability of each CZ on the diamond between its two qubits (its depolarising error and the relaxation of both qubits during the gate), and the best (blue) and worst (orange) layouts of the 4-qubit chain of Tutorial 4. (b) The circuit fault rate $\lambda$ of the compiled circuit (18 CZs, 27 single-qubit gates and 4 readouts; waits not counted) for all 312 layouts that follow the coupling graph, counting both directions of each chain, with the cost $e^{2\lambda}$ of rescaling for the best and worst layouts and for the layout that Qiskit chooses without error rates.](figures/qubit-selection){#fig-qubit-selection width=100%}
 
