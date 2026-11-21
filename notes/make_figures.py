@@ -1773,7 +1773,7 @@ placements = chains(4)
 lambdas = np.array([fault_rate(transpile(t4_circuit, garnet, initial_layout=chain, optimization_level=1))
                     for chain in placements])
 best, worst = placements[lambdas.argmin()], placements[lambdas.argmax()]
-compiled = transpile(t4_circuit, garnet, optimization_level=1)   # the compiler's own choice
+compiled = transpile(t4_circuit, garnet, optimization_level=1)   # the default layout: the IQM backend gives Qiskit no error rates
 own_choice = list(compiled.layout.initial_index_layout(filter_ancillas=True))
 own_lambda = fault_rate(compiled)
 
@@ -1833,7 +1833,7 @@ dashed = dict(color="black", lw=1.8, ls=(0, (3, 2)))
 for chain, colour in ((best, ACCENT), (worst, ORANGE)):
     xs, ys = zip(*(position[q] for q in chain))
     ax_graph.plot(xs, ys, color=colour, zorder=1, **band)
-# The compiler's chain shares qubits with the worst one: it is drawn beside its qubits, on its right
+# The default layout shares qubits with the worst one: it is drawn beside its qubits, on its right
 points = np.array([position[q] for q in own_choice], dtype=float)
 normals = [np.array([d[1], -d[0]]) / np.hypot(*d) for d in np.diff(points, axis=0)]
 shift = [normals[0]] + [(m + n) / (1 + m @ n) for m, n in zip(normals, normals[1:])] + [normals[-1]]
@@ -1889,7 +1889,7 @@ ax_circ.set_title("(b) the circuit of Tutorial 4", loc="left", fontsize=9.5)
 
 # the circuit fault rate of each layout, with the line styles of (a)
 rows = (("best", best, lambdas.min(), dict(color=ACCENT, **band)),
-        ("compiler's choice", own_choice, own_lambda, dashed),
+        ("default layout", own_choice, own_lambda, dashed),
         ("worst", worst, lambdas.max(), dict(color=ORANGE, **band)))
 ax_table.set_xlim(0, 1)
 ax_table.set_ylim(-len(rows) - 0.4, 1)
