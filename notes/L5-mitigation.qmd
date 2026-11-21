@@ -124,7 +124,7 @@ $$
 a rescaling with an offset.
 For independent readouts on many qubits, the inverse of each qubit's [confusion matrix]{.gloss key="confusion-matrix"} is applied to the measured probabilities of the bit strings, one qubit at a time.
 The mitigated estimate has no bias from readout errors, but the mitigation of each qubit multiplies the standard error by about $1/(1 - e_0 - e_1)$.
-This method assumes that the readout errors of different qubits are independent, and that their rates have not changed since they were measured: correlated readout errors, or rates that have drifted, leave a bias, and can even make it overshoot (@exr-readout-bias, part d).
+This method assumes that the readout errors of different qubits are independent, and that their rates have not changed since they were measured: correlated readout errors, or rates that have drifted since they were measured (@sec-qubit-selection), leave a bias, and can even make it overshoot (@exr-readout-bias, part d).
 Readout-error mitigation is the first step of rescaling and of ZNE; symmetry verification instead discards most readout errors with the other errors (@exr-post-selection).
 
 ### Rescaling and the sampling overhead {#sec-rescaling-overhead}
