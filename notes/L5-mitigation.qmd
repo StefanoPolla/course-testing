@@ -42,7 +42,7 @@ In this section, we look at two techniques that we control ourselves: choosing t
 ### Choosing the qubits {#sec-qubit-selection}
 
 On a superconducting chip, no two qubits are identical.
-Their T1 and T2, their readout errors, and the error rates of their gates differ.
+Their $T_1$ and $T_2$, their readout errors, and the error rates of their gates differ.
 Furthermore these values drift between calibrations, so they will likely be different on different days, and sometimes change over a period of a few hours (@sec-superconducting).
 
 @fig-qubit-selection (a) shows the two-qubit gate error rates on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs).
@@ -52,6 +52,7 @@ We summarize the noise that a circuit suffers on a device with the sum of the er
 $$
 \lambda = \sum_i \varepsilon_i .
 $$ {#eq-fault-rate}
+where $\varepsilon_i$ is the error probability of operation $i$, as in @eq-circuit-fidelity.
 This quantity is called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
 It is the total of the error budgets of @sec-budgets: $\lambda \approx 0.25$ for the brick-wall circuit of @tbl-budget on a superconducting device.
 Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
@@ -63,7 +64,7 @@ The layout must follow the coupling graph: where possible qubits that share two-
 Placing the chain on QB1, QB2, QB3 and QB4, in the order of their numbers, does not follow the coupling graph, since QB2 and QB3 are not coupled: the compiler adds two SWAPs, and $\lambda = 0.47$, more than on any layout that follows the graph.
 
 The layout also sets the price of mitigation.
-Compensating for the shrinking factor $f \approx e^{-\lambda}$ by rescaling costs $e^{2\lambda}$ times as many shots (@sec-rescaling), 1.8 on the best layout and 2.4 on the worst, and the costs of the other methods of this chapter also grow exponentially with $\lambda$ (@sec-mitigation-price).
+Rescaling, which divides an estimate by the factor $f \approx e^{-\lambda}$ by which noise shrinks it, costs $e^{2\lambda}$ times as many shots (@sec-rescaling), 1.8 on the best layout and 2.4 on the worst, and the costs of the other methods of this chapter also grow exponentially with $\lambda$ (@sec-mitigation-price).
 For deeper circuits, the gap between good and bad qubits grows exponentially too (@exr-qubit-choice).
 Suppression therefore comes first, and mitigation is applied on top of it.
 
@@ -86,7 +87,7 @@ What is the ratio now?
 
 In most circuits, some qubits are [idle]{.gloss key="idle-qubit"} while gates act on others, and meanwhile they relax and dephase (@sec-t1-t2): this also increases the fault rate of the circuit.
 Much of the dephasing comes from *slow* noise: the qubit frequency is off by a small amount $\delta$ that we do not know and that changes from shot to shot, but hardly changes during one shot.
-The qubit then picks up its unknown phase $\delta t$ at a steady rate, and a steady drift can be reversed.
+Over an idle time $t$, the qubit then picks up the unknown phase $\delta t$ at a steady rate, and a steady drift can be reversed.
 [Dynamical decoupling]{.gloss key="dynamical-decoupling"} fills the idle time with the [echo]{.gloss key="echo"} of @sec-slow-noise (@fig-dynamical-decoupling).
 An $X$ pulse halfway through the idle time reverses the sign of the phase picked up so far, so the second half undoes the first, whatever $\delta$ is, and a second $X$ at the end undoes the flip.
 Long idle times are filled with several such pairs, or with other sequences of pulses whose product is the identity [@viola1999].
@@ -103,7 +104,7 @@ In contrast to suppression or correction, error mitigation does not attempt to r
 Instead, to mitigate errors we run multiple shots of the noisy circuit, often together with modified versions of it, and we combine their outcomes to compute a better estimate of the noiseless expectation value.
 This process always costs extra shots; in this section we explain why, and we discuss how to determine how many more shots are required.
 
-Consider an experiment that estimates a quantity (e.g. the expectation value $\langle O\rangle$ of an observable) from $N$ shots.
+Consider an experiment that estimates the expectation value $\langle P\rangle$ of a Pauli string $P$ from $N$ shots, by the sample mean $\bar s$ of their outcomes $\pm 1$ (@eq-sample-mean).
 This estimate can be wrong in two ways (@sec-bias-variance).
 Its [bias]{.gloss key="bias"} is the difference between its average, if we repeated the whole experiment many times, and the value we want.
 Noise causes a bias, as it effectively changes the quantum state and thus the outcome probabilities of each measurement.
@@ -117,7 +118,7 @@ We first explore this bias-variance trade-off in the two simplest methods, which
 ### Mitigating readout errors {#sec-readout-mitigation}
 
 Readout errors are the easiest to mitigate, because they act only at the end of the circuit and their rates, collected in the confusion matrix, can be characterised easily, as we discussed in @sec-readout-errors (in [Tutorial 2]({{< var colab >}}/tutorials/tutorial-02/T2-noisy-simulation_qiskit.ipynb), Exercise 2, you measure them on a simulated device).
-Inverting @eq-readout gives the mitigated value of a single qubit,
+With the probabilities $e_0 = p(1\mid 0)$ and $e_1 = p(0\mid 1)$ of reading the wrong bit, the value $\langle Z\rangle_{\text{read}}$ recorded on a single qubit follows @eq-readout, and inverting it gives the mitigated value,
 $$
 \langle Z\rangle = \frac{\langle Z\rangle_{\text{read}} - (e_1 - e_0)}{1 - e_0 - e_1} ,
 $$
@@ -143,14 +144,14 @@ Where it fails, the rescaled estimate keeps a bias, or overshoots, as in the exa
 
 Rescaling is worth its overhead only when the bias matters.
 With few shots, the standard error of $\bar s$ is larger than its bias, and dividing by $f$ only makes the estimate fluctuate more.
-Beyond the $N^*$ shots of @sec-mse, the bias is the larger error, and the rescaled estimate is the better one (@exr-rescaling-pays).
+Beyond the number of shots $N^*$ at which the two are equal (@sec-mse), the bias is the larger error, and the rescaled estimate is the better one (@exr-rescaling-pays).
 
 ::: {.example}
-In [Tutorial 4]({{< var colab >}}/tutorials/tutorial-04/T4-vqe_qiskit.ipynb), the optimised [HVA]{.gloss key="hva"} circuit for a [TFIM]{.gloss key="tfim"} chain of 4 qubits ($J = 1$, $h = 0.5$, 3 layers) reaches an energy only 0.003 above $E_0 = -3.427$ without noise.
-Compiled into 58 single-qubit gates and 18 CZs, under depolarising noise of 0.1% after each single-qubit gate and 0.5% after each CZ, its energy is 0.277 above $E_0$, almost all of it bias.
+In [Tutorial 4]({{< var colab >}}/tutorials/tutorial-04/T4-vqe_qiskit.ipynb), the optimised [HVA]{.gloss key="hva"} circuit for a [TFIM]{.gloss key="tfim"} chain of 4 qubits ($J = 1$, $h = 0.5$, 3 layers) reaches an energy only 0.003 above the ground-state energy $E_0 = -3.427$ without noise.
+Compiled into 58 single-qubit gates and 18 CZs, under depolarising noise of $p = 0.1\%$ after each single-qubit gate and $p = 0.5\%$ after each CZ, its energy is 0.277 above $E_0$, almost all of it bias.
 The error budget, with the Pauli errors $3p/4$ and $15p/16$ of these channels (@def-depolarising and @def-global-depolarising), gives $\lambda \approx 0.13$ and $f \approx 0.88$.
 Dividing the noisy energy by this $f$ gives an energy 0.15 *below* $E_0$: rescaling overshoots, and the result breaks the variational bound (@eq-variational).
-The noise is not global depolarising: not every error changes every term of $H$, each term shrinks by its own factor, and the energy as a whole shrinks by 0.92, not 0.88.
+The noise is not global depolarising: not every error changes every term of the Hamiltonian $H$, each term shrinks by its own factor, and the energy as a whole shrinks by 0.92, not 0.88.
 Only a simulation of the noisy circuit could have predicted this.
 :::
 
@@ -161,7 +162,7 @@ Symmetry verification recognises the shots that suffered an error, instead of co
 ::: {#exr-rescaling-pays}
 ## When rescaling pays off
 Under global depolarising noise, a circuit has $\langle P\rangle = 0.2$ and the shrinking factor $f = 0.9$.
-The standard error of $\bar s$ is $\sigma/\sqrt{N}$, with $\sigma^2 = 1 - f^2\langle P\rangle^2$ (@sec-mse).
+The standard error of $\bar s$ is $\sigma/\sqrt{N}$, where $\sigma^2 = 1 - f^2\langle P\rangle^2$ is the variance of a single shot (@sec-mse).
 
 (a) For $N = 100$ and for $N = 10^4$ shots, compute the bias and the standard error of the unmitigated estimate $\bar s$ and of the rescaled estimate $\bar s/f$.
 Which estimate would you trust more in each case?
@@ -185,7 +186,7 @@ Write $E(c)$ for the expectation value of the observable, for example the energy
 On a digital device, the simplest way to scale the noise is [gate folding]{.gloss key="gate-folding"}: replace a gate $G$ by $G G^\dagger G$ [@giurgica-tiron2020].
 In the ideal circuit, $G^\dagger G = I$, so nothing changes; on the device, the gate runs three times, with three times the errors, if $G^\dagger$ is as noisy as $G$.
 Folding the whole circuit $U$ into $U(U^\dagger U)^k$ scales the noise by $c = 2k+1$, that is, by 1, 3, 5, ….
-Folding only $m$ of its $G$ gates, chosen at random, gives the factors in between, $c = 1 + 2m/G$ if all gates are equally noisy; in practice, one often folds only the two-qubit gates, which dominate the error budget, and counts $G$ among them.
+Folding only $g$ of its $n_G$ gates, chosen at random, gives the factors in between, $c = 1 + 2g/n_G$ if all gates are equally noisy; in practice, one often folds only the two-qubit gates, which dominate the error budget, and counts $n_G$ among them.
 
 Three points matter when implementing folding.
 
@@ -213,11 +214,11 @@ for example $\gamma = (\tfrac{15}{8}, -\tfrac{5}{4}, \tfrac{3}{8})$ for $c = 1, 
 $$
 \hat E_{\text{exp}} = \hat E_1\Big(\frac{\hat E_1}{\hat E_2}\Big)^{c_1/(c_2 - c_1)} ,
 $$
-which for $c = 1, 3$ is $\hat E_1(\hat E_1/\hat E_3)^{1/2}$ [@endo2018]. This model assumes that noise pulls the value towards zero, and it fails when an estimate is within its standard error of zero. Depolarising noise pulls an observable $O$ towards its value in the maximally mixed state, $\Tr[O]/2^n$, which must be subtracted first if it is not zero; for the TFIM, $\Tr[H] = 0$. Since this model is not linear, it matters what we extrapolate: here, always the total energy.
+which for $c = 1, 3$ is $\hat E_1(\hat E_1/\hat E_3)^{1/2}$ [@endo2018]. This model assumes that noise pulls the value towards zero, and it fails when an estimate is within its standard error of zero. Depolarising noise pulls an observable $O$ towards its value in the maximally mixed state of $n$ qubits, $\Tr[O]/2^n$, which must be subtracted first if it is not zero; for the TFIM, $\Tr[H] = 0$. Since this model is not linear, it matters what we extrapolate: here, always the total energy.
 
 With more points than parameters, a least-squares fit replaces these formulas.
 Which model fits best depends on the noise.
-Under global depolarising noise, the exponential model is exact, while the linear one leaves a bias of order $\lambda^2$ (@exr-zne-two-points) and Richardson extrapolation with $m$ points one of order $\lambda^m$.
+Under global depolarising noise, the exponential model is exact, while the linear one leaves a bias of order $\lambda^2$, with the circuit fault rate $\lambda$ of @eq-fault-rate (@exr-zne-two-points) and Richardson extrapolation with $m$ points one of order $\lambda^m$.
 
 ### The price: amplified shot noise {#sec-zne-variance}
 
@@ -337,12 +338,12 @@ $$
 p_{\text{keep}} = f + (1-f)(1-d) ,
 $$
 and among them, a fraction $f/p_{\text{keep}}$ ran without errors.
-If $\langle O\rangle_u$ is the average of the observable over the shots with undetected errors, the post-selected estimate averages to
+We estimate an observable $O$ whose noiseless expectation value is $\langle O\rangle$. If $\langle O\rangle_u$ is its average over the shots with undetected errors, the post-selected estimate averages to
 $$
 \langle O\rangle_{\text{ps}} = \frac{f\langle O\rangle + (1-f)(1-d)\langle O\rangle_u}{p_{\text{keep}}} ,
 $$ {#eq-post-selected}
 so its bias, $(1-f)(1-d)\big(\langle O\rangle_u - \langle O\rangle\big)/p_{\text{keep}}$, comes only from the undetected errors.
-The price is that only $p_{\text{keep}}N$ of the $N$ shots are used, so the variance grows to about $\sigma^2/(p_{\text{keep}}N)$, by a factor $1/p_{\text{keep}}$.
+The price is that only $p_{\text{keep}}N$ of the $N$ shots are used, so the variance grows from $\sigma^2/N$, with $\sigma^2$ the variance of a single shot, to about $\sigma^2/(p_{\text{keep}}N)$, by a factor $1/p_{\text{keep}}$.
 If every error is detected, $d = 1$, the estimate has no bias, and its sampling overhead is $1/f \approx e^{\lambda}$, the square root of the overhead $e^{2\lambda}$ of rescaling.
 Post-selection is cheaper because it knows which shots went wrong, while rescaling compensates for the errors of all shots on average.
 The fraction of discarded shots, $(1-f)d$, is also a measured lower bound on the probability of an error, a useful check on the error budget.
