@@ -116,7 +116,7 @@ We first explore this bias-variance trade-off in the two simplest methods, which
 
 ### Mitigating readout errors {#sec-readout-mitigation}
 
-Readout errors (@sec-readout-errors) are the the easiest to mitigate, because they act only at the end of the circuit and their rates can be measured: prepare $\ket{0}$ and $\ket{1}$ and read them out many times, as in Tutorial 2.
+Readout errors are the easiest to mitigate, because they act only at the end of the circuit and their rates, collected in the confusion matrix, can be characterised easily, as we discussed in @sec-readout-errors.
 Inverting @eq-readout gives the mitigated value of a single qubit,
 $$
 \langle Z\rangle = \frac{\langle Z\rangle_{\text{read}} - (e_1 - e_0)}{1 - e_0 - e_1} ,
