@@ -99,15 +99,20 @@ On IQM devices, dynamical decoupling is an option of the run (`dd_mode`), off by
 
 ## The price of mitigation {#sec-mitigation-price}
 
-Error mitigation cannot remove the errors from the shots themselves.
-Instead, it runs the noisy circuit, often together with modified versions of it, and computes from the outcomes a corrected estimate of the noiseless expectation value.
-This correction always costs extra shots, and in this section we see why, and how many.
+In contrast to suppression or correction, error mitigation does not attempt to reduce or remove errors from any single shot.
+Instead, to mitigate errors we run multiple shots of the noisy circuit, often together with modified versions of it, and we combine their outcomes to compute a better estimate of the noiseless expectation value.
+This process always costs extra shots; in this section we explain why, and we discuss how to determine how many more shots are required.
 
-An estimate from $N$ shots can be wrong in two ways (@sec-bias-variance).
-Its [bias]{.gloss key="bias"} is the difference between its average, if we repeated the whole experiment many times, and the value we want: noise causes a bias, and more shots do not reduce it.
-Its standard error (@eq-standard-error) measures how much it fluctuates from one repetition of the experiment to the next, and it shrinks as $1/\sqrt{N}$.
-A mitigation method reduces the bias, but the correction also amplifies the fluctuations: the mitigated estimate has a larger standard error, and needs more shots to reach the same precision.
-We first see this in the two simplest methods, which we met in the previous chapters.
+Consider an experiment that estimates a quantity (e.g. the expectation value $\langle O\rangle$ of an observable) from $N$ shots.
+This estimate can be wrong in two ways (@sec-bias-variance).
+Its [bias]{.gloss key="bias"} is the difference between its average, if we repeated the whole experiment many times, and the value we want.
+Noise causes a bias, as it effectively changes the quantum state and thus the outcome probabilities of each measurement.
+Increasing the number of shots does not reduce the bias.
+The standard error measures how much the estimate fluctuates from one repetition of the experiment to the next.
+The standard error, denoted $\sigma_{\bar s}$ in @eq-standard-error, is the square root of the estimate's variance, and it shrinks as $1/\sqrt{N}$.
+
+Error mitigation reduces the bias of an estimate, but the mitigation procedure also amplifies fluctuations: the mitigated estimate has a larger standard error, and needs more shots to reach the same precision.
+We first explore this bias-variance trade-off in the two simplest methods, which we met in the previous chapters.
 
 ### Correcting readout errors {#sec-readout-correction}
 
