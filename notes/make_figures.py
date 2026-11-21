@@ -1815,17 +1815,29 @@ garnet_grid = {1: (4, 6), 2: (5, 5), 3: (2, 6), 4: (3, 5), 5: (4, 4), 6: (5, 3),
 position = {qubit_index(f"QB{k}"): (col, -row) for k, (col, row) in garnet_grid.items()}
 assert all(abs(position[a][0] - position[b][0]) == abs(position[a][1] - position[b][1]) == 1 for a, b in couplers)
 
-fig = plt.figure(figsize=(8.0, 3.6))
-grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.2], height_ratios=[1, 0.045], wspace=0.25, hspace=0.12)
+# (a) the coupling graph with the three layouts of the chain; (b) the circuit of Tutorial 4 that is
+# placed, and below it the circuit fault rate of each layout, in the colours of (a)
+from matplotlib.patches import Arc  # noqa: E402
+
+fig = plt.figure(figsize=(8.0, 3.7))
+grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.25], height_ratios=[1, 0.045], wspace=0.1, hspace=0.12)
 ax_graph = fig.add_subplot(grid[0, 0])
 ax_bar = fig.add_subplot(grid[1, 0])
-ax_hist = fig.add_subplot(grid[:, 1])
+right = grid[:, 1].subgridspec(2, 1, height_ratios=[1.25, 1], hspace=0.05)
+ax_circ = fig.add_subplot(right[0])
+ax_table = fig.add_subplot(right[1])
 coupler_colours = plt.get_cmap("viridis_r")   # as on Resonance: light for good couplers, dark for bad ones
 norm = Normalize(vmin=0.6, vmax=1.8)          # CZ error in %
+band = dict(lw=16, alpha=0.3, solid_capstyle="round", solid_joinstyle="round")
+dashed = dict(color="black", lw=1.8, ls=(0, (3, 2)))
 for chain, colour in ((best, ACCENT), (worst, ORANGE)):
     xs, ys = zip(*(position[q] for q in chain))
-    ax_graph.plot(xs, ys, color=colour, lw=16, alpha=0.3, solid_capstyle="round", solid_joinstyle="round",
-                  zorder=1)
+    ax_graph.plot(xs, ys, color=colour, zorder=1, **band)
+# The compiler's chain shares qubits with the worst one: it is drawn beside its qubits, on its right
+points = np.array([position[q] for q in own_choice], dtype=float)
+normals = [np.array([d[1], -d[0]]) / np.hypot(*d) for d in np.diff(points, axis=0)]
+shift = [normals[0]] + [(m + n) / (1 + m @ n) for m, n in zip(normals, normals[1:])] + [normals[-1]]
+ax_graph.plot(*(points + 0.52 * np.array(shift)).T, zorder=5, **dashed)
 for a, b in couplers:
     (xa, ya), (xb, yb) = position[a], position[b]
     ax_graph.plot([(xa + xb) / 2], [(ya + yb) / 2], "D", ms=11, mec="white", mew=0.8,
@@ -1835,10 +1847,8 @@ for q, (x, y) in position.items():
     ax_graph.add_patch(plt.Circle((x, y), 0.36, facecolor="white", edgecolor=ring.get(q, "0.45"),
                                   lw=2.0 if q in ring else 0.8, zorder=3))
     ax_graph.text(x, y, garnet.index_to_qubit_name(q), ha="center", va="center", fontsize=6, zorder=4)
-ax_graph.text(0.15, -0.3, "best", ha="center", va="center", fontsize=8.5)
-ax_graph.text(6.0, -1.25, "worst", ha="center", va="center", fontsize=8.5)
-ax_graph.set_xlim(-0.5, 6.5)
-ax_graph.set_ylim(-6.5, 0.5)
+ax_graph.set_xlim(-0.5, 6.9)
+ax_graph.set_ylim(-6.5, 0.7)
 ax_graph.set_aspect("equal")
 ax_graph.axis("off")
 ax_graph.set_title("(a) IQM Garnet", loc="left", fontsize=9.5)
@@ -1848,21 +1858,55 @@ colorbar.set_label("CZ error probability (%)", fontsize=8.5)
 colorbar.set_ticks([0.6, 1.0, 1.4, 1.8])
 colorbar.ax.tick_params(labelsize=8)
 
-ax_hist.hist(lambdas, bins=np.arange(0.295, 0.445, 0.005), color="0.78", edgecolor="white", lw=0.6)
-top = ax_hist.get_ylim()[1]
-for value, colour, dash, label, height in ((lambdas.min(), ACCENT, "-", "best", 1.45),
-                                           (own_lambda, "black", "--", "compiler's choice", 1.12),
-                                           (lambdas.max(), ORANGE, "-", "worst", 1.45)):
-    ax_hist.plot([value, value], [0, top * (height + 0.2)], dash, color=colour, lw=1.6)
-    ax_hist.text(value + (0.003 if label != "worst" else -0.003), top * (height + 0.2),
-                 f"{label}\n$\\lambda = {value:.2f}$, $e^{{2\\lambda}} = {np.exp(2 * value):.1f}$",
-                 ha="left" if label != "worst" else "right", va="top", fontsize=8)
-ax_hist.set_ylim(0, top * 1.7)
-ax_hist.set_xticks([0.30, 0.35, 0.40, 0.45])
-ax_hist.set_xlabel(r"circuit fault rate $\lambda$")
-ax_hist.set_ylabel("number of placements")
-ax_hist.set_title("(b)", loc="left", fontsize=9.5)
-clean_axes(ax_hist)
+
+def meter(ax, x, y, s=0.46):
+    ax.add_patch(Rectangle((x - s / 2, y - s / 2), s, s, facecolor="white", edgecolor="black", lw=0.9, zorder=3))
+    ax.add_patch(Arc((x, y - 0.12 * s), 0.7 * s, 0.6 * s, theta1=0, theta2=180, lw=0.8, zorder=4))
+    ax.plot([x, x + 0.25 * s], [y - 0.12 * s, y + 0.3 * s], color="black", lw=0.8, zorder=4)
+
+
+# the logical circuit: |+...+>, then 3 layers of R_ZZ on the bonds and R_X on every qubit (hva_ansatz)
+dy, x_layer, w_layer = 0.62, 0.85, 2.5
+for q in range(4):
+    ax_circ.plot([0.1, 4.25], [-q * dy, -q * dy], color="0.35", lw=0.9, zorder=1)
+    ax_circ.text(0.0, -q * dy, f"$q_{q + 1}$", ha="right", va="center", fontsize=9)
+    circuit_box(ax_circ, 0.42, -q * dy, 0.4, 0.4, "$H$", fs=8.5)
+    meter(ax_circ, 3.85, -q * dy, s=0.42)
+ax_circ.add_patch(Rectangle((x_layer, -3 * dy - 0.36), w_layer, 3 * dy + 0.72, facecolor="0.94",
+                            edgecolor="none", zorder=0))
+ax_circ.text(x_layer + w_layer / 2, 0.42, r"layer $k$, repeated for $k = 1, 2, 3$", ha="center", va="bottom",
+             fontsize=8.5)
+for xb, first in ((x_layer + 0.45, 0), (x_layer + 1.15, 1)):   # bonds (1,2), (3,4), then (2,3)
+    for i in range(first, 3, 2):
+        circuit_box(ax_circ, xb, -(i + 0.5) * dy, 0.56, dy + 0.4, "$R_{ZZ}$\n$(\\gamma_k)$", fs=7.5)
+for q in range(4):
+    circuit_box(ax_circ, x_layer + 1.95, -q * dy, 0.78, 0.44, "$R_X(\\beta_k)$", fs=7.5)
+ax_circ.set_xlim(-0.35, 4.3)
+ax_circ.set_ylim(-3 * dy - 0.45, 0.75)
+ax_circ.set_aspect("equal")
+ax_circ.axis("off")
+ax_circ.set_title("(b) the circuit of Tutorial 4", loc="left", fontsize=9.5)
+
+# the circuit fault rate of each layout, with the line styles of (a)
+rows = (("best", best, lambdas.min(), dict(color=ACCENT, **band)),
+        ("compiler's choice", own_choice, own_lambda, dashed),
+        ("worst", worst, lambdas.max(), dict(color=ORANGE, **band)))
+ax_table.set_xlim(0, 1)
+ax_table.set_ylim(-len(rows) - 0.4, 1)
+ax_table.axis("off")
+columns = (0.13, 0.5, 1.04)
+for x, text, align in zip(columns, ("layout", r"qubits $q_1$ to $q_4$", r"$\lambda$"), ("left", "left", "right")):
+    ax_table.text(x, 0, text, ha=align, va="center", fontsize=8.5, color="0.3")
+ax_table.plot([0.0, 1.04], [-0.45, -0.45], color="0.6", lw=0.6)
+for k, (label, chain, value, style) in enumerate(rows):
+    y = -k - 1
+    style = dict(style)
+    if "alpha" in style:
+        style["lw"] = 9
+    ax_table.plot([0.02, 0.1], [y, y], **style)
+    ax_table.text(columns[0], y, label, ha="left", va="center", fontsize=8.5)
+    ax_table.text(columns[1], y, names(chain).replace("-", ", "), ha="left", va="center", fontsize=8)
+    ax_table.text(columns[2], y, f"{value:.2f}", ha="right", va="center", fontsize=8.5)
 save_fig(fig, "qubit-selection")
 
 

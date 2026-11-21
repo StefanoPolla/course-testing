@@ -46,7 +46,7 @@ Their T1 and T2, their readout errors, and the error rates of their gates differ
 Furthermore these values drift between calibrations, so they will likely be different on different days, and sometimes change over a period of a few hours (@sec-superconducting).
 
 @fig-qubit-selection (a) shows the two-qubit gate error rates on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs).
-In the particular moment when these calibration data were taken, the error probability of a CZ ranges from 0.7% to 1.8%.
+In these data, the error probability of a CZ ranges from 0.7% to 1.8%; on the device itself, the values change from one calibration to the next.
 
 We summarize the noise that a circuit suffers on a device with the sum of the error probabilities of all the operations it uses (gates, waits and readouts):
 $$
@@ -57,9 +57,9 @@ It is the total of the error budgets of @sec-budgets: $\lambda \approx 0.25$ for
 Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
 The layout must follow the coupling graph: where possible qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler must add expensive SWAP gates (@sec-connectivity).
 
-![Choosing the qubits on IQM's Garnet, with the calibration data shipped with IQM's software (the fake backend `IQMFakeGarnet` of `iqm-client` 36.0.0, an undated snapshot). (a) The coupling graph, drawn as on IQM's Resonance platform, with the error probability of each CZ on the diamond between its two qubits (its depolarising error and the relaxation of both qubits during the gate), and the best (blue) and worst (orange) layouts of the 4-qubit chain of Tutorial 4. (b) The circuit fault rate $\lambda$ of the compiled circuit (18 CZs, 27 single-qubit gates and 4 readouts; waits not counted) for all 312 layouts that follow the coupling graph, counting both directions of each chain, with the cost $e^{2\lambda}$ of rescaling for the best and worst layouts and for the layout that Qiskit chooses without error rates.](figures/qubit-selection){#fig-qubit-selection width=100%}
+![Choosing the qubits on IQM's Garnet, with the example calibration data that IQM ships with its software (the fake backend `IQMFakeGarnet` of `iqm-client` 36.0.0; fixed values, not the device's current calibration). (a) The coupling graph, drawn as on IQM's Resonance platform, with the error probability of each CZ on the diamond between its two qubits (its depolarising error and the relaxation of both qubits during the gate), and three layouts of the chain of qubits $q_1$ to $q_4$: the best (blue) and the worst (orange) of the 312 layouts that follow the coupling graph, counting both directions of each chain, and the layout that Qiskit chooses without error rates (dashed, drawn beside its qubits). (b) The circuit of Tutorial 4 and, below it, its circuit fault rate $\lambda$ on the three layouts of (a). The compiled circuit has 18 CZs, 27 single-qubit gates and 4 readouts; the waits are not counted.](figures/qubit-selection){#fig-qubit-selection width=100%}
 
-@fig-qubit-selection (b) shows $\lambda$ for the circuit of Tutorial 4 on every layout of its 4-qubit chain: from 0.30 on the best layout to 0.44 on the worst.
+@fig-qubit-selection (b) gives $\lambda$ for the circuit of Tutorial 4: 0.30 on the best layout of its 4-qubit chain and 0.44 on the worst.
 Placing the chain on QB1, QB2, QB3 and QB4, in the order of their numbers, does not follow the coupling graph, since QB2 and QB3 are not coupled: the compiler adds two SWAPs, and $\lambda = 0.47$, more than on any layout that follows the graph.
 
 The layout also sets the price of mitigation.
@@ -70,7 +70,7 @@ Suppression therefore comes first, and mitigation is applied on top of it.
 Compilers can choose the layout from the error rates of the device.
 In Qiskit, the pass `VF2Layout` looks for layouts that need no SWAPs and, if the backend reports error rates, picks the one with the fewest errors.
 By default, the IQM backend reports none, so Qiskit's layout follows the coupling graph but ignores the calibration: for the circuit of Tutorial 4, it has $\lambda = 0.32$ (@fig-qubit-selection (b)).
-To use the best qubits, choose them from the calibration data and fix the layout when compiling, for example with `transpile(circuit, backend, initial_layout=[12, 13, 17, 18])` for QB13, QB14, QB18 and QB19 (Qiskit numbers the qubits from 0).
+To use the best qubits, choose them from the device's current calibration data and fix the layout when compiling, for example with `transpile(circuit, backend, initial_layout=[12, 13, 17, 18])` for QB13, QB14, QB18 and QB19, the best chain in @fig-qubit-selection (Qiskit numbers the qubits from 0).
 
 ::: {#exr-qubit-choice}
 ## Good qubits for a deeper circuit
