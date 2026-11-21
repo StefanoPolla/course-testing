@@ -40,7 +40,7 @@ In this section, we look at two techniques that we control ourselves: choosing t
 ### Choosing the qubits {#sec-qubit-selection}
 
 No two qubits of a chip are identical, so the error rates of their gates and readouts differ, and they drift between calibrations (@sec-superconducting).
-@fig-qubit-selection (a) shows this on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs): in a set of its calibration data, the error probability of a CZ ranges from 0.7% to 1.8%, depending on the pair of qubits.
+@fig-qubit-selection (a) shows this on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs): in one set of its calibration data, the error probability of a CZ ranges from 0.7% to 1.8%.
 
 One number measures how much noise a circuit suffers on a device: the sum of the error probabilities of all the operations it uses, gates, waits and readouts,
 $$
@@ -61,9 +61,9 @@ For deeper circuits, the gap between good and bad qubits grows exponentially too
 Suppression therefore comes first, and mitigation is applied on top of it.
 
 Compilers can choose the layout from the error rates of the device.
-In Qiskit, the pass `VF2Layout` looks for layouts that need no SWAPs and, if the backend reports error rates, picks the one with the fewest errors; `VF2PostLayout` does the same after SWAPs have been added.
-By default, the IQM backend reports no error rates to the compiler, so Qiskit picks a layout that follows the coupling graph but ignores the calibration: for the circuit of Tutorial 4, the one marked in @fig-qubit-selection (b), with $\lambda = 0.32$.
-To use the best qubits, choose them from the calibration data and fix the layout when compiling, for example with `transpile(circuit, backend, initial_layout=[12, 13, 17, 18])` for QB13, QB14, QB18 and QB19, since Qiskit numbers the qubits from 0.
+In Qiskit, the pass `VF2Layout` looks for layouts that need no SWAPs and, if the backend reports error rates, picks the one with the fewest errors.
+By default, the IQM backend reports none, so Qiskit's layout follows the coupling graph but ignores the calibration: for the circuit of Tutorial 4, it has $\lambda = 0.32$ (@fig-qubit-selection (b)).
+To use the best qubits, choose them from the calibration data and fix the layout when compiling, for example with `transpile(circuit, backend, initial_layout=[12, 13, 17, 18])` for QB13, QB14, QB18 and QB19 (Qiskit numbers the qubits from 0).
 
 ::: {#exr-qubit-choice}
 ## Good qubits for a deeper circuit
