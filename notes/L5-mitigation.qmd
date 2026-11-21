@@ -22,7 +22,7 @@ We group the software methods to reduce error in three categories:
 
 **Suppression** includes better calibrated pulses, compiling into fewer two-qubit gates, choosing the best qubits of a device, and dynamical decoupling (@sec-suppression); it costs no extra shots, but it cannot remove all errors.
 
-**Mitigation** includes the readout correction and the rescaling of @sec-rescaling, and the two methods explained in this chapter, as well as many more.
+**Mitigation** includes readout-error mitigation and the rescaling of @sec-rescaling, and the two methods explained in this chapter, as well as many more.
 An extensive review can be found in @cai2023.
 It needs no extra qubits, but it improves only estimates of expectation values, not the state on the device, and its cost in shots grows exponentially with the amount of noise (@sec-mitigation-price).
 
@@ -63,7 +63,7 @@ The layout must follow the coupling graph: where possible qubits that share two-
 Placing the chain on QB1, QB2, QB3 and QB4, in the order of their numbers, does not follow the coupling graph, since QB2 and QB3 are not coupled: the compiler adds two SWAPs, and $\lambda = 0.47$, more than on any layout that follows the graph.
 
 The layout also sets the price of mitigation.
-Correcting the shrinking factor $f \approx e^{-\lambda}$ by rescaling costs $e^{2\lambda}$ times as many shots (@sec-rescaling), 1.8 on the best layout and 2.4 on the worst, and the costs of the other methods of this chapter also grow exponentially with $\lambda$ (@sec-mitigation-price).
+Compensating for the shrinking factor $f \approx e^{-\lambda}$ by rescaling costs $e^{2\lambda}$ times as many shots (@sec-rescaling), 1.8 on the best layout and 2.4 on the worst, and the costs of the other methods of this chapter also grow exponentially with $\lambda$ (@sec-mitigation-price).
 For deeper circuits, the gap between good and bad qubits grows exponentially too (@exr-qubit-choice).
 Suppression therefore comes first, and mitigation is applied on top of it.
 
@@ -114,18 +114,18 @@ The standard error, denoted $\sigma_{\bar s}$ in @eq-standard-error, is the squa
 Error mitigation reduces the bias of an estimate, but the mitigation procedure also amplifies fluctuations: the mitigated estimate has a larger standard error, and needs more shots to reach the same precision.
 We first explore this bias-variance trade-off in the two simplest methods, which we met in the previous chapters.
 
-### Correcting readout errors {#sec-readout-correction}
+### Mitigating readout errors {#sec-readout-mitigation}
 
-Readout errors (@sec-readout-errors) are the easiest case, because they act only at the end of the circuit and their rates can be measured: prepare $\ket{0}$ and $\ket{1}$ and read them out many times, as in Tutorial 2.
-Inverting @eq-readout gives the corrected value of a single qubit,
+Readout errors (@sec-readout-errors) are the the easiest to mitigate, because they act only at the end of the circuit and their rates can be measured: prepare $\ket{0}$ and $\ket{1}$ and read them out many times, as in Tutorial 2.
+Inverting @eq-readout gives the mitigated value of a single qubit,
 $$
 \langle Z\rangle = \frac{\langle Z\rangle_{\text{read}} - (e_1 - e_0)}{1 - e_0 - e_1} ,
 $$
 a rescaling with an offset.
 For independent readouts on many qubits, the inverse of each qubit's [confusion matrix]{.gloss key="confusion-matrix"} is applied to the measured probabilities of the bit strings, one qubit at a time.
-The corrected estimate has no bias from readout errors, but each qubit's correction multiplies the standard error by about $1/(1 - e_0 - e_1)$.
-The correction assumes that the readout errors of different qubits are independent, and that their rates have not changed since they were measured: correlated readout errors, or rates that have drifted, leave a bias, and can even make the correction overshoot (@exr-readout-bias, part d).
-This readout correction is the first step of rescaling and of ZNE; symmetry verification instead discards most readout errors with the other errors (@exr-post-selection).
+The mitigated estimate has no bias from readout errors, but the mitigation of each qubit multiplies the standard error by about $1/(1 - e_0 - e_1)$.
+This method assumes that the readout errors of different qubits are independent, and that their rates have not changed since they were measured: correlated readout errors, or rates that have drifted, leave a bias, and can even make it overshoot (@exr-readout-bias, part d).
+Readout-error mitigation is the first step of rescaling and of ZNE; symmetry verification instead discards most readout errors with the other errors (@exr-post-selection).
 
 ### Rescaling and the sampling overhead {#sec-rescaling-overhead}
 
@@ -139,7 +139,7 @@ Mitigation therefore works for circuits whose fault rate is at most of order 1 [
 Rescaling rests on an assumption: that the noise is global depolarising, so that every expectation value shrinks by the same factor $f$, and the error rates of the device predict it (@eq-circuit-fidelity).
 This makes the method simple and cheap, but real noise is only approximately global depolarising: not every error changes every Pauli string, so each expectation value shrinks by its own factor (@sec-signal-left).
 The assumption must therefore be checked, for example with a simulation of the noisy circuit, or on a similar circuit whose result is known.
-Where it fails, the rescaled estimate keeps a bias, or over-corrects, as in the example below.
+Where it fails, the rescaled estimate keeps a bias, or overshoots, as in the example below.
 
 Rescaling is worth its overhead only when the bias matters.
 With few shots, the standard error of $\bar s$ is larger than its bias, and dividing by $f$ only makes the estimate fluctuate more.
@@ -149,14 +149,14 @@ Beyond the $N^*$ shots of @sec-mse, the bias is the larger error, and the rescal
 In [Tutorial 4]({{< var colab >}}/tutorials/tutorial-04/T4-vqe_qiskit.ipynb), the optimised [HVA]{.gloss key="hva"} circuit for a [TFIM]{.gloss key="tfim"} chain of 4 qubits ($J = 1$, $h = 0.5$, 3 layers) reaches an energy only 0.003 above $E_0 = -3.427$ without noise.
 Compiled into 58 single-qubit gates and 18 CZs, under depolarising noise of 0.1% after each single-qubit gate and 0.5% after each CZ, its energy is 0.277 above $E_0$, almost all of it bias.
 The error budget, with the Pauli errors $3p/4$ and $15p/16$ of these channels (@def-depolarising and @def-global-depolarising), gives $\lambda \approx 0.13$ and $f \approx 0.88$.
-Dividing the noisy energy by this $f$ gives an energy 0.15 *below* $E_0$: rescaling over-corrects, and the result breaks the variational bound (@eq-variational).
+Dividing the noisy energy by this $f$ gives an energy 0.15 *below* $E_0$: rescaling overshoots, and the result breaks the variational bound (@eq-variational).
 The noise is not global depolarising: not every error changes every term of $H$, each term shrinks by its own factor, and the energy as a whole shrinks by 0.92, not 0.88.
 Only a simulation of the noisy circuit could have predicted this.
 :::
 
 The difficulty of rescaling lies in knowing $f$, as in @sec-rescaling, and the two methods of this chapter avoid it in different ways.
 Zero-noise extrapolation measures how the estimate changes when the noise grows, instead of predicting it.
-Symmetry verification recognises the shots that suffered an error, instead of correcting all shots on average.
+Symmetry verification recognises the shots that suffered an error, instead of compensating for the errors of all shots on average.
 
 ::: {#exr-rescaling-pays}
 ## When rescaling pays off
@@ -190,7 +190,7 @@ Folding only $m$ of its $G$ gates, chosen at random, gives the factors in betwee
 Three points matter when implementing folding.
 
 1. Fold the circuit that prepares the state, after compiling it into native gates, and only then add the basis changes of the measurement settings and the measurements, as in Tutorial 4. Make sure that nothing simplifies the folded circuit afterwards: a compiler that sees $U^\dagger U$ removes it. In Qiskit, the folded circuit is `native.compose(native.inverse()).compose(native)`, built before adding measurements and run without compiling again. With `r` and `cz`, the inverse of each gate is a gate of the same kind, so the noise model acts on it too; if the inverse contains gates that are not native, compile again with barriers between the three parts, which keep the compiler from cancelling them.
-2. Folding scales only the errors of the gates. Readout errors are the same at every $c$, so they should be corrected first (@sec-readout-correction), or they remain in the extrapolated value.
+2. Folding scales only the errors of the gates. Readout errors are the same at every $c$, so they should be mitigated first (@sec-readout-mitigation), or they remain in the extrapolated value.
 3. Folding assumes that errors add up, like the incoherent errors of @sec-gate-errors. Coherent errors can instead cancel: if every pulse over-rotates by a fixed fraction of its angle, $G^\dagger = R_X(-\theta)$ over-rotates in the opposite direction to $G = R_X(\theta)$, and $GG^\dagger G$ has the error of a single $G$. [Twirling]{.gloss key="twirling"} (@sec-gate-errors) turns coherent errors into Pauli channels, which do add up [@cai2023].
 
 ### Extrapolating to zero noise {#sec-extrapolation}
@@ -254,7 +254,7 @@ With ten times more shots, the remaining bias of the linear fit would be about a
 In practice, ZNE takes the following steps.
 
 1. Compile the circuit into native gates, and build the folded circuits for the chosen scale factors, for example $c = 1, 3, 5$, protected from further simplification.
-2. Estimate the expectation value and its standard error at each $c$, with the same measurement settings, and correct readout errors in each estimate.
+2. Estimate the expectation value and its standard error at each $c$, with the same measurement settings, and mitigate readout errors in each estimate.
 3. Extrapolate with one or more models, and propagate the standard errors (@eq-zne-variance).
 4. Check the result: if the models disagree by more than their standard errors, the extrapolation is not reliable. Where possible, test the procedure on a small instance with a known answer and the same noise.
 
@@ -344,7 +344,7 @@ $$ {#eq-post-selected}
 so its bias, $(1-f)(1-d)\big(\langle O\rangle_u - \langle O\rangle\big)/p_{\text{keep}}$, comes only from the undetected errors.
 The price is that only $p_{\text{keep}}N$ of the $N$ shots are used, so the variance grows to about $\sigma^2/(p_{\text{keep}}N)$, by a factor $1/p_{\text{keep}}$.
 If every error is detected, $d = 1$, the estimate has no bias, and its sampling overhead is $1/f \approx e^{\lambda}$, the square root of the overhead $e^{2\lambda}$ of rescaling.
-Post-selection is cheaper because it knows which shots went wrong, while rescaling corrects all shots on average.
+Post-selection is cheaper because it knows which shots went wrong, while rescaling compensates for the errors of all shots on average.
 The fraction of discarded shots, $(1-f)d$, is also a measured lower bound on the probability of an error, a useful check on the error budget.
 
 ::: {.example}
@@ -438,7 +438,7 @@ Five questions help.
 1. Does it come with a standard error that includes the amplified shot noise (@eq-zne-variance, or the shots kept)? Without one, it cannot be judged.
 2. Which model does it assume: which fit and scale factors, and do other fits agree? For rescaling, where does $f$ come from?
 3. For post-selection, which fraction of the shots was kept?
-4. Does it break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy satisfies the variational bound (@eq-variational). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below $E_0$ after mitigation (@exr-below-E0) is amplified shot noise, as in @fig-zne, or an over-correction, as in the rescaling example of @sec-rescaling-overhead.
+4. Does it break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy satisfies the variational bound (@eq-variational). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below $E_0$ after mitigation (@exr-below-E0) is amplified shot noise, as in @fig-zne, or an overshoot, as in the rescaling example of @sec-rescaling-overhead.
 5. Was the method tested on an instance with a known answer and the same noise?
 
 ## Other methods {#sec-other-methods}

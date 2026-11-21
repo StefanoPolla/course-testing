@@ -436,7 +436,7 @@ an [echo]{.gloss key="echo"}, or Hahn echo, after Erwin Hahn, who found it with 
 spins in 1950. It leaves the qubit flipped, so a second $X$ is added at
 the end of the wait. Repeated echoes during a long wait, called
 [dynamical decoupling]{.gloss key="dynamical-decoupling"}, protect idle qubits from slow
-noise on the device itself, while the error mitigation of later chapters corrects the
+noise on the device itself, while the error mitigation of later chapters improves the
 estimates after the run.
 
 If the frequency also changes during the wait, the phases picked up in the two halves
@@ -555,7 +555,7 @@ $$
 \langle P\rangle \mapsto f\langle P\rangle, \qquad f = \prod_i (1-p_i) .
 $$ {#eq-global-factor}
 A single number describes the noise of the whole circuit. This makes global depolarising
-noise much easier to model than local noise, and to correct for (@sec-rescaling).
+noise much easier to model than local noise, and to mitigate (@sec-rescaling).
 
 Local noise does not commute with entangling gates. Conjugation by CZ turns an $X$ on the
 second qubit into $Z\otimes X$ (@sec-compiling), so an $X$ error before a CZ is a
@@ -684,7 +684,7 @@ $\ket{y}$. For independent readouts, it is the tensor product of single-qubit
 matrices. If, in addition, each qubit's two error
 rates are equal, every qubit of a Pauli string shrinks its expectation value by its own
 factor $1 - 2e_j$ (@exr-readout-bias). Otherwise, the offsets of @eq-readout also mix in
-the expectation values of shorter strings. Correcting estimates for known readout errors
+the expectation values of shorter strings. Compensating estimates for known readout errors
 is the simplest form of error mitigation, which we meet later in the course.
 
 ::: {#exr-readout}
@@ -889,7 +889,7 @@ shots worth taking on a better device?
 explain the result of that comparison.
 :::
 
-### Correcting a known shrinking factor {#sec-rescaling}
+### Rescaling by a known shrinking factor {#sec-rescaling}
 
 If the shrinking factor $f$ is known, the bias can be removed: $\bar s/f$ averages to $\langle P\rangle$. The
 price is in the variance. Dividing by $f$ multiplies the standard error by $1/f$, so the

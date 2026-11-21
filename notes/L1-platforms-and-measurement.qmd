@@ -1027,7 +1027,7 @@ helping?
     The standard error is given by @eq-standard-error.
     ::::
 
-(d) If $p$ is known, how can the estimate be corrected? What does the correction do to
+(d) If $p$ is known, how can the bias of the estimate be removed? What does this do to
 the standard error?
 :::
 

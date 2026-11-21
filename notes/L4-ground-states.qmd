@@ -210,8 +210,8 @@ Three habits follow.
 1. Test the whole procedure on small instances whose ground state is known from exact diagonalisation (computing the lowest eigenvector of $H$ classically), as in the figures of this chapter.
 2. After the optimisation, estimate the energy of the final parameters again with fresh shots.
 The optimiser kept the parameters whose estimates were lowest, and among many estimates the lowest are often those that fluctuated downwards, so the last estimate is biased low.
-3. Read an estimate below $E_0$ as a fluctuation, or as a sign of a systematic error, such as a readout correction (@exr-readout-bias, part d) whose calibration is off and over-corrects, not as a better state.
-<!-- L5-LINK: other mitigation methods can also over-correct; link to the error-mitigation chapter. -->
+3. Read an estimate below $E_0$ as a fluctuation, or as a sign of a systematic error, such as readout-error mitigation (@exr-readout-bias, part d) whose calibration is off and overshoots, not as a better state.
+<!-- L5-LINK: other mitigation methods can also overshoot; link to the error-mitigation chapter. -->
 
 ::: {#exr-below-E0}
 ## An energy below the ground state
