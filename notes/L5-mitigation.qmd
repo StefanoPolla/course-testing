@@ -54,6 +54,7 @@ $$
 \lambda = \sum_i \varepsilon_i .
 $$ {#eq-fault-rate}
 This quantity is called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
+It is the total of the error budgets of @sec-budgets: $\lambda \approx 0.25$ for the brick-wall circuit of @tbl-budget on a superconducting device.
 Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
 The layout must follow the coupling graph: qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler adds SWAPs, of 3 CZs each (@sec-connectivity).
 
