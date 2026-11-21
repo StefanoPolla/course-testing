@@ -1828,7 +1828,7 @@ ax_circ = fig.add_subplot(right[0])
 ax_table = fig.add_subplot(right[1])
 coupler_colours = plt.get_cmap("viridis_r")   # as on Resonance: light for good couplers, dark for bad ones
 norm = Normalize(vmin=0.6, vmax=1.8)          # CZ error in %
-band = dict(lw=16, alpha=0.3, solid_capstyle="round", solid_joinstyle="round")
+band = dict(lw=20, alpha=0.5, solid_capstyle="round", solid_joinstyle="round")
 dashed = dict(color="black", lw=1.8, ls=(0, (3, 2)))
 for chain, colour in ((best, ACCENT), (worst, ORANGE)):
     xs, ys = zip(*(position[q] for q in chain))
@@ -1837,7 +1837,10 @@ for chain, colour in ((best, ACCENT), (worst, ORANGE)):
 points = np.array([position[q] for q in own_choice], dtype=float)
 normals = [np.array([d[1], -d[0]]) / np.hypot(*d) for d in np.diff(points, axis=0)]
 shift = [normals[0]] + [(m + n) / (1 + m @ n) for m, n in zip(normals, normals[1:])] + [normals[-1]]
-ax_graph.plot(*(points + 0.52 * np.array(shift)).T, zorder=5, **dashed)
+dashed_line = points + 0.52 * np.array(shift)
+ax_graph.plot(*dashed_line.T, zorder=5, **dashed)
+
+
 for a, b in couplers:
     (xa, ya), (xb, yb) = position[a], position[b]
     ax_graph.plot([(xa + xb) / 2], [(ya + yb) / 2], "D", ms=11, mec="white", mew=0.8,
@@ -1847,7 +1850,13 @@ for q, (x, y) in position.items():
     ax_graph.add_patch(plt.Circle((x, y), 0.36, facecolor="white", edgecolor=ring.get(q, "0.45"),
                                   lw=2.0 if q in ring else 0.8, zorder=3))
     ax_graph.text(x, y, garnet.index_to_qubit_name(q), ha="center", va="center", fontsize=6, zorder=4)
-ax_graph.set_xlim(-0.5, 6.9)
+# The order q1..q4 of each chain: a small label to the left of each qubit of the best and worst
+# layouts, and to the right of the qubits of the default layout, beyond its dashed line
+for chain, colour, dx in ((best, ACCENT, -0.72), (worst, ORANGE, -0.72), (own_choice, "black", 1.15)):
+    for k, q in enumerate(chain):
+        x, y = position[q]
+        ax_graph.text(x + dx, y, f"$q_{k + 1}$", color=colour, ha="center", va="center", fontsize=7.5, zorder=6)
+ax_graph.set_xlim(-1.0, 7.4)
 ax_graph.set_ylim(-6.5, 0.7)
 ax_graph.set_aspect("equal")
 ax_graph.axis("off")
@@ -1902,7 +1911,7 @@ for k, (label, chain, value, style) in enumerate(rows):
     y = -k - 1
     style = dict(style)
     if "alpha" in style:
-        style["lw"] = 9
+        style["lw"] = 10
     ax_table.plot([0.02, 0.1], [y, y], **style)
     ax_table.text(columns[0], y, label, ha="left", va="center", fontsize=8.5)
     ax_table.text(columns[1], y, names(chain).replace("-", ", "), ha="left", va="center", fontsize=8)
