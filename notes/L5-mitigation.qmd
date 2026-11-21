@@ -34,19 +34,26 @@ Combining error correction with mitigation is an active area of research, which 
 ## Error suppression {#sec-suppression}
 
 Error suppression changes how a device runs a circuit, but not what the circuit computes.
-Some of it happens in every run without our help: providers calibrate the pulses of the gates regularly (@sec-superconducting), and compilers turn a circuit into as few native gates as they can, above all as few two-qubit gates, which cause most errors (@sec-compiling).
+When running a circuit on cloud hardware, some error suppression happens automatically in every run: providers calibrate the pulses of the gates regularly (@sec-superconducting).
+Compilers, in turn, can turn a circuit into as few native gates as possible, above all as few two-qubit gates, which cause most errors (@sec-compiling).
+How hard they try is usually up to us: in Qiskit, the `optimization_level` of `transpile` sets it, as in [Tutorial 3]({{< var colab >}}/tutorials/tutorial-03/T3-hamiltonians_qiskit.ipynb), where level 1 merges neighbouring single-qubit gates and level 0 does not.
 In this section, we look at two techniques that we control ourselves: choosing the qubits on which a circuit runs, and protecting the qubits that wait with dynamical decoupling.
 
 ### Choosing the qubits {#sec-qubit-selection}
 
-No two qubits of a chip are identical, so the error rates of their gates and readouts differ, and they drift between calibrations (@sec-superconducting).
-@fig-qubit-selection (a) shows this on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs): in one set of its calibration data, the error probability of a CZ ranges from 0.7% to 1.8%.
+On a superconducting chip, no two qubits of a chip are identical. 
+Their T1 and T2, their readout errors, and the error rates of their gates differ.
+Furthermore these values drift between calibrations, so they will likely be different on differend days, and sometimes change over a few hours period
+(@sec-superconducting).
 
-One number measures how much noise a circuit suffers on a device: the sum of the error probabilities of all the operations it uses, gates, waits and readouts,
+@fig-qubit-selection (a) shows the two-qubit gate error rates on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs). 
+In the particular moment when these calibration data were taken, the error probability of a CZ ranges from 0.7% to 1.8%.
+
+We summarize the noise that a circuit suffers on a device with the sum of the error probabilities of all the operations it uses (gates, waits and readouts):
 $$
 \lambda = \sum_i \varepsilon_i .
 $$ {#eq-fault-rate}
-It is the average number of errors per shot, called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
+This quantity is called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
 Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
 The layout must follow the coupling graph: qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler adds SWAPs, of 3 CZs each (@sec-connectivity).
 
