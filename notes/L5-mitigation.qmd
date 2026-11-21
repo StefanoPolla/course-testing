@@ -20,7 +20,7 @@ We group the software methods to reduce error in three categories:
 - [Quantum error correction]{.gloss key="qec"} encodes each logical qubit in many physical qubits, and detects and corrects errors during the computation (@sec-nisq).
 :::
 
-**Suppression** includes better calibrated pulses, compiling into fewer two-qubit gates, choosing the best qubits of a device, and dynamical decoupling (below); it costs no extra shots, but it cannot remove all errors.
+**Suppression** includes better calibrated pulses, compiling into fewer two-qubit gates, choosing the best qubits of a device, and dynamical decoupling (@sec-suppression); it costs no extra shots, but it cannot remove all errors.
 
 **Mitigation** includes the readout correction and the rescaling of @sec-rescaling, and the two methods explained in this chapter, as well as many more.
 An extensive review can be found in @cai2023.
@@ -31,36 +31,67 @@ It needs no extra qubits, but it improves only estimates of expectation values, 
 Error suppression techniques can be applied to any quantum circuit, so they combine naturally with both mitigation and correction.
 Combining error correction with mitigation is an active area of research, which may find applications on the first fault-tolerant devices [@dutkiewicz2025; @jeon2026].
 
+## Error suppression {#sec-suppression}
+
+Error suppression changes how a device runs a circuit, but not what the circuit computes.
+Some of it happens in every run without our help: providers calibrate the pulses of the gates regularly (@sec-superconducting), and compilers turn a circuit into as few native gates as they can, above all as few two-qubit gates, which cause most errors (@sec-compiling).
+In this section, we look at two techniques that we control ourselves: choosing the qubits on which a circuit runs, and protecting the qubits that wait with dynamical decoupling.
+
+### Choosing the qubits {#sec-qubit-selection}
+
+No two qubits of a chip are identical, so the error rates of their gates and readouts differ, and they drift between calibrations (@sec-superconducting).
+@fig-qubit-selection (a) shows this on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs): in a set of its calibration data, the error probability of a CZ ranges from 0.7% to 1.8%, depending on the pair of qubits.
+
+One number measures how much noise a circuit suffers on a device: the sum of the error probabilities of all the operations it uses, gates, waits and readouts,
+$$
+\lambda = \sum_i \varepsilon_i .
+$$ {#eq-fault-rate}
+It is the average number of errors per shot, called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
+Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
+The layout must follow the coupling graph: qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler adds SWAPs, of 3 CZs each (@sec-connectivity).
+
+![Choosing the qubits on IQM's Garnet, with the calibration data shipped with IQM's software (the fake backend `IQMFakeGarnet` of `iqm-client` 36.0.0, an undated snapshot). (a) The coupling graph, with the error probability of each CZ (its depolarising error and the relaxation of both qubits during the gate), and the best (blue) and worst (orange) layouts of the 4-qubit chain of Tutorial 4. (b) The circuit fault rate $\lambda$ of the compiled circuit (18 CZs, 27 single-qubit gates and 4 readouts; waits not counted) for all 312 layouts that follow the coupling graph, counting both directions of each chain, with the cost $e^{2\lambda}$ of rescaling for the best and worst layouts and for the layout that Qiskit chooses without error rates.](figures/qubit-selection){#fig-qubit-selection width=100%}
+
+@fig-qubit-selection (b) shows $\lambda$ for the circuit of Tutorial 4 on every layout of its 4-qubit chain: from 0.30 on the best layout to 0.44 on the worst.
+Placing the chain on QB1, QB2, QB3 and QB4, in the order of their numbers, does not follow the coupling graph, since QB2 and QB3 are not coupled: the compiler adds two SWAPs, and $\lambda = 0.47$, more than on any layout that follows the graph.
+
+The layout also sets the price of mitigation.
+Correcting the shrinking factor $f \approx e^{-\lambda}$ by rescaling costs $e^{2\lambda}$ times as many shots (@sec-rescaling), 1.8 on the best layout and 2.4 on the worst, and the costs of the other methods of this chapter also grow exponentially with $\lambda$ (@sec-mitigation-price).
+For deeper circuits, the gap between good and bad qubits grows exponentially too (@exr-qubit-choice).
+Suppression therefore comes first, and mitigation is applied on top of it.
+
+Compilers can choose the layout from the error rates of the device.
+In Qiskit, the pass `VF2Layout` looks for layouts that need no SWAPs and, if the backend reports error rates, picks the one with the fewest errors; `VF2PostLayout` does the same after SWAPs have been added.
+By default, the IQM backend reports no error rates to the compiler, so Qiskit picks a layout that follows the coupling graph but ignores the calibration: for the circuit of Tutorial 4, the one marked in @fig-qubit-selection (b), with $\lambda = 0.32$.
+To use the best qubits, choose them from the calibration data and fix the layout when compiling, for example with `transpile(circuit, backend, initial_layout=[12, 13, 17, 18])` for QB13, QB14, QB18 and QB19, since Qiskit numbers the qubits from 0.
+
+::: {#exr-qubit-choice}
+## Good qubits for a deeper circuit
+In the circuit of Tutorial 4, each of the three bonds of the chain carries 6 CZs.
+On the best layout of @fig-qubit-selection, the CZs of the three bonds have error probabilities of 0.7%, 0.9% and 1.0%; on the worst layout, 1.3%, 1.8% and 1.0%.
+
+(a) Compute the contribution of the CZs to $\lambda$ on each layout, and the ratio of the costs $e^{2\lambda}$ of rescaling that this difference alone causes.
+
+(b) A deeper circuit has ten times as many layers on the same chain, so 60 CZs on each bond.
+What is the ratio now?
+:::
+
 ### Dynamical decoupling {#sec-dynamical-decoupling}
 
-Recall the [echo]{.gloss key="echo"} of @sec-slow-noise.
-An idle qubit whose frequency is shifted by an unknown amount $\delta$, constant during the shot, picks up a relative phase $\delta$ per unit time between $\ket{0}$ and $\ket{1}$.
-Starting from $\ket{+}$, we wait for a time $t/2$, apply $X$, wait for another $t/2$, and apply $X$ again (up to global phases):
-$$
-\frac{\ket{0} + \ket{1}}{\sqrt 2}
-\;\xrightarrow{\ t/2\ }\;
-\frac{\ket{0} + e^{-i\delta t/2}\ket{1}}{\sqrt 2}
-\;\xrightarrow{\ X\ }\;
-\frac{e^{-i\delta t/2}\ket{0} + \ket{1}}{\sqrt 2}
-\;\xrightarrow{\ t/2\ }\;
-e^{-i\delta t/2}\,\frac{\ket{0} + \ket{1}}{\sqrt 2}
-\;\xrightarrow{\ X\ }\;
-e^{-i\delta t/2}\,\frac{\ket{0} + \ket{1}}{\sqrt 2} .
-$$
-The $X$ swaps the two amplitudes, so the phase picked up in the second half lands on the other amplitude and cancels the first, whatever the value of $\delta$.
-The same holds for any initial state (@exr-echo).
+The circuit fault rate also counts the waits: in most circuits, some qubits wait while gates act on others, and during the wait they relax and dephase (@sec-t1-t2).
+[Dynamical decoupling]{.gloss key="dynamical-decoupling"} fills these waits with the [echo]{.gloss key="echo"} of @sec-slow-noise (@fig-dynamical-decoupling).
+An $X$ pulse halfway through the wait reverses the sign of the phase picked up so far, so the second half of the wait undoes the first, and a second $X$ at the end undoes the flip.
+Long waits are filled with several such pairs, or with other sequences of pulses whose product is the identity [@viola1999].
 
-[Dynamical decoupling]{.gloss key="dynamical-decoupling"} applies this idea to the idle periods of a circuit, when a qubit waits while gates act on other qubits.
-Each idle period is filled with a sequence of pulses whose product is the identity, up to a global phase, such as $X$, $X$, or $X$, $Y$, $X$, $Y$, spaced so that the phases picked up between pulses cancel [@viola1999].
-The same pulses also cancel the small, always-on $R_{ZZ}$ coupling between neighbouring superconducting qubits (@sec-multi-qubit-noise), since an $X$ on one of the two qubits flips the sign of $Z\otimes Z$; the pulses on neighbouring qubits are therefore staggered, so that they do not flip both at once.
+![Dynamical decoupling on a qubit that waits. Qubit 3 waits for a time $t$ while qubits 1 and 2 run gates, and the two $X$ pulses inserted in the wait (blue) form the echo of @fig-ramsey-echo; their product is the identity. The boxes marked PRX are single-qubit gates, and the vertical lines with two dots are CZs.](figures/dynamical-decoupling){#fig-dynamical-decoupling width=75%}
 
-Dynamical decoupling is suppression: the circuit computes the same thing, and each shot suffers fewer errors, with no extra shots and no post-processing.
-It only removes noise that changes slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better.
-Compilers can insert the sequences automatically once the durations of all gates are known; @ezzell2023 compare many sequences on superconducting devices.
+Dynamical decoupling only removes noise that changes slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better.
+Compilers can insert the pulses once the durations of all gates are known, and many sequences have been compared on superconducting devices [@ezzell2023].
+On IQM devices, dynamical decoupling is an option of the run (`dd_mode`), off by default.
 
 ## The price of mitigation {#sec-mitigation-price}
 
-Every mitigation method in this chapter combines estimates from noisy circuits into a new estimate, with a smaller [bias]{.gloss key="bias"} and a larger variance.
+All error mitigation methods combine estimates from noisy circuits into a new estimate, with a smaller [bias]{.gloss key="bias"} and a larger variance.
 We met the simplest case in @sec-rescaling.
 If the noise shrinks an expectation value by a known factor $f$, as global depolarising noise does (@eq-global-factor), the rescaled estimate $\bar s/f$ has no bias, and its standard error is that of $\bar s$ multiplied by $1/f$.
 By @eq-mse, rescaling changes the mean squared error from
@@ -74,12 +105,7 @@ Rescaling replaces a bias, which no number of shots removes, by a larger varianc
 
 To reach the same standard error as the unmitigated estimate, rescaling needs $1/f^2$ times as many shots.
 This factor is the [sampling overhead]{.gloss key="sampling-overhead"} of a method: the number of shots it needs for a given standard error, divided by the number that the unmitigated estimate needs.
-By @eq-circuit-fidelity, $f \approx e^{-\lambda}$, where
-$$
-\lambda = \sum_i \varepsilon_i
-$$
-is the sum of the error probabilities of all operations of the circuit, gates, waits and readouts: the average number of errors per shot, called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023].
-The overhead of rescaling is $e^{2\lambda}$: about 7 for $\lambda = 1$, 400 for $\lambda = 3$ and 22,000 for $\lambda = 5$.
+By @eq-circuit-fidelity, $f \approx e^{-\lambda}$, with the circuit fault rate $\lambda$ of @eq-fault-rate, so the overhead of rescaling is $e^{2\lambda}$: about 7 for $\lambda = 1$, 400 for $\lambda = 3$ and 22,000 for $\lambda = 5$.
 Other methods have other overheads, but for general circuits all of them grow exponentially with $\lambda$, and it has been proved that, in the worst case, no method of a broad class, which includes those of this chapter, can avoid this [@quek2024].
 Mitigation therefore works for circuits whose fault rate is at most of order 1 [@cai2023]: it extends what a noisy device can do, but it does not remove the limit set by noise.
 

@@ -392,7 +392,7 @@ glossary:
     def: "A quantity conserved by a Hamiltonian, or an operation that leaves it unchanged, such as flipping all qubits in the TFIM. Evolution under the Hamiltonian, or a circuit that respects the symmetry, keeps its value fixed."
   error-suppression:
     term: error suppression
-    def: "Methods that change how a device runs a circuit, so that each shot suffers fewer errors, such as better calibration, compiling into fewer gates, or dynamical decoupling. They cost no extra shots."
+    def: "Methods that change how a device runs a circuit, so that each shot suffers fewer errors, such as better calibration, compiling into fewer gates, choosing the best qubits, or dynamical decoupling. They cost no extra shots."
     ref: def-three-ways
   sampling-overhead:
     term: sampling overhead
@@ -400,6 +400,9 @@ glossary:
   circuit-fault-rate:
     term: circuit fault rate
     def: "The sum of the error probabilities of all operations of a circuit: the average number of errors per shot. A shot runs without errors with a probability of about e to the power minus this number."
+  layout:
+    term: layout
+    def: "The choice of the qubits of a device that play the roles of the qubits of a circuit, made when the circuit is compiled. A good layout follows the coupling graph, so that no SWAPs are needed, and uses the qubits and couplers with the lowest error rates."
   zne:
     term: zero-noise extrapolation
     def: "An error-mitigation method that estimates an expectation value at several amplified noise levels and extrapolates the estimates to zero noise. It amplifies the shot noise."

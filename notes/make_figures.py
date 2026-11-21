@@ -1700,3 +1700,206 @@ ax_kept.set_title("(d)", loc="left", fontsize=9.5)
 ax_kept.legend(frameon=False, fontsize=8)
 clean_axes(ax_kept)
 save_fig(fig, "light-cone-noise")
+
+
+# ------------------------------------------- L5: choosing the qubits on IQM Garnet (about 5 s)
+# The calibration snapshot of Garnet that ships with iqm-client 36.0.0 (IQMFakeGarnet, undated):
+# no credentials and no jobs. Its noise model adds relaxation during each gate (T1, T2, gate
+# durations) to the depolarising error of the snapshot. The error probability of an operation is
+# 1 - process fidelity of its noise channel: 3p/4 and 15p/16 for depolarising noise alone, as in L2.
+from iqm.qiskit_iqm.fake_backends.fake_garnet import IQMFakeGarnet  # noqa: E402
+from matplotlib.colors import ListedColormap, Normalize  # noqa: E402
+from qiskit.quantum_info import SuperOp, process_fidelity  # noqa: E402
+
+garnet = IQMFakeGarnet()
+profile = garnet.error_profile
+qubit_index = garnet.qubit_name_to_index   # Qiskit numbers the qubits from 0: QB1 is qubit 0
+
+
+def error_probability(channel):
+    return 1 - process_fidelity(SuperOp(channel))
+
+
+errors = {}   # (operation, physical qubits) -> error probability
+duration = profile.single_qubit_gate_durations["prx"]
+for name, p in profile.single_qubit_gate_depolarizing_error_parameters["prx"].items():
+    channel = profile.thermal_relaxation(name, duration).compose(depolarizing_error(p, 1))
+    errors["r", (qubit_index(name),)] = error_probability(channel)
+duration = profile.two_qubit_gate_durations["cz"]
+for (a, b), p in profile.two_qubit_gate_depolarizing_error_parameters["cz"].items():
+    relaxation = profile.thermal_relaxation(a, duration).tensor(profile.thermal_relaxation(b, duration))
+    errors["cz", (qubit_index(a), qubit_index(b))] = errors["cz", (qubit_index(b), qubit_index(a))] = \
+        error_probability(relaxation.compose(depolarizing_error(p, 2)))
+for name, e in profile.readout_errors.items():
+    errors["measure", (qubit_index(name),)] = (e["0"] + e["1"]) / 2   # averaged over the two outcomes
+
+
+def fault_rate(native):
+    # The circuit fault rate: the sum of the error probabilities of all operations of the compiled
+    # circuit (gates and readouts; the waits are not counted)
+    total = 0
+    for instruction in native.data:
+        qubits = tuple(native.find_bit(q).index for q in instruction.qubits)
+        total += errors.get((instruction.operation.name, qubits), 0)   # a barrier has no error
+    return total
+
+
+couplers = sorted({tuple(sorted(edge)) for edge in garnet.coupling_map.get_edges()})
+neighbours = {q: set() for q in range(garnet.num_qubits)}
+for a, b in couplers:
+    neighbours[a].add(b)
+    neighbours[b].add(a)
+
+
+def chains(length):
+    # All placements of a chain of `length` qubits that follow the coupling graph, in both directions
+    found = []
+
+    def extend(chain):
+        if len(chain) == length:
+            found.append(chain)
+            return
+        for q in sorted(neighbours[chain[-1]] - set(chain)):
+            extend(chain + [q])
+
+    for q in range(garnet.num_qubits):
+        extend([q])
+    return found
+
+
+t4_circuit = hva_ansatz(4, 3).assign_parameters(result.x)   # the optimised circuit of the ZNE example
+t4_circuit.measure_all()
+placements = chains(4)
+lambdas = np.array([fault_rate(transpile(t4_circuit, garnet, initial_layout=chain, optimization_level=1))
+                    for chain in placements])
+best, worst = placements[lambdas.argmin()], placements[lambdas.argmax()]
+compiled = transpile(t4_circuit, garnet, optimization_level=1)   # the compiler's own choice
+own_choice = list(compiled.layout.initial_index_layout(filter_ancillas=True))
+own_lambda = fault_rate(compiled)
+
+
+def names(chain):
+    return "-".join(garnet.index_to_qubit_name(q) for q in chain)
+
+
+def parts(native):
+    # the fault rate split by operation
+    split = {}
+    for instruction in native.data:
+        qubits = tuple(native.find_bit(q).index for q in instruction.qubits)
+        name = instruction.operation.name
+        split[name] = split.get(name, 0) + errors.get((name, qubits), 0)
+    return {name: round(value, 3) for name, value in split.items() if value}
+
+
+print("L5 Garnet: CZ error", round(min(errors["cz", c] for c in couplers), 4), "to",
+      round(max(errors["cz", c] for c in couplers), 4), " r error", round(min(errors["r", (q,)] for q in range(20)), 4),
+      "to", round(max(errors["r", (q,)] for q in range(20)), 4), " readout", round(min(errors["measure", (q,)] for q in range(20)), 4),
+      "to", round(max(errors["measure", (q,)] for q in range(20)), 4))
+print("  ops on a chain", dict(compiled.count_ops()), " placements", len(placements),
+      " median lambda", round(np.median(lambdas), 3))
+for label, chain, value in (("best", best, lambdas.min()), ("worst", worst, lambdas.max()),
+                            ("compiler", own_choice, own_lambda)):
+    native = transpile(t4_circuit, garnet, initial_layout=chain, optimization_level=1)
+    print(f"  {label}: {names(chain)}, lambda = {value:.3f}, e^(2 lambda) = {np.exp(2 * value):.2f},",
+          parts(native), " CZ errors on the chain",
+          [round(100 * errors["cz", (a, b)], 2) for a, b in zip(chain, chain[1:])])
+first_four = transpile(t4_circuit, garnet, initial_layout=[0, 1, 2, 3], optimization_level=1)
+print("  QB1-QB2-QB3-QB4 (not a chain):", dict(first_four.count_ops()), " lambda", round(fault_rate(first_four), 3))
+
+# the coupling graph of Garnet is a square lattice with these rows (IQM's qubit names QB1-QB20)
+garnet_rows = [[None, 1, 2, None, None], [3, 4, 5, 6, 7], [8, 9, 10, 11, 12], [13, 14, 15, 16, 17],
+               [None, 18, 19, 20, None]]
+position = {qubit_index(f"QB{k}"): (col, -row) for row, ks in enumerate(garnet_rows) for col, k in enumerate(ks) if k}
+assert all(abs(position[a][0] - position[b][0]) + abs(position[a][1] - position[b][1]) == 1 for a, b in couplers)
+
+fig = plt.figure(figsize=(8.0, 3.2))
+grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.25], height_ratios=[1, 0.05], wspace=0.3, hspace=0.25)
+ax_graph = fig.add_subplot(grid[0, 0])
+ax_bar = fig.add_subplot(grid[1, 0])
+ax_hist = fig.add_subplot(grid[:, 1])
+greys = ListedColormap(plt.get_cmap("Greys")(np.linspace(0.25, 1, 256)))   # the lightest still visible
+norm = Normalize(vmin=0.6, vmax=1.8)                                         # CZ error in %
+for chain, colour in ((best, ACCENT), (worst, ORANGE)):
+    xs, ys = zip(*(position[q] for q in chain))
+    ax_graph.plot(xs, ys, color=colour, lw=13, alpha=0.35, solid_capstyle="round", solid_joinstyle="round",
+                  zorder=1)
+for a, b in couplers:
+    (xa, ya), (xb, yb) = position[a], position[b]
+    ax_graph.plot([xa, xb], [ya, yb], color=greys(norm(100 * errors["cz", (a, b)])), lw=3.2, zorder=2,
+                  solid_capstyle="butt")
+for q, (x, y) in position.items():
+    ax_graph.add_patch(plt.Circle((x, y), 0.22, facecolor="white", edgecolor="0.35", lw=0.8, zorder=3))
+    ax_graph.text(x, y, garnet.index_to_qubit_name(q)[2:], ha="center", va="center", fontsize=7, zorder=4)
+ax_graph.text(0.55, -4.0, "best", ha="right", va="center", fontsize=8.5)
+ax_graph.text(3.5, -0.5, "worst", ha="center", va="bottom", fontsize=8.5)
+ax_graph.set_xlim(-0.45, 4.45)
+ax_graph.set_ylim(-4.45, 0.45)
+ax_graph.set_aspect("equal")
+ax_graph.axis("off")
+ax_graph.set_title("(a) IQM Garnet", loc="left", fontsize=9.5)
+colorbar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=greys), cax=ax_bar, orientation="horizontal")
+colorbar.set_label("CZ error probability (%)", fontsize=8.5)
+colorbar.set_ticks([0.6, 1.0, 1.4, 1.8])
+colorbar.ax.tick_params(labelsize=8)
+
+ax_hist.hist(lambdas, bins=np.arange(0.295, 0.445, 0.005), color="0.78", edgecolor="white", lw=0.6)
+top = ax_hist.get_ylim()[1]
+for value, colour, dash, label, height in ((lambdas.min(), ACCENT, "-", "best", 1.45),
+                                           (own_lambda, "black", "--", "compiler's choice", 1.12),
+                                           (lambdas.max(), ORANGE, "-", "worst", 1.45)):
+    ax_hist.plot([value, value], [0, top * (height + 0.2)], dash, color=colour, lw=1.6)
+    ax_hist.text(value + (0.003 if label != "worst" else -0.003), top * (height + 0.2),
+                 f"{label}\n$\\lambda = {value:.2f}$, $e^{{2\\lambda}} = {np.exp(2 * value):.1f}$",
+                 ha="left" if label != "worst" else "right", va="top", fontsize=8)
+ax_hist.set_ylim(0, top * 1.7)
+ax_hist.set_xticks([0.30, 0.35, 0.40, 0.45])
+ax_hist.set_xlabel(r"circuit fault rate $\lambda$")
+ax_hist.set_ylabel("number of placements")
+ax_hist.set_title("(b)", loc="left", fontsize=9.5)
+clean_axes(ax_hist)
+save_fig(fig, "qubit-selection")
+
+
+# ------------------------------------------- L5: dynamical decoupling on an idle qubit
+# Drawn by hand in the style of ramsey-echo (L2): qubit 3 waits while qubits 1 and 2 run gates,
+# and the two X pulses of an echo (in colour) are inserted in its wait.
+fig, ax = plt.subplots(figsize=(6.4, 1.9))
+wire_y = {1: 1.7, 2: 0.85, 3: 0.0}
+start, end = 0.0, 12.6
+for q, y in wire_y.items():
+    ax.plot([start, end], [y, y], color="0.4", lw=1.0, zorder=1)
+    ax.text(start - 0.3, y, f"qubit {q}", ha="right", va="center", fontsize=9)
+
+
+def gate_box(x, q, text, fill="white", ink="black"):
+    y = wire_y[q]
+    ax.add_patch(Rectangle((x - 0.45, y - 0.27), 0.9, 0.54, facecolor=fill, edgecolor="black", lw=1.0, zorder=2))
+    ax.text(x, y, text, ha="center", va="center", fontsize=8, color=ink, zorder=3)
+
+
+def cz_gate(x, qa, qb):
+    ax.plot([x, x], [wire_y[qa], wire_y[qb]], color="black", lw=1.0, zorder=2)
+    for q in (qa, qb):
+        ax.add_patch(plt.Circle((x, wire_y[q]), 0.09, color="black", zorder=3))
+
+
+for q in (1, 2, 3):
+    gate_box(0.7, q, "PRX")
+    gate_box(11.9, q, "PRX")
+cz_gate(1.7, 2, 3)
+for x in (2.7, 4.7, 6.7, 8.7):        # qubits 1 and 2 run gates, qubit 3 waits
+    gate_box(x, 1, "PRX")
+    gate_box(x, 2, "PRX")
+    cz_gate(x + 1.0, 1, 2)
+cz_gate(10.9, 2, 3)
+idle_start, first, second = 1.9, 5.65, 9.95     # the two waits between the pulses are equally long
+gate_box(first, 3, "$X$", fill=ACCENT, ink="white")
+gate_box(second, 3, "$X$", fill=ACCENT, ink="white")
+for a, b in ((idle_start, first - 0.45), (first + 0.45, second - 0.45)):
+    ax.annotate("", xy=(b, -0.5), xytext=(a, -0.5), arrowprops=dict(arrowstyle="<->", lw=0.8, color="0.3"))
+    ax.text((a + b) / 2, -0.62, "$t/2$", ha="center", va="top", fontsize=8.5)
+ax.set_xlim(start - 1.6, end + 0.1)
+ax.set_ylim(-1.05, 2.1)
+ax.axis("off")
+save_fig(fig, "dynamical-decoupling")
