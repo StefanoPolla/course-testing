@@ -469,7 +469,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">15 November 2026</p>
+      <p class="date-modified">21 November 2026</p>
     </div>
   </div>
     
@@ -817,7 +817,7 @@ Figure&nbsp;2.2: The Bloch sphere (grey) and its image (blue) under (a) amplitud
 </figcaption>
 </figure>
 </div>
-<p>An idle qubit undergoes this combined channel while it waits. For a short wait <span class="math inline">\(t\)</span>, its factors are <span class="math inline">\(1 - t/T_2^*\)</span> on the <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> axes and <span class="math inline">\(1 - t/T_1\)</span> on the <span class="math inline">\(z\)</span> axis, so its error is of order <span class="math inline">\(t/T_2^*\)</span> (<a href="#sec-budgets" class="quarto-xref"><span>Section 2.6.3</span></a> makes this precise). A wait of 100 ns with <span class="math inline">\(T_2^* = 100\)</span> µs therefore costs as much as a single-qubit gate, or more. <a href="#tbl-channels" class="quarto-xref">Table&nbsp;<span>2.1</span></a> collects the single-qubit channels.</p>
+<p>A qubit is <a href="glossary.html#gloss-idle-qubit" class="gloss" data-gloss="A qubit on which no gate acts for a while, for example while gates act on other qubits. While idle, it still relaxes and dephases.">idle</a> when no gate acts on it, for example while gates act on other qubits. An idle qubit undergoes this combined channel. For a short wait <span class="math inline">\(t\)</span>, its factors are <span class="math inline">\(1 - t/T_2^*\)</span> on the <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> axes and <span class="math inline">\(1 - t/T_1\)</span> on the <span class="math inline">\(z\)</span> axis, so its error is of order <span class="math inline">\(t/T_2^*\)</span> (<a href="#sec-budgets" class="quarto-xref"><span>Section 2.6.3</span></a> makes this precise). A wait of 100 ns with <span class="math inline">\(T_2^* = 100\)</span> µs therefore costs as much as a single-qubit gate, or more. <a href="#tbl-channels" class="quarto-xref">Table&nbsp;<span>2.1</span></a> collects the single-qubit channels.</p>
 <div id="tbl-channels" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-channels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
