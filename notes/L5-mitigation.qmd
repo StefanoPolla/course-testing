@@ -302,14 +302,17 @@ Both are observables that commute with the Hamiltonian.
 ::: {#def-symmetry}
 ## Symmetry, quantum number and sector
 A [symmetry]{.gloss key="symmetry"} of a Hamiltonian $H$ is an observable $S$ that commutes with it, $SH = HS$.
-The eigenvalues $s$ of $S$ are called [quantum numbers]{.gloss key="quantum-number"}, and the eigenspace of each eigenvalue, made of the states with $S\ket{\psi} = s\ket{\psi}$, is a [symmetry sector]{.gloss key="symmetry-sector"}.
+The eigenvalues $s$ of $S$ are called [quantum numbers]{.gloss key="quantum-number"}, and the eigenspace of each eigenvalue, made of all the states with $S\ket{\psi} = s\ket{\psi}$, is a [symmetry sector]{.gloss key="symmetry-sector"}.
 :::
 
-The name comes from physics, which labels states by their conserved values, for example the number of electrons of a molecule or its total spin.
+The name "quantum number" comes from physics, which labels eigenstates of a system by their conserved values, for example the number of electrons in a molecule, or the total angular momentum of an atom.
 Two properties follow from $SH = HS$.
 
 1. $H$ maps each sector into itself: if $S\ket{\psi} = s\ket{\psi}$, then $S(H\ket{\psi}) = H(S\ket{\psi}) = s\,H\ket{\psi}$. In a basis of eigenvectors of $S$, sorted by sector, the matrix of $H$ is block diagonal (@fig-sectors).
-2. The quantum number is conserved: a gate $G$ that commutes with $S$ keeps each state in its sector, since $SG\ket{\psi} = GS\ket{\psi} = s\,G\ket{\psi}$. This holds for the evolution $e^{-iHt}$, and for any circuit whose gates all commute with $S$, even an approximate one such as a Trotter circuit. A Pauli rotation $e^{-i\theta P/2}$ commutes with a Pauli string $S$ if $P$ does, that is, if their single-qubit factors anticommute on an even number of qubits.
+2. The quantum number is conserved: a gate $G$ that commutes with $S$ keeps each state in its sector, since $SG\ket{\psi} = GS\ket{\psi} = s\,G\ket{\psi}$.
+   This holds for the evolution $e^{-iHt}$, and for any circuit whose gates all commute with $S$.
+   If a Trotter circuit approximating the evolution is made of gates $G_i$ which, individually, commute with the symmetry, the whole circuit conserves quantum numbers.
+   Remember: a Pauli rotation $e^{-i\theta P/2}$ commutes with a Pauli string $S$ if $[P, S] = 0$.
 
 For the Heisenberg chain, the number of flipped qubits is the observable
 $$
