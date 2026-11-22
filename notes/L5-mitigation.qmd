@@ -180,16 +180,16 @@ Noise levels cannot be reduced below what the physical device allows, but they c
 Zero-noise extrapolation needs no model of the noise, only a way to increase it.
 
 To describe this, we need a number for the noise level.
-Imagine that we could make every error of the circuit $c$ times more likely, and write $E(c)$ for the expectation value we want, for example the energy, at that noise level.
-The number $c$ is called the *noise scale factor*.
-On the device as it is, $c = 1$, and $E(1)$ is the noisy value that we measure.
+Imagine that we could make every error of the circuit $c$ times more likely; we call $c$ the *noise scale factor*.
+We can then write $E(c)$ for the unmitigated, noisy value of the expectation value we want (for example the energy) at that noise level.
+Running the bare circuit on the device as it is, we have $c = 1$, and $E(1)$ is the noisy value that we measure.
 The noiseless value that we want is $E(0)$, which no device can reach.
-ZNE measures $E(c)$ at a few scale factors $c \ge 1$, and follows how it changes with $c$ back to $c = 0$, as in @fig-zne (a).
+ZNE measures $E(c)$ at a few scale factors $c \ge 1$, fits a chosen curve to $E(c)$, and extrapolates back to $c = 0$, as in @fig-zne (a).
 The next two sections explain the two steps: how to scale the noise, and how to extrapolate.
 
 ### Scaling the noise by folding {#sec-folding}
 
-We cannot change the error rates of the device, but we can make the circuit longer without changing what it computes.
+We cannot easily change the error rates of the device, but we can make the circuit longer without changing what it computes.
 On a digital device, the simplest way to do this is [gate folding]{.gloss key="gate-folding"}: replace a gate $G$ by $G G^\dagger G$ [@giurgica-tiron2020].
 Without noise, $G^\dagger G = I$, so the folded circuit computes the same thing as the original.
 On the device, the gate now runs three times, so it suffers three times the errors, if $G^\dagger$ is as noisy as $G$.
