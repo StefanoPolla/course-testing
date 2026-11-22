@@ -467,7 +467,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">21 November 2026</p>
+      <p class="date-modified">22 November 2026</p>
     </div>
   </div>
     
@@ -530,8 +530,8 @@ Figure&nbsp;5.1: Choosing the qubits on IQM’s Garnet, with the example calibra
 <div id="exr-qubit-choice" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 5.1 (Good qubits for a deeper circuit)</strong></span> In the circuit of Tutorial 4, each of the three bonds of the chain carries 6 CZs. On the best layout of <a href="#fig-qubit-selection" class="quarto-xref">Figure&nbsp;<span>5.1</span></a>, the CZs of the three bonds have error probabilities of 0.7%, 0.9% and 1.0%; on the worst layout, 1.3%, 1.8% and 1.0%.</p>
 <ol type="a">
-<li><p>Compute the contribution of the CZs to <span class="math inline">\(\lambda\)</span> on each layout, and the ratio of the costs <span class="math inline">\(e^{2\lambda}\)</span> of rescaling that this difference alone causes.</p></li>
-<li><p>A deeper circuit has ten times as many layers on the same chain, so 60 CZs on each bond. What is the ratio now?</p></li>
+<li><p>Compute the contribution of the CZs to <span class="math inline">\(\lambda\)</span> on each layout, and the factor <span class="math inline">\(f \approx e^{-\lambda}\)</span> by which the CZs alone shrink an expectation value.</p></li>
+<li><p>A deeper circuit has ten times as many layers on the same chain, so 60 CZs on each bond. Compute <span class="math inline">\(f\)</span> again on both layouts. How has the ratio of the two values of <span class="math inline">\(f\)</span> changed, and how much of the signal is left on the worst layout?</p></li>
 </ol>
 </div>
 </section>
@@ -548,7 +548,7 @@ Figure&nbsp;5.2: Dynamical decoupling on an idle qubit. Qubit 3 is idle for a ti
 </figcaption>
 </figure>
 </div>
-<p>Dynamical decoupling only removes noise that changes slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better. Compilers can insert the pulses once the durations of all gates are known, and many sequences have been compared on superconducting devices <span class="citation" data-cites="ezzell2023">(<a href="L1-platforms-and-measurement.html#ref-ezzell2023" role="doc-biblioref">Ezzell et al. 2023</a>)</span>. On IQM devices, dynamical decoupling is an option of the run (<code>dd_mode</code>), off by default.</p>
+<p>Dynamical decoupling only removes certain kinds of noise, like dephasing that changes slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better. Compilers can insert the pulses once the durations of all gates are known, and many sequences have been compared on superconducting devices <span class="citation" data-cites="ezzell2023">(<a href="L1-platforms-and-measurement.html#ref-ezzell2023" role="doc-biblioref">Ezzell et al. 2023</a>)</span>. On IQM devices, dynamical decoupling is an option of the run (<code>dd_mode</code>), off by default.</p>
 </section>
 </section>
 <section id="sec-mitigation-price" class="level2" data-number="5.3">
