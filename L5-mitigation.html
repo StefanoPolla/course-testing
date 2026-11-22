@@ -9,7 +9,7 @@
 <meta name="author" content="Stefano Polla">
 <meta name="dcterms.date" content="2026-11-20">
 
-<title>5&nbsp; Error mitigation – Near-term Quantum Computing — lecture notes</title>
+<title>5&nbsp; Reducing the effect of noise – Near-term Quantum Computing — lecture notes</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -306,7 +306,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./L5-mitigation.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Error mitigation</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./L5-mitigation.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Reducing the effect of noise</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -369,7 +369,7 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./L5-mitigation.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Error mitigation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Reducing the effect of noise</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -443,7 +443,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-mitigation" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Error mitigation</span></span></h1>
+<h1 class="title"><span id="sec-mitigation" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Reducing the effect of noise</span></span></h1>
 </div>
 
 
@@ -486,7 +486,7 @@ window.Quarto = {
 \newcommand{\Tr}{\mathrm{Tr}}
 \]</span></p>
 </div>
-<p>In the previous chapters, noise was what made our estimates wrong: it shrinks expectation values (<a href="L2-noise.html#sec-bias-variance" class="quarto-xref"><span>Section 2.7</span></a>), it limits the number of Trotter steps (<a href="L3-hamiltonians.html#sec-trotter-noise" class="quarto-xref"><span>Section 3.7</span></a>), and in <a href="https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-04/T4-vqe_qiskit.ipynb">Tutorial 4</a> it left the energy of the variational state far above what the ansatz could reach. In this chapter, we discuss a family of techniques developed to reduce the effect of noise in <a href="glossary.html#gloss-nisq" class="gloss" data-gloss="Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.">NISQ</a> computation: error mitigation.</p>
+<p>In the previous chapters, noise was what made our estimates wrong: it shrinks expectation values (<a href="L2-noise.html#sec-bias-variance" class="quarto-xref"><span>Section 2.7</span></a>), it limits the number of Trotter steps (<a href="L3-hamiltonians.html#sec-trotter-noise" class="quarto-xref"><span>Section 3.7</span></a>), and in <a href="https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-04/T4-vqe_qiskit.ipynb">Tutorial 4</a> it left the energy of the variational state far above what the ansatz could reach. In this chapter, we discuss how to reduce the effect of noise in <a href="glossary.html#gloss-nisq" class="gloss" data-gloss="Noisy intermediate-scale quantum: devices with tens to thousands of qubits whose errors are not corrected, so noise limits the size of the circuits they can run.">NISQ</a> computation without error correction: briefly with error suppression, and mainly with error mitigation.</p>
 <p>By the end of the chapter, you should be able to tell error suppression, mitigation and correction apart; explain how zero-noise extrapolation and symmetry verification work, and how they trade bias for standard error; and judge whether a mitigated result is plausible.</p>
 <section id="sec-three-ways" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="sec-three-ways"><span class="header-section-number">5.1</span> Suppression, mitigation and correction</h2>
