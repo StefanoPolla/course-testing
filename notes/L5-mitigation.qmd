@@ -445,18 +445,19 @@ A mitigated value is the output of a model and of post-processing, and it should
 Five questions help.
 
 1. Does it come with a standard error that includes the amplified shot noise (@eq-zne-variance, or the shots kept)? Without one, it cannot be judged.
-2. Which model does it assume: which fit and scale factors, and do other fits agree? For rescaling, where does $f$ come from?
-3. For post-selection, which fraction of the shots was kept?
-4. Does it break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy satisfies the variational bound (@eq-variational). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below $E_0$ after mitigation (@exr-below-E0) is amplified shot noise, as in @fig-zne, or an overshoot, as when rescaling divides by too small an $f$ (@sec-rescaling-overhead).
-5. Was the method tested on an instance with a known answer and the same noise?
+2. Which assumptions are made on the noise model? Are these assumptions meant as approximations, or are they exact? For ZNE, what fit is used, and how is it justified? For rescaling, where does $f$ come from?
+3. For post-selection, which fraction of the shots was kept? Can we estimate which fraction of the errors might have gone undetected?
+4. Does the error-mitigated estimate break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy needs to satisfy the variational bound (@eq-variational). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below $E_0$ after mitigation (@exr-below-E0) is amplified shot noise, as in @fig-zne, or an overshoot, as when rescaling divides by too small an $f$ (@sec-rescaling-overhead).
+5. Was the method tested and validated on an instance with a known answer and the same noise?
 
 ## Other methods {#sec-other-methods}
 
-Many other methods exist; @cai2023 review them, and we may return to some later in the course.
+Many other methods exist; @cai2023 reviews most of the established methods.
+Some of the most popular include:
 
 - [Probabilistic error cancellation]{.gloss key="pec"} (PEC) undoes the noise of each gate on average, by inserting random operations with positive and negative weights [@temme2017]; it needs an accurate noise model, learned from the device.
 - *Twirling* (@sec-gate-errors) does not remove errors, but makes them simpler to model, which PEC needs and which helps ZNE (@sec-folding).
-- *Purification methods*, such as virtual distillation [@huggins2021; @koczor2021], use several copies of the state to suppress the contribution of errors.
+- *Purification methods* suppress the contribution of errors by comparing the noisy state with itself: virtual distillation [@huggins2021; @koczor2021] uses several copies of the state, and echo verification [@obrien2021; @obrien2023] runs the circuit forwards and then backwards on a single copy.
 - *Learning-based methods* learn the relation between noisy and noiseless values on circuits that can be simulated classically [@czarnik2021].
 
 ## Further reading {#sec-L5-reading}
