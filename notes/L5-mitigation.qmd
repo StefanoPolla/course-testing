@@ -165,7 +165,7 @@ The standard error of $\bar s$ is $\sigma/\sqrt{N}$, where $\sigma^2 = 1 - f^2\l
 (a) For $N = 100$ and for $N = 10^4$ shots, compute the bias and the standard error of the unmitigated estimate $\bar s$ and of the rescaled estimate $\bar s/f$.
 Which estimate would you trust more in each case?
 
-(b) Roughly from how many shots on is the rescaled estimate the better one?
+(b) Roughly how many shots are needed for the rescaled estimate to be the better one?
 
     :::: {.hint}
     Compare the bias of $\bar s$ with its standard error.
