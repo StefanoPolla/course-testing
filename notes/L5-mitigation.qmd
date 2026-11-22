@@ -77,10 +77,11 @@ To use the best qubits, choose them from the device's current calibration data a
 In the circuit of Tutorial 4, each of the three bonds of the chain carries 6 CZs.
 On the best layout of @fig-qubit-selection, the CZs of the three bonds have error probabilities of 0.7%, 0.9% and 1.0%; on the worst layout, 1.3%, 1.8% and 1.0%.
 
-(a) Compute the contribution of the CZs to $\lambda$ on each layout, and the ratio of the costs $e^{2\lambda}$ of rescaling that this difference alone causes.
+(a) Compute the contribution of the CZs to $\lambda$ on each layout, and the factor $f \approx e^{-\lambda}$ by which the CZs alone shrink an expectation value.
 
 (b) A deeper circuit has ten times as many layers on the same chain, so 60 CZs on each bond.
-What is the ratio now?
+Compute $f$ again on both layouts.
+How has the ratio of the two values of $f$ changed, and how much of the signal is left on the worst layout?
 :::
 
 ### Dynamical decoupling {#sec-dynamical-decoupling}
@@ -94,7 +95,7 @@ Long idle times are filled with several such pairs, or with other sequences of p
 
 ![Dynamical decoupling on an idle qubit. Qubit 3 is idle for a time $t$ while qubits 1 and 2 run gates, and the two $X$ pulses inserted in the idle time (blue) form the echo of @fig-ramsey-echo; their product is the identity. The boxes marked PRX are single-qubit gates, and the vertical lines with two dots are CZs.](figures/dynamical-decoupling){#fig-dynamical-decoupling width=75%}
 
-Dynamical decoupling only removes noise that changes slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better.
+Dynamical decoupling only removes certain kinds of noise that change slowly compared with the spacing of the pulses, and every pulse adds a small error of its own, so more pulses are not always better.
 Compilers can insert the pulses once the durations of all gates are known, and many sequences have been compared on superconducting devices [@ezzell2023].
 On IQM devices, dynamical decoupling is an option of the run (`dd_mode`), off by default.
 
