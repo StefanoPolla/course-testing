@@ -1,9 +1,9 @@
-# Error mitigation {#sec-mitigation}
+# Reducing the effect of noise {#sec-mitigation}
 
 {{< include _macros.qmd >}}
 
 In the previous chapters, noise was what made our estimates wrong: it shrinks expectation values (@sec-bias-variance), it limits the number of Trotter steps (@sec-trotter-noise), and in [Tutorial 4]({{< var colab >}}/tutorials/tutorial-04/T4-vqe_qiskit.ipynb) it left the energy of the variational state far above what the ansatz could reach.
-In this chapter, we discuss a family of techniques developed to reduce the effect of noise in [NISQ]{.gloss key="nisq"} computation: error mitigation.
+In this chapter, we discuss how to reduce the effect of noise in [NISQ]{.gloss key="nisq"} computation without error correction: briefly with error suppression, and mainly with error mitigation.
 
 By the end of the chapter, you should be able to tell error suppression, mitigation and correction apart; explain how zero-noise extrapolation and symmetry verification work, and how they trade bias for standard error; and judge whether a mitigated result is plausible.
 
