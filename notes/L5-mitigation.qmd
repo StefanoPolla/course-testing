@@ -138,7 +138,7 @@ We can thus reconstruct an estimate of $\langle P \rangle$ by rescaling the aver
 (This was already discussed in @sec-rescaling.)
 
 Rescaling rests on two assumptions: that the noise is global depolarising, so that every expectation value shrinks by the same factor $f$, and that we can accurately characterise the shrinking factor $f$.
-This makes the method simple and cheap, but real noise is only approximately global depolarising: not every error changes every Pauli string, so each expectation value shrinks by its own factor (@sec-signal-left).
+These assumptions make the method simple and cheap, but real noise is only approximately global depolarising: not every error changes every Pauli string, so each expectation value shrinks by its own factor (@sec-signal-left).
 The first assumption must therefore be checked, for example by simulating a similar circuit whose result is known.
 Where this approximation fails, the rescaled estimate keeps a bias.
 Furthermore, estimating $f$ from the fault rate, as $e^{-\lambda}$, is not sufficient: $e^{-\lambda}$ is the probability that no error occurs, and since some errors leave a given Pauli string unchanged, it tends to underestimate $f$; underestimating $f$ would result in an overcompensation when applying rescaling, and the mitigated estimate would overshoot past the true value.
@@ -154,9 +154,8 @@ Rescaling is worth its overhead only when the bias matters.
 With few shots, the standard error of $\bar s$ is larger than its bias, and dividing by $f$ only makes the estimate fluctuate more.
 With many shots, the bias is the larger error, and the rescaled estimate is the better one (@exr-rescaling-pays).
 
-The sampling overhead changes for different error mitigation methods, but for general circuits all of them grow exponentially with $\lambda$.
-Mitigation therefore works for circuits whose fault rate is not too large: it extends what a noisy device can do, but it does not remove the limits set by noise.
-Thus, error mitigation can be thought of as a "last mile" method, which pushes what devices can do a little past their unmitigated capabilities.
+The sampling overhead changes for different error mitigation methods, but in the worst case all of them grow exponentially with $\lambda$ [@quek2024].
+Mitigation therefore works for circuits whose fault rate is not too large: it can cover the "last mile", pushing the limits set by noise a little further, but not eliminating them completely.
 
 ::: {#exr-rescaling-pays}
 ## When rescaling pays off
