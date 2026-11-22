@@ -137,14 +137,15 @@ Then, we know the sample mean $\bar s$ of the outcomes will be an unbiased estim
 We can thus reconstruct an estimate of $\langle P \rangle$ by rescaling the average: $\bar s / f$.
 (This was already discussed in @sec-rescaling.)
 
-Rescaling rests on two assumptions: that the noise is global depolarising, so that every expectation value shrinks by the same factor $f$, and that we can accurately characterise the shrinking factor $f$.
-These assumptions make the method simple and cheap, but real noise is only approximately global depolarising: not every error changes every Pauli string, so each expectation value shrinks by its own factor (@sec-signal-left).
-The first assumption must therefore be checked, for example by simulating a similar circuit whose result is known.
-Where this approximation fails, the rescaled estimate keeps a bias.
-Furthermore, estimating $f$ from the fault rate, as $e^{-\lambda}$, is not sufficient: $e^{-\lambda}$ is the probability that no error occurs, and since some errors leave a given Pauli string unchanged, it tends to underestimate $f$; underestimating $f$ would result in an overcompensation when applying rescaling, and the mitigated estimate would overshoot past the true value.
-Thus, $f$ should instead be measured, again by running a similar circuit.
-Due to these complex assumptions, rescaling is often unreliable in practice.
-However, like global depolarising noise, it is very useful as an archetype of error mitigation methods as it admits a very simple theoretical analysis.
+Rescaling rests on two assumptions, and each of them can fail.
+The first assumption is that the noise is global depolarising, so that every expectation value shrinks by the same factor $f$.
+Real noise is not always well approximated by global depolarising noise: not every error changes every Pauli string, so expectation values shrink by different factors (@sec-signal-left), and dividing all by a single $f$ leaves a bias.
+The second assumption is that we know the value of $f$.
+Estimating it from the error rates, as $e^{-\lambda}$, gives the probability that no error occurs.
+This tends to underestimate $f$, because some errors leave a given Pauli string unchanged.
+When $f$ is too small, dividing by it overcompensates, and the estimate overshoots past the true value.
+Both assumptions can be checked, and $f$ can be measured instead of predicted, by running a similar circuit whose result is known.
+Due to these demanding assumptions, rescaling is often unreliable in practice, but (like the global depolarising model for noise) it is a useful archetype of error mitigation: its theoretical analysis is simple, and what we learn from studying it often extends to other error mitigation methods.
 
 Dividing an estimate by $f$ also multiplies the standard error by $1/f$, so reaching the same standard error as the unmitigated estimate takes $1/f^2$ times as many shots.
 This factor is the [sampling overhead]{.gloss key="sampling-overhead"} of an error mitigation method: the number of shots it needs to achieve a given standard error, divided by the number of shots that the unmitigated estimate needs for the same error.
@@ -155,7 +156,7 @@ With few shots, the standard error of $\bar s$ is larger than its bias, and divi
 With many shots, the bias is the larger error, and the rescaled estimate is the better one (@exr-rescaling-pays).
 
 The sampling overhead changes for different error mitigation methods, but in the worst case all of them grow exponentially with $\lambda$ [@quek2024].
-Mitigation therefore works for circuits whose fault rate is not too large: it can cover the "last mile", pushing the limits set by noise a little further, but not eliminating them completely.
+Mitigation therefore works only for circuits whose fault rate is not too large: it pushes the limits set by noise a little further, and can cover the "last mile" to a result the device alone cannot reach.
 
 ::: {#exr-rescaling-pays}
 ## When rescaling pays off
@@ -174,9 +175,9 @@ Which estimate would you trust more in each case?
 
 ## Zero-noise extrapolation {#sec-zne}
 
-[Zero-noise extrapolation]{.gloss key="zne"} (ZNE) does the opposite of suppression: it increases the noise of the circuit, in a controlled way.
-It estimates an expectation value at several noise levels, all at least as large as the device's own, fits a curve through these estimates, and evaluates it at zero noise [@temme2017; @li2017].
-It needs no model of the noise, only a way to scale it.
+[Zero-noise extrapolation]{.gloss key="zne"} (ZNE) is performed by running the same circuit at several different noise levels, fitting a curve to the results and extrapolating to zero noise [@temme2017; @li2017].
+Noise levels cannot be reduced below what the physical device allows, but they can be increased by doing the opposite of error suppression.
+Zero-noise extrapolation needs no model of the noise, only a way to increase it controllably.
 
 ### Scaling the noise by folding {#sec-folding}
 
