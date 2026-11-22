@@ -347,7 +347,8 @@ $$
 p_{\text{keep}} = f + (1-f)(1-d) ,
 $$
 and among them, a fraction $f/p_{\text{keep}}$ ran without errors.
-We estimate an observable $O$ whose noiseless expectation value is $\langle O\rangle$. If $\langle O\rangle_u$ is its average over the shots with undetected errors, the post-selected estimate averages to
+We estimate an observable $O$ whose noiseless expectation value is $\langle O\rangle$.
+If $\langle O\rangle_u$ is its average over the shots with undetected errors, the post-selected estimate averages to
 $$
 \langle O\rangle_{\text{ps}} = \frac{f\langle O\rangle + (1-f)(1-d)\langle O\rangle_u}{p_{\text{keep}}} ,
 $$ {#eq-post-selected}
