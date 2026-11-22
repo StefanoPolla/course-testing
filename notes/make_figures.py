@@ -1674,9 +1674,9 @@ print("  mean |error| noisy", np.round(np.abs(noisy - ideal).mean(axis=1), 3))
 print("  mean |error| post-selected", np.round(np.abs(post_selected - ideal).mean(axis=1), 3))
 times = dt * np.arange(n_steps + 1)
 fig = plt.figure(figsize=(8.6, 2.75))
-grid = fig.add_gridspec(1, 6, width_ratios=[1, 1, 1, 0.07, 0.62, 1.3], wspace=0.22)   # column 4: a gap
+grid = fig.add_gridspec(1, 7, width_ratios=[1, 1, 1, 0.18, 0.07, 0.5, 1.3], wspace=0.22)   # columns 3 and 5: gaps
 panels = [fig.add_subplot(grid[0, k]) for k in range(3)]
-ax_kept = fig.add_subplot(grid[0, 5])
+ax_kept = fig.add_subplot(grid[0, 6])
 for ax, data, title in zip(panels, [ideal, noisy, post_selected], ["(a) no noise", "(b) noise", "(c) post-selected"]):
     mesh = ax.pcolormesh(times, np.arange(1, n_qubits + 1), np.maximum(data, 1e-3).T, shading="nearest",
                          cmap="Blues", norm=LogNorm(vmin=1e-3, vmax=1), rasterized=True)
@@ -1689,7 +1689,9 @@ panels[0].set_ylabel("qubit $i$")
 for ax in panels[1:]:
     ax.set_yticks([1, 6, 11])
     ax.set_yticklabels([])
-fig.colorbar(mesh, cax=fig.add_subplot(grid[0, 3]), label="probability of a flip")
+colorbar = fig.colorbar(mesh, cax=fig.add_subplot(grid[0, 4]))
+colorbar.set_label("probability of a flip")
+colorbar.ax.yaxis.set_label_position("left")   # label towards (a)-(c), away from (d)
 ax_kept.plot(times, kept_fraction, "o-", color=ACCENT, ms=4, lw=1.4, label="shots kept")
 ax_kept.plot(times, np.exp(-np.array(fault_rate)), "s--", color=ORANGE, ms=3.5, lw=1.2,
              label=r"no error, $e^{-\lambda}$")

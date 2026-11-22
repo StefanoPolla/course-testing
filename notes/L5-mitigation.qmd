@@ -296,7 +296,7 @@ On each shot, it checks quantities that the circuit should conserve because of a
 
 ### Symmetries and quantum numbers {#sec-quantum-numbers}
 
-We met two conserved quantities in earlier chapters: the number of flipped qubits $K = \sum_i (I - Z_i)/2$ of the [Heisenberg model]{.gloss key="heisenberg-model"} (@sec-spin-models), and the parity $X_1 X_2 \cdots X_n$ in the [TFIM]{.gloss key="tfim"} (@sec-adiabatic).
+We met two conserved quantities in earlier chapters: the number of flipped qubits $K = \sum_i (I - Z_i)/2$ of the [Heisenberg model]{.gloss key="heisenberg-model"} (@sec-spin-models), and the parity $\Pi = X_1 X_2 \cdots X_n$ in the [TFIM]{.gloss key="tfim"} (@sec-adiabatic).
 Both are observables that commute with the Hamiltonian.
 
 ::: {#def-symmetry}
@@ -306,7 +306,8 @@ The eigenvalues $s$ of $S$ are called [quantum numbers]{.gloss key="quantum-numb
 :::
 
 The name "quantum number" comes from physics, which labels eigenstates of a system by their conserved values, for example the number of electrons in a molecule, or the total angular momentum of an atom.
-Two properties follow from $SH = HS$.
+
+Two properties follow from $SH = HS$:
 
 1. $H$ maps each sector into itself: if $S\ket{\psi} = s\ket{\psi}$, then $S(H\ket{\psi}) = H(S\ket{\psi}) = s\,H\ket{\psi}$. In a basis of eigenvectors of $S$, sorted by sector, the matrix of $H$ is block diagonal (@fig-sectors).
 2. The quantum number is conserved: a gate $G$ that commutes with $S$ keeps each state in its sector, since $SG\ket{\psi} = GS\ket{\psi} = s\,G\ket{\psi}$.
@@ -320,9 +321,12 @@ K = \sum_{i=1}^n \frac{I - Z_i}{2} ,
 $$
 which counts the 1s of a basis state: $K\ket{x} = k\ket{x}$ for a bit string $x$ with $k$ ones.
 Its sector $k$ is spanned by the $\binom{n}{k}$ bit strings with $k$ ones.
-Each bond term equals $J(2\,\gate{SWAP} - I)$ (@exr-pauli-decomposition), so it moves 1s around but never creates or removes one, and neither do the bond gates of the Trotter circuit (@sec-dynamics-observables).
+Each bond term equals $J(2\,\gate{SWAP} - I)$ (@exr-pauli-decomposition), so it moves 1s around but never creates or removes one.
+You can check that the bond gates of the Trotter circuit, the exponentials of the bond terms, also commute with $K$ (@sec-dynamics-observables); the single Pauli terms $X_iX_{i+1}$ and $Y_iY_{i+1}$ do not, only their sum does.
+
 For the TFIM, the parity $\Pi = X_1X_2\cdots X_n$ squares to $I$, so its eigenvalues are $\pm 1$, and its two sectors have $2^{n-1}$ states each.
-Each $X_i$ commutes with $\Pi$, and so does each $Z_iZ_{i+1}$, whose two factors $Z$ each anticommute with the $X$ of $\Pi$ on the same qubit, so the $R_X$ and $R_{ZZ}$ gates of the HVA conserve the parity (@sec-adiabatic).
+Each $X_i$ commutes with $\Pi$, and so does each $Z_iZ_{i+1}$.
+Thus, the $R_X$ and $R_{ZZ}$ gates of the Trotterised adiabatic state preparation circuit (or of the HVA) conserve the parity (@sec-adiabatic).
 
 ![The nonzero entries (grey) of the Hamiltonian of (a) a Heisenberg chain and (b) a TFIM chain, both of 4 qubits, in a basis of eigenvectors of the symmetry, sorted by sector (blue boxes). (a) Bit strings sorted by the number of flipped qubits $k$: sectors of 1, 4, 6, 4 and 1 states. (b) The TFIM in the $X$ basis, $\ket{\pm}$ on each qubit, where the parity $X_1X_2X_3X_4$ is diagonal: two sectors of 8 states. No entry connects two sectors.](figures/sectors){#fig-sectors width=75%}
 
@@ -335,7 +339,7 @@ If the quantum number can be read from the bits of each shot, a shot that gives 
 [Symmetry verification]{.gloss key="symmetry-verification"} discards these shots, and estimates the expectation value from the others [@bonet-monroig2018; @mcardle2019].
 Keeping only the shots that pass a test is called [post-selection]{.gloss key="post-selection"}.
 
-Post-selection removes part of the bias, at the price of fewer shots.
+Post-selection removes part of the bias, at the price of fewer accepted shots.
 To see how much, recall that a shot runs without errors with probability $f \approx e^{-\lambda}$ (@eq-circuit-fidelity), and suppose that a fraction $d$ of the shots with errors is detected.
 The fraction of shots kept is then
 $$
@@ -347,8 +351,11 @@ $$
 \langle O\rangle_{\text{ps}} = \frac{f\langle O\rangle + (1-f)(1-d)\langle O\rangle_u}{p_{\text{keep}}} ,
 $$ {#eq-post-selected}
 so its bias, $(1-f)(1-d)\big(\langle O\rangle_u - \langle O\rangle\big)/p_{\text{keep}}$, comes only from the undetected errors.
-The price is that only $p_{\text{keep}}N$ of the $N$ shots are used, so the variance of the estimate grows by a factor $1/p_{\text{keep}}$.
-If every error is detected, $d = 1$, the estimate has no bias, and its sampling overhead is $1/f \approx e^{\lambda}$, the square root of the overhead $e^{2\lambda}$ of rescaling.
+The price is that only $p_{\text{keep}}N$ of the $N$ shots are kept and used for computing averages, so the variance of the estimate grows by a factor $1/p_{\text{keep}}$.
+
+In the best case scenario every error is detected, $d = 1$.
+Then, the estimate has no bias, and the sampling overhead is $1/f \approx e^{\lambda}$.
+Compared to the overhead $e^{2\lambda}$ of rescaling, this overhead of symmetry verification is its square root.
 The fraction of discarded shots, $(1-f)d$, is also a measured lower bound on the probability of an error, a useful check on the error budget.
 
 ::: {.example}
