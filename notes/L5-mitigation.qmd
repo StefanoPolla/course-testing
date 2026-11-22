@@ -323,6 +323,7 @@ which counts the 1s of a basis state: $K\ket{x} = k\ket{x}$ for a bit string $x$
 Its sector $k$ is spanned by the $\binom{n}{k}$ bit strings with $k$ ones.
 Each bond term equals $J(2\,\gate{SWAP} - I)$ (@exr-pauli-decomposition), so it moves 1s around but never creates or removes one.
 You can check that the bond gates of the Trotter circuit, the exponentials of the bond terms, also commute with $K$ (@sec-dynamics-observables); the single Pauli terms $X_iX_{i+1}$ and $Y_iY_{i+1}$ do not, only their sum does.
+In the circuit of Tutorial 3, each bond gate is the product of three rotations, $R_{XX}R_{YY}R_{ZZ}$: $R_{ZZ}$ conserves $K$ on its own, but $R_{XX}$ and $R_{YY}$ conserve it only together.
 
 For the TFIM, the parity $\Pi = X_1X_2\cdots X_n$ squares to $I$, so its eigenvalues are $\pm 1$, and its two sectors have $2^{n-1}$ states each.
 Each $X_i$ commutes with $\Pi$, and so does each $Z_iZ_{i+1}$.
@@ -389,7 +390,7 @@ Which fraction of the kept shots report the flip on a wrong qubit, and which fra
 
 ### Implementing symmetry verification {#sec-sv-steps}
 
-1. Find a symmetry $S$ of the problem that every gate of the circuit conserves, and the quantum number $s_0$ of the initial state. Check the gates of the circuit before compiling: the native gates of the compiled circuit need not conserve $S$ one by one.
+1. Find a symmetry $S$ of the problem that every gate of the circuit conserves, or every group of gates, such as the $R_{XX}R_{YY}$ of a Heisenberg bond, and the quantum number $s_0$ of the initial state. Check the gates of the circuit before compiling: the native gates of the compiled circuit need not conserve $S$ one by one.
 2. For each measurement setting, check whether $S$ can be read from its outcomes, that is, whether $S$ is diagonal in the measured basis. A Pauli string, such as the parity, can be read in a [measurement setting]{.gloss key="measurement-setting"} that agrees with it wherever it is not $I$ (@def-qwc), as the product of the outcomes $\pm 1$ on those qubits. The settings in which $S$ cannot be read are used with all their shots.
 3. For each shot of the other settings, compute the quantum number from its bits, and keep the shot if it equals $s_0$.
 4. Estimate the observable from the kept shots, with the standard error for their number, $N_{\text{kept}}$ instead of $N$ (@eq-standard-error).
