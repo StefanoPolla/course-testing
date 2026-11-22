@@ -11,20 +11,20 @@ By the end of the chapter, you should be able to tell error suppression, mitigat
 
 Dealing with noise is central to quantum computing.
 One natural way to reduce noise is to build better hardware, with fewer errors per gate; but much can also be done on the *software* side, i.e. in the way we design algorithms and run them on a given device.
-We group the software methods to reduce error in three categories:
+We group the software methods to reduce errors into three categories:
 
 ::: {#def-three-ways}
 ## Error suppression, mitigation and correction
-- [Quantum Error suppression]{.gloss key="error-suppression"} changes how the device runs a circuit (e.g. in gate implementation or compilation), so that each shot suffers fewer errors.
-- [Quantum Error mitigation]{.gloss key="error-mitigation"} leaves the errors of each shot as they are. It runs many shots, often of several modified circuits, and combines their outcomes in classical post-processing into an estimate of the noiseless expectation value.
+- [Quantum error suppression]{.gloss key="error-suppression"} changes how the device runs a circuit (e.g. in gate implementation or compilation), so that each shot suffers fewer errors.
+- [Quantum error mitigation]{.gloss key="error-mitigation"} leaves the errors of each shot as they are. It runs many shots, often of several modified circuits, and combines their outcomes in classical post-processing into an estimate of the noiseless expectation value.
 - [Quantum error correction]{.gloss key="qec"} encodes each logical qubit in many physical qubits, and detects and corrects errors during the computation (@sec-nisq).
 :::
 
 **Suppression** includes better calibrated pulses, compiling into fewer two-qubit gates, choosing the best qubits of a device, and dynamical decoupling (@sec-suppression); it costs no extra shots, but it cannot remove all errors.
 
-**Mitigation** includes readout-error mitigation and the rescaling of @sec-rescaling, and the two methods explained in this chapter, as well as many more.
+**Mitigation** includes readout-error mitigation and the rescaling of @sec-rescaling, and zero-noise extrapolation and symmetry verification, the two main methods of this chapter, as well as many more.
 An extensive review can be found in @cai2023.
-It needs no extra qubits, but it improves only estimates of expectation values, not the state on the device, and its cost in shots grows exponentially with the amount of noise (@sec-mitigation-price).
+Mitigation needs no extra qubits, but it improves only estimates of expectation values, not the state on the device, and its cost in shots grows exponentially with the amount of noise (@sec-mitigation-price).
 
 **Correction** can make a computation as reliable as needed, but it needs many more qubits, with error rates below the threshold (@sec-nisq); in order to avoid all errors, error correction must be combined with fault-tolerant gate implementation, which is typically very expensive.
 
@@ -43,20 +43,20 @@ In this section, we look at two techniques that we control ourselves: choosing t
 
 On a superconducting chip, no two qubits are identical.
 Their $T_1$ and $T_2$, their readout errors, and the error rates of their gates differ.
-Furthermore these values drift between calibrations, so they will likely be different on different days, and sometimes change over a period of a few hours (@sec-superconducting).
+Furthermore, these values drift between calibrations, so they will likely be different on different days, and sometimes change over a period of a few hours (@sec-superconducting).
 
 @fig-qubit-selection (a) shows the two-qubit gate error rates on IQM's 20-qubit device Garnet, whose coupling graph is a square lattice (@fig-coupling-graphs).
 In these data, the error probability of a CZ ranges from 0.7% to 1.8%; on the device itself, the values change from one calibration to the next.
 
-We summarize the noise that a circuit suffers on a device with the sum of the error probabilities of all the operations it uses (gates, waits and readouts):
+We summarise the noise that a circuit suffers on a device with the sum of the error probabilities of all the operations it uses (gates, waits and readouts):
 $$
-\lambda = \sum_i \varepsilon_i .
+\lambda = \sum_i \varepsilon_i ,
 $$ {#eq-fault-rate}
 where $\varepsilon_i$ is the error probability of operation $i$, as in @eq-circuit-fidelity.
 This quantity is called the [circuit fault rate]{.gloss key="circuit-fault-rate"} [@cai2023], and by @eq-circuit-fidelity a shot runs without errors with probability $e^{-\lambda}$.
 It is the total of the error budgets of @sec-budgets: $\lambda \approx 0.25$ for the brick-wall circuit of @tbl-budget on a superconducting device.
 Since the error rates differ, $\lambda$ depends on which qubits of the device play the roles of the qubits of the circuit, a choice called the [layout]{.gloss key="layout"}.
-The layout must follow the coupling graph: where possible qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler must add expensive SWAP gates (@sec-connectivity).
+The layout must follow the coupling graph: where possible, qubits that share two-qubit gates in the circuit should be neighbours on the device, otherwise the compiler must add expensive SWAP gates (@sec-connectivity).
 
 ![Choosing the qubits on IQM's Garnet, with the example calibration data that IQM ships with its software (the fake backend `IQMFakeGarnet` of `iqm-client` 36.0.0; fixed values, not the device's current calibration). (a) The coupling graph, drawn as on IQM's Resonance platform, with the error probability of each CZ on the diamond between its two qubits (its depolarising error and the relaxation of both qubits during the gate), and three layouts of the chain of qubits $q_1$ to $q_4$: the best (blue) and the worst (orange) of the 312 layouts that follow the coupling graph, counting both directions of each chain, and the default layout, which Qiskit chooses without error rates (dashed, drawn beside its qubits). (b) The circuit of Tutorial 4 and, below it, its circuit fault rate $\lambda$ on the three layouts of (a). The compiled circuit has 18 CZs, 27 single-qubit gates and 4 readouts; the waits are not counted.](figures/qubit-selection){#fig-qubit-selection width=100%}
 
@@ -333,14 +333,14 @@ Thus, the $R_X$ and $R_{ZZ}$ gates of the Trotterised adiabatic state preparatio
 
 ### Post-selection on the quantum number {#sec-post-selection}
 
-Suppose that the circuit starts in a state with the quantum number $s_0$, and that all its gates commute with $S$.
+Suppose that the circuit starts in a state with the quantum number $s_0$, and that all its gates, or groups of gates, commute with $S$.
 Without noise, the final state lies in the sector $s_0$.
 An error that does not commute with $S$ can move the state to another sector, where the following gates keep it.
 If the quantum number can be read from the bits of each shot, a shot that gives a value other than $s_0$ reveals that an error happened: for $K$, measured in the $Z$ basis, the quantum number of a shot is its number of 1s.
 [Symmetry verification]{.gloss key="symmetry-verification"} discards these shots, and estimates the expectation value from the others [@bonet-monroig2018; @mcardle2019].
 Keeping only the shots that pass a test is called [post-selection]{.gloss key="post-selection"}.
 
-Post-selection removes part of the bias, at the price of fewer accepted shots.
+Post-selection removes part of the bias, at the price of keeping fewer shots.
 To see how much, recall that a shot runs without errors with probability $f \approx e^{-\lambda}$ (@eq-circuit-fidelity), and suppose that a fraction $d$ of the shots with errors is detected.
 The fraction of shots kept is then
 $$
@@ -354,7 +354,7 @@ $$ {#eq-post-selected}
 so its bias, $(1-f)(1-d)\big(\langle O\rangle_u - \langle O\rangle\big)/p_{\text{keep}}$, comes only from the undetected errors.
 The price is that only $p_{\text{keep}}N$ of the $N$ shots are kept and used for computing averages, so the variance of the estimate grows by a factor $1/p_{\text{keep}}$.
 
-In the best case scenario every error is detected, $d = 1$.
+In the best-case scenario, every error is detected, $d = 1$.
 Then, the estimate has no bias, and the sampling overhead is $1/f \approx e^{\lambda}$.
 Compared to the overhead $e^{2\lambda}$ of rescaling, this overhead of symmetry verification is its square root.
 The fraction of discarded shots, $(1-f)d$, is also a measured lower bound on the probability of an error, a useful check on the error budget.
