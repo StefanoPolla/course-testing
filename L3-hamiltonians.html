@@ -461,7 +461,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Last updated</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">15 November 2026</p>
+      <p class="date-modified">22 November 2026</p>
     </div>
   </div>
     
@@ -624,8 +624,7 @@ Figure&nbsp;3.3: The two measurement settings of the TFIM on four qubits, after 
 <p><em>Example.</em> For the TFIM chain with <span class="math inline">\(n = 10\)</span>, uncorrelated groups give <span class="math inline">\((\sqrt{9} + \sqrt{10})^2/0.1^2 \approx 3{,}800\)</span> shots instead of 36,100, in 2 circuits instead of 19. For the state that the chain reaches from <span class="math inline">\(\ket{0\cdots0}\)</span> after a time <span class="math inline">\(t = 1\)</span>, the exact group variances give about 3,100 shots.</p>
 </div>
 <p>With data, the sample variance of the values <span class="math inline">\(s_g\)</span> of each setting gives the standard error; <a href="https://colab.research.google.com/github/StefanoPolla/course-testing/blob/main/tutorials/tutorial-03/T3-hamiltonians_qiskit.ipynb">Tutorial 3</a> does this in code.</p>
-<!-- L5-LINK: symmetry verification in L5 can use the Heisenberg model's conserved
-number of flipped qubits (@sec-spin-models), read from the Z setting. -->
+<p>In the Heisenberg model, the <span class="math inline">\(Z\)</span> setting also gives, in each shot, the number of flipped qubits, which <a href="L5-mitigation.html#sec-post-selection" class="quarto-xref"><span>Section 5.5.2</span></a> uses to detect errors.</p>
 <div id="exr-settings" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 3.3 (Measurement settings)</strong></span> How many measurement settings does <span class="math inline">\(H = Z_1Z_2 + Z_2Z_3 + X_1 + X_2 + X_3 + Z_1X_2\)</span> need, with single-qubit rotations only? Give the settings and the terms that each measures.</p>
 <details class="hint"><summary>Hint</summary>
