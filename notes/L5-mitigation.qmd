@@ -290,12 +290,13 @@ In a VQE, ZNE is usually applied only to the final angles: inside the optimisati
 
 ## Symmetry verification {#sec-symmetry-verification}
 
-Zero-noise extrapolation uses nothing about the problem.
-Symmetry verification instead uses a property of the problem, a symmetry, to recognise the shots that suffered an error, and discards them.
+The methods so far, readout-error mitigation, rescaling and zero-noise extrapolation, can be applied to any circuit that estimates expectation values: they rely only on assumptions about the noise.
+Symmetry verification is the archetype of a different kind of method, which uses properties of the problem instead.
+On each shot, it checks quantities that the circuit should conserve because of a symmetry of the problem: if one of them has changed, an error must have happened, and the shot is discarded.
 
 ### Symmetries and quantum numbers {#sec-quantum-numbers}
 
-We met two conserved quantities in earlier chapters: the number of flipped qubits of the [Heisenberg model]{.gloss key="heisenberg-model"} (@sec-spin-models), which we called a symmetry in @sec-hardness, and the parity of the [TFIM]{.gloss key="tfim"}, the flip of all qubits $X_1X_2\cdots X_n$ (@sec-adiabatic).
+We met two conserved quantities in earlier chapters: the number of flipped qubits of the [Heisenberg model]{.gloss key="heisenberg-model"} (@sec-spin-models), and the parity of the [TFIM]{.gloss key="tfim"}, the flip of all qubits $X_1X_2\cdots X_n$ (@sec-adiabatic).
 Both are observables that commute with the Hamiltonian.
 
 ::: {#def-symmetry}
