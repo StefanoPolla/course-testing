@@ -175,9 +175,9 @@ Which estimate would you trust more in each case?
 
 ## Zero-noise extrapolation {#sec-zne}
 
-[Zero-noise extrapolation]{.gloss key="zne"} (ZNE) is performed by running the same circuit at several different noise levels, fitting a curve to the results and extrapolating to zero noise [@temme2017; @li2017].
-Noise levels cannot be reduced below what the physical device allows, but they can be increased by doing the opposite of error suppression.
-Zero-noise extrapolation needs no model of the noise, only a way to increase it controllably.
+[Zero-noise extrapolation]{.gloss key="zne"} (ZNE) is performed by running the same computation at several noise levels, fitting a curve to the results and extrapolating to zero noise [@temme2017; @li2017].
+Noise levels cannot be reduced below what the physical device allows, but they can be increased on purpose, which is the opposite of error suppression (@sec-folding).
+Zero-noise extrapolation needs no model of the noise, only a way to increase it.
 
 ### Scaling the noise by folding {#sec-folding}
 
