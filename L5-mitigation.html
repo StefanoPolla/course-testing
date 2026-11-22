@@ -754,19 +754,19 @@ Figure&nbsp;5.5: The light cone of <a href="L3-hamiltonians.html#fig-light-cone"
 <p>A mitigated value is the output of a model and of post-processing, and it should be read with both in mind. Five questions help.</p>
 <ol type="1">
 <li>Does it come with a standard error that includes the amplified shot noise (<a href="#eq-zne-variance" class="quarto-xref">Equation&nbsp;<span>5.3</span></a>, or the shots kept)? Without one, it cannot be judged.</li>
-<li>Which model does it assume: which fit and scale factors, and do other fits agree? For rescaling, where does <span class="math inline">\(f\)</span> come from?</li>
-<li>For post-selection, which fraction of the shots was kept?</li>
-<li>Does it break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy satisfies the variational bound (<a href="L4-ground-states.html#eq-variational" class="quarto-xref">Equation&nbsp;<span>4.1</span></a>). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below <span class="math inline">\(E_0\)</span> after mitigation (<a href="L4-ground-states.html#exr-below-E0" class="quarto-xref">Exercise&nbsp;<span>4.2</span></a>) is amplified shot noise, as in <a href="#fig-zne" class="quarto-xref">Figure&nbsp;<span>5.3</span></a>, or an overshoot, as when rescaling divides by too small an <span class="math inline">\(f\)</span> (<a href="#sec-rescaling-overhead" class="quarto-xref"><span>Section 5.3.2</span></a>).</li>
-<li>Was the method tested on an instance with a known answer and the same noise?</li>
+<li>Which assumptions are made on the noise model? Are these assumptions meant as approximations, or are they exact? For ZNE, what fit is used, and how is it justified? For rescaling, where does <span class="math inline">\(f\)</span> come from?</li>
+<li>For post-selection, which fraction of the shots was kept? Can we estimate which fraction of the errors might have gone undetected?</li>
+<li>Does the error-mitigated estimate break a bound that the true value satisfies? The noisy state is still a state, a mixed one, so its energy needs to satisfy the variational bound (<a href="L4-ground-states.html#eq-variational" class="quarto-xref">Equation&nbsp;<span>4.1</span></a>). A mitigated energy is a rescaled estimate or an extrapolation, and need not satisfy it: an energy below <span class="math inline">\(E_0\)</span> after mitigation (<a href="L4-ground-states.html#exr-below-E0" class="quarto-xref">Exercise&nbsp;<span>4.2</span></a>) is amplified shot noise, as in <a href="#fig-zne" class="quarto-xref">Figure&nbsp;<span>5.3</span></a>, or an overshoot, as when rescaling divides by too small an <span class="math inline">\(f\)</span> (<a href="#sec-rescaling-overhead" class="quarto-xref"><span>Section 5.3.2</span></a>).</li>
+<li>Was the method tested and validated on an instance with a known answer and the same noise?</li>
 </ol>
 </section>
 <section id="sec-other-methods" class="level2" data-number="5.7">
 <h2 data-number="5.7" class="anchored" data-anchor-id="sec-other-methods"><span class="header-section-number">5.7</span> Other methods</h2>
-<p>Many other methods exist; <span class="citation" data-cites="cai2023">Cai et al. (<a href="L1-platforms-and-measurement.html#ref-cai2023" role="doc-biblioref">2023</a>)</span> review them, and we may return to some later in the course.</p>
+<p>Many other methods exist; <span class="citation" data-cites="cai2023">Cai et al. (<a href="L1-platforms-and-measurement.html#ref-cai2023" role="doc-biblioref">2023</a>)</span> reviews most of the established methods. Some of the most popular include:</p>
 <ul>
 <li><a href="glossary.html#gloss-pec" class="gloss" data-gloss="An error-mitigation method that undoes the noise of each gate on average, by inserting random operations with positive and negative weights chosen from a noise model learned from the device.">Probabilistic error cancellation</a> (PEC) undoes the noise of each gate on average, by inserting random operations with positive and negative weights <span class="citation" data-cites="temme2017">(<a href="L1-platforms-and-measurement.html#ref-temme2017" role="doc-biblioref">Temme et al. 2017</a>)</span>; it needs an accurate noise model, learned from the device.</li>
 <li><em>Twirling</em> (<a href="L2-noise.html#sec-gate-errors" class="quarto-xref"><span>Section 2.4</span></a>) does not remove errors, but makes them simpler to model, which PEC needs and which helps ZNE (<a href="#sec-folding" class="quarto-xref"><span>Section 5.4.1</span></a>).</li>
-<li><em>Purification methods</em>, such as virtual distillation <span class="citation" data-cites="huggins2021 koczor2021">(<a href="L1-platforms-and-measurement.html#ref-huggins2021" role="doc-biblioref">Huggins et al. 2021</a>; <a href="L1-platforms-and-measurement.html#ref-koczor2021" role="doc-biblioref">Koczor 2021</a>)</span>, use several copies of the state to suppress the contribution of errors.</li>
+<li><em>Purification methods</em> suppress the contribution of errors by comparing the noisy state with itself: virtual distillation <span class="citation" data-cites="huggins2021 koczor2021">(<a href="L1-platforms-and-measurement.html#ref-huggins2021" role="doc-biblioref">Huggins et al. 2021</a>; <a href="L1-platforms-and-measurement.html#ref-koczor2021" role="doc-biblioref">Koczor 2021</a>)</span> uses several copies of the state, and echo verification <span class="citation" data-cites="obrien2021 obrien2023">(<a href="L1-platforms-and-measurement.html#ref-obrien2021" role="doc-biblioref">O’Brien et al. 2021</a>, <a href="L1-platforms-and-measurement.html#ref-obrien2023" role="doc-biblioref">2023</a>)</span> runs the circuit forwards and then backwards on a single copy.</li>
 <li><em>Learning-based methods</em> learn the relation between noisy and noiseless values on circuits that can be simulated classically <span class="citation" data-cites="czarnik2021">(<a href="L1-platforms-and-measurement.html#ref-czarnik2021" role="doc-biblioref">Czarnik et al. 2021</a>)</span>.</li>
 </ul>
 </section>
@@ -821,6 +821,12 @@ Li, Ying, and Simon C. Benjamin. 2017. <span>“Efficient Variational Quantum Si
 </div>
 <div id="ref-mcardle2019" class="csl-entry" role="listitem">
 McArdle, Sam, Xiao Yuan, and Simon Benjamin. 2019. <span>“Error-Mitigated Digital Quantum Simulation.”</span> <em>Physical Review Letters</em> 122 (18): 180501. <a href="https://doi.org/10.1103/PhysRevLett.122.180501">https://doi.org/10.1103/PhysRevLett.122.180501</a>.
+</div>
+<div id="ref-obrien2023" class="csl-entry" role="listitem">
+<span class="nocase">O’Brien, Thomas E., Gian-Luca Anselmetti, Fotios Gkritsis, et al.</span> 2023. <span>“Purification-Based Quantum Error Mitigation of Pair-Correlated Electron Simulations.”</span> <em>Nature Physics</em> 19 (12): 1787–92. <a href="https://doi.org/10.1038/s41567-023-02240-y">https://doi.org/10.1038/s41567-023-02240-y</a>.
+</div>
+<div id="ref-obrien2021" class="csl-entry" role="listitem">
+O’Brien, Thomas E., Stefano Polla, Nicholas C. Rubin, et al. 2021. <span>“Error Mitigation via Verified Phase Estimation.”</span> <em>PRX Quantum</em> 2 (2): 020317. <a href="https://doi.org/10.1103/PRXQuantum.2.020317">https://doi.org/10.1103/PRXQuantum.2.020317</a>.
 </div>
 <div id="ref-quek2024" class="csl-entry" role="listitem">
 Quek, Yihui, Daniel Stilck França, Sumeet Khatri, Johannes Jakob Meyer, and Jens Eisert. 2024. <span>“Exponentially Tighter Bounds on Limitations of Quantum Error Mitigation.”</span> <em>Nature Physics</em> 20 (10): 1648–58. <a href="https://doi.org/10.1038/s41567-024-02536-7">https://doi.org/10.1038/s41567-024-02536-7</a>.
