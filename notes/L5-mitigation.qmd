@@ -278,10 +278,13 @@ Compare it with the figure.
 ### Implementing ZNE {#sec-zne-steps}
 
 1. Compile the circuit that prepares the state into native gates, and fold the compiled circuit, so that the folded gates are the ones that run.
-2. Put a barrier between the parts of each folded circuit: a compiler that sees $U^\dagger U$ removes it, but it does not simplify across barriers. In Qiskit, if `native` is the compiled circuit without measurements, the circuit with $c = 3$ is `f = native.copy()`, followed by `f.barrier()`, `f.compose(native.inverse(), inplace=True)`, `f.barrier()` and `f.compose(native, inplace=True)`.
-3. Add the basis changes of the measurement settings and the measurements, as in Tutorial 4. To run on a device, compile again with the layout fixed on a chain of coupled qubits (`initial_layout`, @sec-qubit-selection), so that the compiler adds no SWAP gates, which would not be folded. Estimate the expectation value and its standard error at each $c$, with readout errors mitigated (@sec-readout-mitigation).
+2. Put a barrier between the parts of each folded circuit: a compiler that sees $U^\dagger U$ removes it, but it does not simplify across barriers.
+3. Add the basis changes of the measurement settings and the measurements, as in Tutorial 4. To run on a device, compile again with the layout fixed on a chain of coupled qubits (@sec-qubit-selection), so that the compiler adds no SWAP gates, which would not be folded. Estimate the expectation value and its standard error at each $c$, with readout errors mitigated (@sec-readout-mitigation).
 4. Extrapolate with one or more models, and find the standard error of the result, from @eq-zne-variance or by resampling.
 5. Check the result: if the models disagree by more than their standard errors, the extrapolation is not reliable. Where possible, test the procedure on a small instance with a known answer and the same noise.
+
+Tutorial 5 implements these steps in Qiskit.
+<!-- T5-LINK: link to the Tutorial 5 notebook once it exists, and check that it shows folding with barriers. -->
 
 In a VQE, ZNE is usually applied only to the final angles: inside the optimisation loop, it would multiply the cost of every step, while the optimiser only needs to compare energies.
 
@@ -377,9 +380,12 @@ Which fraction of the kept shots report the flip on a wrong qubit, and which fra
 
 1. Find a symmetry $S$ of the problem that every gate of the circuit conserves, and the quantum number $s_0$ of the initial state. Check the gates of the circuit before compiling: the native gates of the compiled circuit need not conserve $S$ one by one.
 2. For each measurement setting, check whether $S$ can be read from its outcomes, that is, whether $S$ is diagonal in the measured basis. A Pauli string, such as the parity, can be read in a [measurement setting]{.gloss key="measurement-setting"} that agrees with it wherever it is not $I$ (@def-qwc), as the product of the outcomes $\pm 1$ on those qubits. The settings in which $S$ cannot be read are used with all their shots.
-3. For each shot of the other settings, compute the quantum number from its bits (in Qiskit, qubit 0 is the rightmost bit of a bit string), and keep the shot if it equals $s_0$.
+3. For each shot of the other settings, compute the quantum number from its bits, and keep the shot if it equals $s_0$.
 4. Estimate the observable from the kept shots, with the standard error for their number, $N_{\text{kept}}$ instead of $N$ (@eq-standard-error).
-5. Report the fraction of shots kept.
+5. Report the fraction of shots kept: it sets the price in shots (@sec-post-selection).
+
+Tutorial 5 implements these steps in Qiskit.
+<!-- T5-LINK: link to the Tutorial 5 notebook once it exists, and check that it shows how to read the bits of a shot (in Qiskit, qubit 0 is the rightmost bit). -->
 
 Post-selection needs no extra circuits, so in a VQE it can also be used inside the optimisation loop.
 Other methods can be applied on top: ZNE, for example, extrapolates post-selected estimates as well as plain ones.
