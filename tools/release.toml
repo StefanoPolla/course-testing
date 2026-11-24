@@ -13,6 +13,10 @@ release = "StefanoPolla/ntqc"
 staging = "stefanopolla.github.io/course-testing"
 release = "stefanopolla.github.io/ntqc"
 
+[[rewrite]]
+staging = "stefanopolla.com/course-testing"
+release = "stefanopolla.com/ntqc"
+
 [paths]
 # Never copied, and ignored by diff (build output, tooling, staging-only settings).
 exclude = [
